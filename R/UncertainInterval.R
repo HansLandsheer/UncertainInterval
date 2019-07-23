@@ -1,0 +1,51 @@
+#' @title Set of functions for the determination of an Uncertain Interval of
+#'   test scores
+#'
+#' @description A collection of functions to determine a range of test scores
+#'   that are inconclusive and do not allow a diagnosis (other than Uncertain)
+#'   and to access its qualities.
+#'
+#' @seealso \code{\link{ui.nonpar}},  \code{\link{plotMD}},
+#'   \code{\link{get.intersection}},  \code{\link{quality.threshold}},
+#'   \code{\link{quality.threshold.uncertain}}
+#' @name UncertainInterval
+#' @details Uncertain test scores are scores that have about the same density in
+#'   the two distributions of patients with and without the targeted condition.
+#'   This range is typically found around the optimal cut-point, that is the
+#'   point of intersection or Youden index (Schisterman et al., 2005). Most
+#'   functions use a specified low value for Se and Sp to find this uncertain
+#'   interval (default Se = Sp = .55). The most recent added function
+#'   \code{\link{RPV}} uses the odds of Standardized Predictive Values of
+#'   ordinal test scores near 1 (default < 2).
+#'
+#'   This library also contains two alternative definitions. Coste et al. (2003)
+#'   defined a grey zone in between positive and negative conclusions
+#'   (see \code{\link{greyzone}}), and Greiner (1995) defined a middle inconclusive
+#'   zone of intermediate values (see \code{\link{TG.ROC}}). See Index for all
+#'   available functions and plot possibilities.
+#' @references Landsheer, J. A. (2016). Interval of Uncertainty: An Alternative
+#'   Approach for the Determination of Decision Thresholds, with an Illustrative
+#'   Application for the Prediction of Prostate Cancer. PloS One, 11(11),
+#'   e0166007.
+#'
+#'   Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
+#'   Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
+#'   Decision-Making and Screening. Diagnostics, 8(2), 32.
+#'   https://doi.org/10.3390/diagnostics8020032
+#'
+#'   Schisterman, E. F., Perkins, N. J., Liu, A., & Bondell, H. (2005). Optimal
+#'   cut-point and its corresponding Youden Index to discriminate individuals
+#'   using pooled blood samples. Epidemiology, 73-81.
+#'
+#'   Greiner, M. (1995). Two-graph receiver operating characteristic (TG-ROC): A
+#'   Microsoft-EXCEL template for the selection of cut-off values in diagnostic
+#'   tests. Journal of Immunological Methods, 185(1), 145-146.
+#'
+#'   Coste, J., & Pouchot, J. (2003). A grey zone for quantitative diagnostic
+#'   and screening tests. International Journal of Epidemiology, 32(2), 304-313.
+
+
+NULL
+#> NULL
+## "_PACKAGE"
+##> [1] "_PACKAGE"
