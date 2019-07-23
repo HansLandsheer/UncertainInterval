@@ -18,8 +18,8 @@ Description: Functions for the determination of an uncertain interval, that is, 
     range of test scores that is inconclusive and does not allow a classification other
     than 'Uncertain' (Reference: J.A. Landsheer (2016) <doi:10.1371/journal.pone.0166007>).
 License: GPL (>= 2)
-URL: http://r-forge.r-project.org/scm/?group_id=258
-BugReports: http://r-forge.r-project.org/tracker/?group_id=258
+URL: https://github.com/HansLandsheer/UncertainInterval
+BugReports: https://github.com/HansLandsheer/UncertainInterval
 RoxygenNote: 6.1.1
 Imports:
     stats,
