@@ -6,9 +6,13 @@
 likelihood ratios, sensitivity and specificity, and the posterior
 probability.}
 \usage{
-nomogram(prob.pre.test = 0.5, probs.post.test = c(pos = NULL, neg =
-  NULL), SeSp = c(Se = NULL, Sp = NULL), LR = c(PLR = NULL, NLR =
-  NULL), plot = T)
+nomogram(
+  prob.pre.test = 0.5,
+  probs.post.test = c(pos = NULL, neg = NULL),
+  SeSp = c(Se = NULL, Sp = NULL),
+  LR = c(PLR = NULL, NLR = NULL),
+  plot = T
+)
 }
 \arguments{
 \item{prob.pre.test}{The prior test probability, with a default value of .5.

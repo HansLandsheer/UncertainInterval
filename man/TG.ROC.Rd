@@ -4,9 +4,16 @@
 \alias{TG.ROC}
 \title{Two-Graphs Receiving Operating Characteristics.}
 \usage{
-TG.ROC(ref, test, Se.criterion = 0.9, Sp.criterion = 0.9,
-  model = c("none", "binormal"), plot = FALSE,
-  position.legend = "left", cex.legend = 1)
+TG.ROC(
+  ref,
+  test,
+  Se.criterion = 0.9,
+  Sp.criterion = 0.9,
+  model = c("none", "binormal"),
+  plot = FALSE,
+  position.legend = "left",
+  cex.legend = 1
+)
 }
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector

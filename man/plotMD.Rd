@@ -5,9 +5,16 @@
 \title{Function to plot the mixed densities of distributions of individuals with (1)
 and without (0) the targeted condition.}
 \usage{
-plotMD(ref, test, breaks = 20, subtitle = "",
-  position.legend = "topright", colspace = c("color", "grayscale",
-  "BW"), model = c("kernel", "binormal", "ordinal"), ...)
+plotMD(
+  ref,
+  test,
+  breaks = 20,
+  subtitle = "",
+  position.legend = "topright",
+  colspace = c("color", "grayscale", "BW"),
+  model = c("kernel", "binormal", "ordinal"),
+  ...
+)
 }
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector

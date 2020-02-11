@@ -5,10 +5,16 @@
 \title{Barplot of frequencies, densities or both of the two distributions of
 patients with and without the targeted condition.}
 \usage{
-barplotMD(ref, test, name.test = "", fixed.range = c(NULL, NULL),
+barplotMD(
+  ref,
+  test,
+  name.test = "",
+  fixed.range = c(NULL, NULL),
   plot = c("frequencies", "densities", "both", "none"),
-  target.condition = "Target Condition", position.legend = "top",
-  cex.legend = 1)
+  target.condition = "Target Condition",
+  position.legend = "top",
+  cex.legend = 1
+)
 }
 \arguments{
 \item{ref}{Vector of patient status with two ordered values. The first

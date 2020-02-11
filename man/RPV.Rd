@@ -6,11 +6,18 @@
 Likelihood Ratios and Posttest Probabilities of intervals or individual test
 scores of discrete ordinal tests.}
 \usage{
-RPV(ref, test, pretest.prob = NULL, reliability, roll.length = NULL,
-  extend = TRUE, decision.odds = 2,
-  decision.use = c("standardized.pv", "posttest.probability", "LR",
-  "predictive.value"), preselected.thresholds = c(NULL, NULL),
-  digits = 3)
+RPV(
+  ref,
+  test,
+  pretest.prob = NULL,
+  reliability,
+  roll.length = NULL,
+  extend = TRUE,
+  decision.odds = 2,
+  decision.use = c("standardized.pv", "posttest.probability", "LR", "predictive.value"),
+  preselected.thresholds = c(NULL, NULL),
+  digits = 3
+)
 }
 \arguments{
 \item{ref}{A vector of two values, ordering 'patients with' > 'patients
@@ -49,18 +56,20 @@ most often least uncertain decisions for or against the disease, the values
 that can be calculated are extended. When extend = FALSE, NAs (NOT
 Availables) are produced.}
 
-\item{decision.odds}{(default = 2). The odds for a positive or negative
-classification decision. The limit for the Predictive Values =
-decision.odds / (decision.odds+1). For a decision, the Predictive Values
-needs to be larger than this limit. decision.odds <= 1 causes all test
-scores to be used for either positive or negative decisions. NB 1
-Decison.odds can be a broken number, such as .55/(1-.55), which defines the
-decision limit for predictive values as .55. NB 2 When a test is more
-reliable and valid, a higher value for decision.odds can be applied. NB 3
-For serious diseases with relatively uncomplicated cures, decision odds can
-be smaller than one. In that case, a large number of false positives is
-unavoidable and positive decisions are inherently uncertain. See
-Sonis(1999) for a discussion.}
+\item{decision.odds}{(default = 2). The minimum odds for and against the
+targeted impairment for a positive or negative classification. For the
+uncertain range of test scores both the odds for and the odds against are
+therefore between 2 and 1/2. A decision.odds of 1 or less causes all test
+scores to be used for either positive or negative decisions. The limit for
+the Predictive Value = decision.odds / (decision.odds+1); for a decision,
+the Predictive Values needs to be larger than this limit. NB 1 Decison.odds
+can be a broken number, such as .55/(1-.55), which defines the decision
+limit for predictive values as .55. The default is therefore (2/3) / (1
+- (2/3)). NB 2 When a test is more reliable and valid, a higher value for
+decision.odds can be applied. NB 3 For serious diseases with relatively
+uncomplicated cures, decision odds can be smaller than one. In that case, a
+large number of false positives is unavoidable and positive decisions are
+inherently uncertain. See Sonis(1999) for a discussion.}
 
 \item{decision.use}{(default = 'standardized.pv'). The probability to be used
 for decisions. When 'posttest.probability' is chosen, pt.prob is used for
@@ -90,7 +99,7 @@ preselected.thresholds[2] negative decisions: test values >
 preselected.thresholds[1]) uncertain decisions: test values >
 preselected.thresholds[2]  & <= preselected.thresholds[1]. A single
 threshold can be determined with in-between values. For instance c(1.5,
-1.3) defines a single threshold of 1 for a descending test.}
+0.8) defines a single threshold of 1 for a descending ordinal test.}
 
 \item{digits}{the number of digits used in the output.}
 }
@@ -112,8 +121,8 @@ calculated value, 2. the kind of probabilities that are used for decisions.}
 N.B. When roll.length is set to 1, the test reliability is ignored and the
 outcomes are not corrected for unreliability. \itemize{ \item{rnpv: }{(more)
 reliable negative predictive value. Fitting for reporting sample results. }
-\item{rppv: }{(more) reliable positive predictive value.} \item{rndpv:
-}{(more) reliable standardized negative predictive value.} \item{rpdpv:
+\item{rppv: }{(more) reliable positive predictive value.} \item{rsnpv:
+}{(more) reliable standardized negative predictive value.} \item{rsppv:
 }{(more) reliable standardized positive predictive value.} \item{rilr:
 }{(more) reliable interval likelihood ratio.} \item{rpt.odds: }{(more)
 reliable posttest odds.} \item{rpt.prob: }{(more) reliable posttest
@@ -128,7 +137,9 @@ and positive decisions (NPV and PPV).} \item{row true.neg.status:
 }{percentage of patients with a true negative status for the 3 categories.}
 \item{row true.pos.status: }{percentage of patients with a true positive
 status for the 3 categories.} \item{row realized.odds: }{The odds that are
-realized in the sample for each of the three categories.} } } }
+realized in the sample for each of the three categories. NB The odds of the
+uncertain range of test scores concerns the odds for the targeted condition.}
+} } }
 }
 \description{
 This function can correct for the unreliability of the test. It
@@ -144,9 +155,9 @@ This function can be applied to ordinal data. Uncertain test scores
   found around the optimal cut-point, that is, the point of intersection or
   Youden index (Schisterman et al., 2005). The ui-functions use a specified
   low value for Se and Sp to find this uncertain interval (default Se = Sp =
-  .55). Instead, this function uses as a default the odds of Standardized
-  Predictive Values of ordinal test scores near 1 (default < 2). The limit
-  for the Predictive Values = decision.odds / (decision.odds+1).
+  .55). Instead, this function uses as a default the decision odds of ordinal
+  test scores near 1 (default < 2). The limit for the Predictive Values =
+  decision.odds / (decision.odds+1).
 
   N.B. 1: Sp = Negative Decisions | true.neg.status; Se = Positive Decisions
   | true.pos.status. Please note that the values for Se and Sp are
@@ -155,11 +166,12 @@ This function can be applied to ordinal data. Uncertain test scores
   \code{\link{quality.threshold}} and
   \code{\link{quality.threshold.uncertain}} for obtaining respectively
   quality indices for the test scores when ignoring test scores in the
-  uncertain interval and the qualitry indices of the test scores within the
+  uncertain interval and the quality indices of the test scores within the
   uncertain interval.
 
-  N.B. 2: For the category Uncertain the odds are (sum of patients with a
-  positive.status)/(sum of patients with negative.status).
+  N.B. 2: For the category Uncertain the odds are for the targeted condtion
+  (sum of patients with a positive.status)/(sum of patients with
+  negative.status).
 
   N.B. 3: Set roll.length to 1 to ignore the test reliability and obtain raw
   predictive values, likelihood ratios, etc., that are not corrected for the
@@ -244,4 +256,13 @@ Sonis, J. (1999). How to use and interpret interval likelihood
 
   Harvill, L. M. (1991). Standard error of measurement. Educational
   Measurement: Issues and Practice, 10(2), 33–41.
+
+  Landsheer, J. A. (In press). Impact of the Prevalence of Cognitive
+  Impairment on the Accuracy of the Montreal Cognitive Assessment: The
+  advantage of using two MoCA thresholds to identify error-prone test scores.
+  Alzheimer Disease and Associated Disorders.
+  https://doi.org/10.1097/WAD.0000000000000365
+}
+\seealso{
+[synth_NACC] for an example
 }

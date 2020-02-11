@@ -5,10 +5,17 @@
 \title{Function for the determination of the population thresholds an uncertain and
 inconclusive interval for test scores with a known common distribution.}
 \usage{
-nlopt.ui.general(Se = 0.55, Sp = 0.55, distribution = "norm",
-  parameters.d0 = c(mean = 0, sd = 1), parameters.d1 = c(mean = 1, sd =
-  1), overlap.interval = NULL, intersection = NULL, start = NULL,
-  print.level = 0)
+nlopt.ui.general(
+  Se = 0.55,
+  Sp = 0.55,
+  distribution = "norm",
+  parameters.d0 = c(mean = 0, sd = 1),
+  parameters.d1 = c(mean = 1, sd = 1),
+  overlap.interval = NULL,
+  intersection = NULL,
+  start = NULL,
+  print.level = 0
+)
 }
 \arguments{
 \item{Se}{(default = .55). Desired sensitivity of the test scores within the

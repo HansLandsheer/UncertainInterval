@@ -5,8 +5,13 @@
 \title{Function for the determination of a grey zone for quantitative diagnostic and
 screening tests}
 \usage{
-greyzone(ref, test, prevalence = NULL, criterion.values = c(0.05,
-  0.95), return.all = F)
+greyzone(
+  ref,
+  test,
+  prevalence = NULL,
+  criterion.values = c(0.05, 0.95),
+  return.all = F
+)
 }
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector

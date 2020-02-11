@@ -5,8 +5,15 @@
 \title{Function for the determination of the thresholds of an uncertain interval for
 bi-normal distributed test scores that are considered as inconclusive.}
 \usage{
-ui.binormal(ref, test, Se = 0.55, Sp = 0.55, intersection = NULL,
-  start = NULL, print.level = 0)
+ui.binormal(
+  ref,
+  test,
+  Se = 0.55,
+  Sp = 0.55,
+  intersection = NULL,
+  start = NULL,
+  print.level = 0
+)
 }
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector

@@ -133,7 +133,7 @@ plotMD<-function(ref, test, breaks=20, subtitle='',
     intersection=get.intersection(df$ref, df$test, model=model, ...) # raw data always used
 
   } else if (model=='ordinal'){
-    breaks = seq(min(test)-.5, max(test)+.5, by=1)
+    breaks = seq(min(df$test)-.5, max(df$test)+.5, by=1)
     if (any(names(list(...))== 'adjust')) {
       d0=density(df$test[df$ref==0], ...)
       d1=density(df$test[df$ref==1], ...)

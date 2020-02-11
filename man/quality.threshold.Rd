@@ -5,8 +5,13 @@
 \title{Function for the description of the qualities of one or two decision
 thresholds or threshold.}
 \usage{
-quality.threshold(ref, test, threshold, threshold.upper = NULL,
-  model = c("kernel", "binormal", "ordinal"))
+quality.threshold(
+  ref,
+  test,
+  threshold,
+  threshold.upper = NULL,
+  model = c("kernel", "binormal", "ordinal")
+)
 }
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector

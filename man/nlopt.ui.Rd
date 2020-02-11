@@ -5,8 +5,17 @@
 \title{Function for the determination of the population thresholds an uncertain and
 inconclusive interval for bi-normal distributed test scores.}
 \usage{
-nlopt.ui(Se = 0.55, Sp = 0.55, mu0 = 0, sd0 = 1, mu1 = 1,
-  sd1 = 1, intersection = NULL, start = NULL, print.level = 0)
+nlopt.ui(
+  Se = 0.55,
+  Sp = 0.55,
+  mu0 = 0,
+  sd0 = 1,
+  mu1 = 1,
+  sd1 = 1,
+  intersection = NULL,
+  start = NULL,
+  print.level = 0
+)
 }
 \arguments{
 \item{Se}{(default = .55). Desired sensitivity of the test scores within the

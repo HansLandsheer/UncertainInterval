@@ -5,9 +5,15 @@
 \title{Function for the determination of an inconclusive interval for continuous test
 scores}
 \usage{
-ui.nonpar(ref, test, sens.ui = 0.55, spec.ui = 0.55,
-  intersection = NULL, return.first = T, select = c("nearest",
-  "limited"))
+ui.nonpar(
+  ref,
+  test,
+  sens.ui = 0.55,
+  spec.ui = 0.55,
+  intersection = NULL,
+  return.first = T,
+  select = c("nearest", "limited")
+)
 }
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector

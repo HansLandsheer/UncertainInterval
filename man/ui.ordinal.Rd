@@ -5,10 +5,17 @@
 \title{Function to explore possible uncertain intervals of ordinal test results of
 individuals with (1) and without (0) the targeted condition.}
 \usage{
-ui.ordinal(ref, test, select.max = c("MCI.Sp+MCI.Se", "MCI.C", "MCI.Acc",
-  "MCI.Se", "MCI.Sp", "MCI.n", "All"), constraints = c(C = 0.57, Acc =
-  0.6, lower.ratio = 0.8, upper.ratio = 1.25), weights = c(1, 1, 1),
-  intersection = NULL, return.all = FALSE, ...)
+ui.ordinal(
+  ref,
+  test,
+  select.max = c("MCI.Sp+MCI.Se", "MCI.C", "MCI.Acc", "MCI.Se", "MCI.Sp", "MCI.n",
+    "All"),
+  constraints = c(C = 0.57, Acc = 0.6, lower.ratio = 0.8, upper.ratio = 1.25),
+  weights = c(1, 1, 1),
+  intersection = NULL,
+  return.all = FALSE,
+  ...
+)
 }
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector

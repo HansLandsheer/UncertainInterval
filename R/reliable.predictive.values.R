@@ -39,18 +39,20 @@
 #'   most often least uncertain decisions for or against the disease, the values
 #'   that can be calculated are extended. When extend = FALSE, NAs (NOT
 #'   Availables) are produced.
-#' @param decision.odds (default = 2). The odds for a positive or negative
-#'   classification decision. The limit for the Predictive Values =
-#'   decision.odds / (decision.odds+1). For a decision, the Predictive Values
-#'   needs to be larger than this limit. decision.odds <= 1 causes all test
-#'   scores to be used for either positive or negative decisions. NB 1
-#'   Decison.odds can be a broken number, such as .55/(1-.55), which defines the
-#'   decision limit for predictive values as .55. NB 2 When a test is more
-#'   reliable and valid, a higher value for decision.odds can be applied. NB 3
-#'   For serious diseases with relatively uncomplicated cures, decision odds can
-#'   be smaller than one. In that case, a large number of false positives is
-#'   unavoidable and positive decisions are inherently uncertain. See
-#'   Sonis(1999) for a discussion.
+#' @param decision.odds (default = 2). The minimum odds for and against the
+#'   targeted impairment for a positive or negative classification. For the
+#'   uncertain range of test scores both the odds for and the odds against are
+#'   therefore between 2 and 1/2. A decision.odds of 1 or less causes all test
+#'   scores to be used for either positive or negative decisions. The limit for
+#'   the Predictive Value = decision.odds / (decision.odds+1); for a decision,
+#'   the Predictive Values needs to be larger than this limit. NB 1 Decison.odds
+#'   can be a broken number, such as .55/(1-.55), which defines the decision
+#'   limit for predictive values as .55. The default is therefore (2/3) / (1
+#'   - (2/3)). NB 2 When a test is more reliable and valid, a higher value for
+#'   decision.odds can be applied. NB 3 For serious diseases with relatively
+#'   uncomplicated cures, decision odds can be smaller than one. In that case, a
+#'   large number of false positives is unavoidable and positive decisions are
+#'   inherently uncertain. See Sonis(1999) for a discussion.
 #' @param decision.use (default = 'standardized.pv'). The probability to be used
 #'   for decisions. When 'posttest.probability' is chosen, pt.prob is used for
 #'   positive decisions and (1 \- pt.prob) is used for negative decisions. When
@@ -78,7 +80,7 @@
 #'   preselected.thresholds[1]) uncertain decisions: test values >
 #'   preselected.thresholds[2]  & <= preselected.thresholds[1]. A single
 #'   threshold can be determined with in-between values. For instance c(1.5,
-#'   1.3) defines a single threshold of 1 for a descending test.
+#'   0.8) defines a single threshold of 1 for a descending ordinal test.
 #' @param digits   the number of digits used in the output.
 #'
 #' @details This function can be applied to ordinal data. Uncertain test scores
@@ -98,11 +100,12 @@
 #'   \code{\link{quality.threshold}} and
 #'   \code{\link{quality.threshold.uncertain}} for obtaining respectively
 #'   quality indices for the test scores when ignoring test scores in the
-#'   uncertain interval and the qualitry indices of the test scores within the
+#'   uncertain interval and the quality indices of the test scores within the
 #'   uncertain interval.
 #'
-#'   N.B. 2: For the category Uncertain the odds are (sum of patients with a
-#'   positive.status)/(sum of patients with negative.status).
+#'   N.B. 2: For the category Uncertain the odds are for the targeted condtion
+#'   (sum of patients with a positive.status)/(sum of patients with
+#'   negative.status).
 #'
 #'   N.B. 3: Set roll.length to 1 to ignore the test reliability and obtain raw
 #'   predictive values, likelihood ratios, etc., that are not corrected for the
@@ -177,8 +180,8 @@
 #' N.B. When roll.length is set to 1, the test reliability is ignored and the
 #' outcomes are not corrected for unreliability. \itemize{ \item{rnpv: }{(more)
 #' reliable negative predictive value. Fitting for reporting sample results. }
-#' \item{rppv: }{(more) reliable positive predictive value.} \item{rndpv:
-#' }{(more) reliable standardized negative predictive value.} \item{rpdpv:
+#' \item{rppv: }{(more) reliable positive predictive value.} \item{rsnpv:
+#' }{(more) reliable standardized negative predictive value.} \item{rsppv:
 #' }{(more) reliable standardized positive predictive value.} \item{rilr:
 #' }{(more) reliable interval likelihood ratio.} \item{rpt.odds: }{(more)
 #' reliable posttest odds.} \item{rpt.prob: }{(more) reliable posttest
@@ -193,7 +196,9 @@
 #' }{percentage of patients with a true negative status for the 3 categories.}
 #' \item{row true.pos.status: }{percentage of patients with a true positive
 #' status for the 3 categories.} \item{row realized.odds: }{The odds that are
-#' realized in the sample for each of the three categories.} } } }
+#' realized in the sample for each of the three categories. NB The odds of the
+#' uncertain range of test scores concerns the odds for the targeted condition.}
+#' } } }
 #' @references Sonis, J. (1999). How to use and interpret interval likelihood
 #'   ratios. Family Medicine, 31, 432–437.
 #'
@@ -203,7 +208,14 @@
 #'
 #'   Harvill, L. M. (1991). Standard error of measurement. Educational
 #'   Measurement: Issues and Practice, 10(2), 33–41.
-
+#'
+#'   Landsheer, J. A. (In press). Impact of the Prevalence of Cognitive
+#'   Impairment on the Accuracy of the Montreal Cognitive Assessment: The
+#'   advantage of using two MoCA thresholds to identify error-prone test scores.
+#'   Alzheimer Disease and Associated Disorders.
+#'   https://doi.org/10.1097/WAD.0000000000000365
+#'
+#' @seealso [synth_NACC] for an example
 #' @examples
 #' set.seed(1)
 #' # example of a validation sample
@@ -219,6 +231,7 @@
 #' # the Standardized Positive Predictive Values.
 #' RPV(ref, test, pretest.prob = .5, reliability = .9, roll.length = 3)
 #'
+
 # pretest.prob = .5; reliability=.9; roll.length = 1; extend = TRUE;
 # decision.odds = 3; decision.use = 'LR'; digits=3; preselected.thresholds=NULL
 # preselected.thresholds=c(25.9, 25.8)
@@ -271,9 +284,9 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability, roll.length = NULL,
   if (is.null(pretest.prob)) pretest.prob = sample.prevalence
   ts.ilr = (rollsum(tt[2,], roll.length, fill=NA)*st0)/(rollsum(tt[1,],roll.length, fill=NA)*st1)
   #
-  ts.pdpv =  (rollsum(tt[2,], roll.length, fill=NA)/st1)/
+  ts.sppv =  (rollsum(tt[2,], roll.length, fill=NA)/st1)/
     ((rollsum(tt[2,], roll.length, fill=NA)/st1)+(rollsum(tt[1,],roll.length, fill=NA)/st0))
-  ts.ndpv =  (rollsum(tt[1,], roll.length, fill=NA)/st0)/
+  ts.snpv =  (rollsum(tt[1,], roll.length, fill=NA)/st0)/
     ((rollsum(tt[1,], roll.length, fill=NA)/st0)+(rollsum(tt[2,],roll.length, fill=NA)/st1))
 
   if (is.null(preselected.thresholds)){
@@ -286,15 +299,15 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability, roll.length = NULL,
           unname(decuse))
     ts2.npv=na.fill(ts.npv, fill=c('extend', NA, 'extend'))
     ts2.ppv=na.fill(ts.ppv, fill=c('extend', NA, 'extend'))
-    ts2.ndpv=na.fill(ts.ndpv, fill=c('extend', NA, 'extend'))
-    ts2.pdpv=na.fill(ts.pdpv, fill=c('extend', NA, 'extend'))
+    ts2.snpv=na.fill(ts.snpv, fill=c('extend', NA, 'extend'))
+    ts2.sppv=na.fill(ts.sppv, fill=c('extend', NA, 'extend'))
     ts2.ilr=na.fill(ts.ilr, fill=c('extend', NA, 'extend'))
   } else {
     ext = rbind('No extension has been applied.', unname(decuse))
     ts2.npv=ts.npv
     ts2.ppv=ts.ppv
-    ts2.ndpv=ts.ndpv
-    ts2.pdpv=ts.pdpv
+    ts2.snpv=ts.snpv
+    ts2.sppv=ts.sppv
     ts2.ilr=ts.ilr
   }
   pretest.odds = pretest.prob/(1-pretest.prob)
@@ -337,13 +350,13 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability, roll.length = NULL,
         ud = which(posttest.prob <= limit & ((1-posttest.prob) <= limit)) }
     } else if (decision.use == 'standardized.pv'){
       if (decision.odds < 1){
-        pd = which(ts2.pdpv > limit)
+        pd = which(ts2.sppv > limit)
         nd = scores[-pd]
         ud = NA
       } else {
-        pd = which(ts2.pdpv > limit)
-        nd = which(ts2.ndpv > limit)
-        ud = which(ts2.ndpv <= limit & (ts2.pdpv <= limit))
+        pd = which(ts2.sppv > limit)
+        nd = which(ts2.snpv > limit)
+        ud = which(ts2.snpv <= limit & (ts2.sppv <= limit))
       }
     } else if (decision.use == 'LR'){
       if (decision.odds < 1){
@@ -373,9 +386,9 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability, roll.length = NULL,
     }
 
   pv = as.matrix(rbind(rnpv=round(ts2.npv, digits), rppv = round(ts2.ppv, digits),
-                      rndpv=round(ts2.ndpv, digits), rpdpv=round(ts2.pdpv, digits),
+                      rsnpv=round(ts2.snpv, digits), rsppv=round(ts2.sppv, digits),
                       rilr=round(ts2.ilr,digits), rpt.odds = round(posttest.odds,digits), rpt.prob = round(posttest.prob, digits)))
-  if (roll.length==1) row.names(pv) = c('npv', 'ppv', 'ndpv', 'pdpv', 'ilr', 'pt.odds', 'pt.prob')
+  if (roll.length==1) row.names(pv) = c('npv', 'ppv', 'snpv', 'sppv', 'ilr', 'pt.odds', 'pt.prob')
 
   col.title = c('Negative Decisions', 'Uncertain', 'Positive Decisions')
   # scores = c(paste(names(nd), collapse = " "), paste(names(ud),collapse = " "), paste(names(pd), collapse = " "))

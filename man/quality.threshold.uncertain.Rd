@@ -4,8 +4,14 @@
 \alias{quality.threshold.uncertain}
 \title{Function for the description of the qualities of the Uncertain Interval.}
 \usage{
-quality.threshold.uncertain(ref, test, threshold, threshold.upper,
-  intersection = NULL, model = c("kernel", "binormal", "ordinal"))
+quality.threshold.uncertain(
+  ref,
+  test,
+  threshold,
+  threshold.upper,
+  intersection = NULL,
+  model = c("kernel", "binormal", "ordinal")
+)
 }
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector
