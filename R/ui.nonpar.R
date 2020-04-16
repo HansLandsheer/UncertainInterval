@@ -9,19 +9,19 @@
 #'  densities of the two distributions of patients with and without the targeted
 #'  condition are about equal. These test scores are considered as inconclusive
 #'  for the decision for or against the targeted condition. The interval is
-#'  restricted both by a maximum sensitivity of the test scores within the
-#'  uncertain interval (sens.ui) and by a maximum specificity of the test scores
-#'  within the uncertain interval (spec.ui).
+#'  restricted both by a maximum UI.Se of the test scores within the
+#'  uncertain interval (UI.Se) and by a maximum specificity of the test scores
+#'  within the uncertain interval (UI.Sp).
 #'@param ref The reference standard. A column in a data frame or a vector
 #'  indicating the classification by the reference test. The reference standard
 #'  must be coded either as 0 (absence of the condition) or 1 (presence of the
 #'  condition)
 #'@param test The index test or test under evaluation. A column in a dataset or
 #'  vector indicating the test results in a continuous scale.
-#'@param sens.ui (default = .55). The sensitivity of the test scores within the
+#'@param UI.Se (default = .55). The sensitivity of the test scores within the
 #'  uncertain interval is either limited to this value or is the nearest to this
 #'  value. A value <= .5 is useless.
-#'@param spec.ui (default = .55). The specificity of the test scores within the
+#'@param UI.Sp (default = .55). The specificity of the test scores within the
 #'  uncertain interval is either limited to this value or is the nearest to this
 #'  value. A value <= .5 is useless.
 #'@param intersection (default = NULL) When NULL, the intersection is calculated
@@ -33,9 +33,9 @@
 #'  sensitivity and specificity are returned. NOTE: This function does not
 #'  always find a suitable interval and can return a vector of NULL values.
 #'@param select (default = 'nearest') If 'nearest', sensitivity and specificity
-#'  of the uncertain interval are nearest sens.ui and spec.ui respectively. When
+#'  of the uncertain interval are nearest UI.Se and UI.Sp respectively. When
 #'  'limited' the solutions have an uncertain interval with a sensitivity and
-#'  specificity limited by sens.ui and spec.ui respectively.
+#'  specificity limited by UI.Se and UI.Sp respectively.
 #'
 #'@details{ This function can be used for a test without a defined distribution
 #'of the continuous test scores. The Uncertain Interval is generally defined as
@@ -87,8 +87,9 @@
 #'  \item{TP}{ Count of true positives within the Uncertain interval.}
 #'  \item{TN}{ Count of true negatives within the Uncertain interval.}
 #'  \item{FP}{ Count of false positives within the Uncertain interval.}
-#'  \item{sensitivity}{ Sensitivity of the test scores within the Uncertain
-#'  interval.} \item{specificity}{ Specificity of the test scores within the
+#'  \item{UI.Se}{ Sensitivity of the test scores within the Uncertain
+#'  interval.} 
+#'  \item{UI.Sp}{ Specificity of the test scores within the
 #'  Uncertain interval.} } Only a single row is returned when parameter
 #'  \code{return.first} = TRUE (default).}
 #'@importFrom reshape2 melt
@@ -117,8 +118,8 @@
 ui.nonpar <-
   function(ref,
            test,
-           sens.ui = .55,
-           spec.ui = .55,
+           UI.Se = .55,
+           UI.Sp = .55,
            intersection = NULL,
            return.first = T,
            select = c('nearest', 'limited')) {
@@ -133,16 +134,16 @@ ui.nonpar <-
     df = check.data(ref, test, model='kernel')
 
     if (bootstrap > 0) {
-      # o4 = uncertain.interval(df$ref, df$test, sens.ui, spec.ui, intersection, return.first=T,
+      # o4 = uncertain.interval(df$ref, df$test, UI.Se, UI.Sp, intersection, return.first=T,
       #                         select, bootstrap=0)
-      o4 = ui.nonpar(df$ref, df$test, sens.ui, spec.ui, intersection, return.first=T,
+      o4 = ui.nonpar(df$ref, df$test, UI.Se, UI.Sp, intersection, return.first=T,
                               select)
       n = nrow(df) # n=10
       for (i in 1:bootstrap){
         sa = sample(n, replace=T)
-        # o5 = uncertain.interval(df$ref[sa], df$test[sa], sens.ui, spec.ui, intersection, return.first=T,
+        # o5 = uncertain.interval(df$ref[sa], df$test[sa], UI.Se, UI.Sp, intersection, return.first=T,
         #                         select, bootstrap=0)
-        o5 = ui.nonpar(df$ref[sa], df$test[sa], sens.ui, spec.ui, intersection, return.first=T,
+        o5 = ui.nonpar(df$ref[sa], df$test[sa], UI.Se, UI.Sp, intersection, return.first=T,
                                 select)
         o4  = rbind(o4,o5)
       }
@@ -152,10 +153,10 @@ ui.nonpar <-
         return(list(sample.est=o4[1,], boostrap.est=o4[-1,]))
       }
     }
-    if (sens.ui < .5) stop('Value < .5 invalid for sens.ui')
-    if (spec.ui < .5) stop('Value < .5 invalid for spec.ui')
-    # if (sens.ui > .6) warning('Value > .6 not recommended for sens.ui')
-    # if (spec.ui > .6) warning('Value > .6 not recommended for spec.ui')
+    if (UI.Se < .5) stop('Value < .5 invalid for UI.Se')
+    if (UI.Sp < .5) stop('Value < .5 invalid for UI.Sp')
+    # if (UI.Se > .6) warning('Value > .6 not recommended for UI.Se')
+    # if (UI.Sp > .6) warning('Value > .6 not recommended for UI.Sp')
 
     # only one relevant intersection assumed!
     # linear tests are used for determination of point of intersection
@@ -193,8 +194,8 @@ ui.nonpar <-
     o1[, 'TP'] = temp
     o1[, 'FP'] = cumsum(tt[wi1, 1])  #head(o1)
 
-    # find rows where TN/(TN+FP) <= sens.ui
-    value = sens.ui / (1 - sens.ui)
+    # find rows where TN/(TN+FP) <= UI.Se
+    value = UI.Se / (1 - UI.Se)
     # r = o0[2, "TN"]
     if (select == 'limited') {
       res0 = lapply(o0[, "TN"], function(r) {
@@ -241,11 +242,11 @@ ui.nonpar <-
         'TN' = o0[m.cp.l, 'TN'],
         'FP' = o1[m.cp.h , 'FP']
       )
-      oo1$sensitivity = oo1$TP / (oo1$TP + oo1$FN)
-      oo1$specificity = oo1$TN / (oo1$FP + oo1$TN) # head(oo1)
+      oo1$UI.Se = oo1$TP / (oo1$TP + oo1$FN)
+      oo1$UI.Sp = oo1$TN / (oo1$FP + oo1$TN) # head(oo1)
       if (select == 'limited') {
-        oo1 = oo1[oo1$specificity <= spec.ui &
-                    oo1$sensitivity <= sens.ui &
+        oo1 = oo1[oo1$UI.Sp <= UI.Sp &
+                    oo1$UI.Se <= UI.Se &
                     stats::complete.cases(oo1), ]
       } else {
         oo1 = oo1[stats::complete.cases(oo1), ]
@@ -253,10 +254,10 @@ ui.nonpar <-
       oo1 = oo1[!duplicated(oo1[, c('FN', 'TP', 'TN', 'FP')]), ] # nrow(o1)
     }
 
-    # find rows where TP/(TP+FN) <= spec.ui
+    # find rows where TP/(TP+FN) <= UI.Sp
     if (select == 'limited') {
       res1 = lapply(o1[, "TP"], function(r) {
-        a = which(r <= o0[, "FN"] * spec.ui / (1 - spec.ui))
+        a = which(r <= o0[, "FN"] * UI.Sp / (1 - UI.Sp))
         ifelse(length(a) == 0, return(NA), return(a)) })
     } else {
       res1 = lapply(o1[, "TP"], function(r) {
@@ -302,13 +303,13 @@ ui.nonpar <-
         'TN' = o0[m.cp.l, 'TN'],
         'FP' = o1[m.cp.h , 'FP']
       )
-      oo2$sensitivity = oo2$TP / (oo2$TP +
+      oo2$UI.Se = oo2$TP / (oo2$TP +
                                     oo2$FN)
-      oo2$specificity = oo2$TN / (oo2$FP +
+      oo2$UI.Sp = oo2$TN / (oo2$FP +
                                     oo2$TN) # head(oo2)
       if (select == 'limited') {
-        oo2 = oo2[oo2$specificity <= spec.ui &
-                    oo2$sensitivity <= sens.ui & stats::complete.cases(oo2),]
+        oo2 = oo2[oo2$UI.Sp <= UI.Sp &
+                    oo2$UI.Se <= UI.Se & stats::complete.cases(oo2),]
       } else {
         oo2 = oo2[stats::complete.cases(oo2),]
       }
@@ -320,8 +321,8 @@ ui.nonpar <-
     o3 = o3[!duplicated(o3[, c('cp.l', 'cp.h')]), ]
     o3 = o3[!duplicated(o3[, c('FN', 'TP', 'TN', 'FP')]), ] # head(o3,10) # o=t(do.call(rbind, o3))
     if (select == 'nearest') {
-      o3 = o3[find.closest(abs(o3[, 'sensitivity'] - sens.ui) +
-                           abs(o3[, 'specificity'] - spec.ui), 0),]
+      o3 = o3[find.closest(abs(o3[, 'UI.Se'] - UI.Se) +
+                           abs(o3[, 'UI.Sp'] - UI.Sp), 0),]
     }
     if (return.first |
         nrow(o3) == 0)

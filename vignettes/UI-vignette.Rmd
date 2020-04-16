@@ -8,7 +8,7 @@ output:
 ---
 title: "Vignette Uncertain Interval"
 author: "Hans Landsheer"
-date: "24-2-2018"
+date: "6-4-2020"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{"Vignette Uncertain Interval"}
@@ -29,17 +29,19 @@ knitr::opts_chunk$set(
 
 Medical tests (or bio-markers) are designed to distinguish patients with a targeted condition from the patients without that condition. For this classification, most often a dichotomous threshold is determined, allowing for two classes: patients with and without the targeted disease. This decision is often made without considering the possible uncertainty of the patient's classification. Although it is common knowledge that the highest and the lowest scores leads to a decision with the least uncertainty and that scores somewhere in the middle lead to the most uncertain classification, this knowledge is seldom applied when determining cut-points.
 
-The uncertain interval method allows for the determination of an interval of test scores that are the most uncertain for distinguishing patients with and without the targeted condition. Typically, a patient with such a test score would either receive additional tests (when available) to obtain more certainty about the true status of the patient, or further developments of symptoms can be awaited. The latter approach can vary from regular active surveillance to informing the patient which changes in symptoms should trigger further diagnostics.
+The uncertain interval methods allow for the determination of an interval of test scores that are the most uncertain for distinguishing patients with and without the targeted condition. Typically, a patient with such a test score would either receive additional tests (when available) to obtain more certainty about the true status of the patient, or further developments of symptoms can be awaited. The latter approach can vary from regular active surveillance to informing the patient which changes in symptoms should trigger further diagnostics.
 
 An uncertain test score has another weighing of costs than solely a decision for or against the presence of the disease. When the existence of the disease is uncertain, the benefits of treatment would be highly uncertain while the risks of possible negative side effects of a treatment remain present.
 
 In this vignette, first the theoretical basis of the uncertain interval method is explained. Next, an example dataset is analyzed to illustrate the various possibilities of the method. The use of PSA scores as an early indicator of prostate cancer are discussed as an example. 
 
+**NOTE 1:** This example is intended to illustrate the determination of uncertain or inconclusive test scores. It is not intended to promote the use of PSA as a single indicator.
+
 The PSA test is a relatively weak test, and demonstrates the clear existence of an interval of uncertain test scores. Prostate cancer in itself is often a slow growing form of cancer and patients with this disease do not necessarily die from the disease. On the other hand, prostate cancer treatments can have serious side effects that seriously affect the quality of life, such as incontinence and sexual dysfunctions, without necessarily leading to a longer life span. Therefore, the current policy is to prevent over-treatment and to offer patients active surveillance of their disease. The question which PSA scores should lead to informing the patient that prostate cancer is very unlikely, which test scores should lead to immediate further diagnostics and possible treatment and which test scores should lead to active surveillance is therefore relevant. The intention of this vignette is to illustrate how the functions in the UncertainInterval package can be used to answer this kind of questions.
 
 ### Intersection and Overlap
 
-Test are not perfect and uncertainty whether the test can distinguish the patients is dependent on the test score. Most often, high and low test scores are the most certain, but test scores in the middle are far less certain. The test scores at the point of the intersection of the two distributions is most uncertain (figure 1). The point of intersection is the point where the densities of the two distributions are equal. On the point of intersection, the probability that the patient belongs to the population of patients with the targeted disease (H1) is equal to the probability that the patient belongs to the population of patients without the disease (H0). 
+Tests are not perfect and uncertainty whether the test can distinguish the patients is dependent on the test score. Preferably, tests have  a single point on intersection between the two distributions of patients with and without the targeted condition. In that case, high and low test scores are the most certain, but test scores in the middle are far less certain. The test scores at the point of the intersection of the two distributions is most uncertain (figure 1). The point of intersection is the point where the densities of the two distributions are equal. On the point of intersection, the probability that the patient belongs to the population of patients with the targeted disease (H1) is equal to the probability that the patient belongs to the population of patients without the disease (H0). 
 
 ```{r , fig.height = 5, fig.width = 7, results='asis'}
 intersect.binormal <- function(m1, sd1, m2, sd2, p1=.5, p2=.5){
@@ -70,13 +72,13 @@ text(0, 0.03, expression(beta), col='black')
 
 Around the intersection, the test scores are found that are the most uncertain. Uncertain test scores are therefore defined as test scores where the densities of the two distributions are almost equal. 
 
-Let us define a threshold (black line) close to the intersection (red line). For the patients that have test scores close to the intersection, the probability to receive a wrong classifiaction is near 50%. The classification based om test scores close to the intersection is most unreliable: a second measure is bound to give results slightly lower or higher. When a patients has a score slightly above the intersection, when measuring again the result can be slightly below the intersection. The classification would reverse, while in reality little has changed.
+Let us define a threshold (black line) close to the intersection (red line). For the patients that have test scores close to the intersection, the probability to receive a wrong classification is near 50%. The classification based on a test score close to the intersection is least valid: a second measurement is bound to give results slightly lower or higher. When a patient has a score slightly above the intersection, when measuring again the result can be slightly below the intersection. The classification would reverse, while in reality little has changed.
 
 The intersection is also the point where the sum of false positive rate (FPR = $\alpha$ (alpha error) = 1 - Sp) and false negative rate (FNR = $\beta$ (beta error) = 1 - Se) is minimal (Schisterman et al., 1995). The intersection is therefore the same as the Youden threshold, the point where the sum of true positive rate (TPR = Se) and true negative rate (TNR = Sp) is maximal. Small differences may occur as a result of differences in estimation methods, but in principle the intersection and the Youden threshold are the same.
 
-Note: Tests that have more than one intersection can be problematic. When an intersection occurs in a region where the densities are very low, such an intersection can be ignored. When this is not the case, extra intersections indicate a lower quality of the test. An extra intersection indicates the existence of a region where the interpretation of results is reversed and not straightforward.
+**NOTE 2:** Tests that have more than one intersection can be problematic. When an intersection occurs in a region where the densities are very low, such an intersection can be ignored. When this is not the case, extra intersections indicate a lower quality of the test. An extra intersection indicates the existence of a region where the interpretation of results is reversed and not straightforward.
 
-The uncertain interval method offers the possibility to determine an interval that can be considered to be too uncertain to distinguish one type of patient from the other type. This indicates to the decision maker that more information is needed before a classification can be made. The decision maker is far less uncertain about a patient with scores outside the defined middle range of test scores (Landsheer, 2016, 2018).
+The uncertain interval methods offer the possibility to determine an interval that can be considered to be too uncertain to distinguish one type of patient from the other type. This indicates to the decision maker that more information is needed before a classification can be made. The decision maker is far less uncertain about a patient with scores outside the defined middle range of test scores (Landsheer, 2016, 2018).
 
 ### An Example
 
@@ -91,27 +93,34 @@ abline(v=4, col='red')
 
 ```
 
-It is easy to see in figure 2 that the interpretation of these distributions of scores is problematic. A large overlap is found in the lower region, both distributions have long tails and there are multiple intersections. Both patients with (1) and without (0) prostate cancer can have low or high PSA scores. Using the usual threshold of 4 micro gram per liter (red line), it is easy to see that there are a considerable number of miss classifications and especially the number of false negatives (FN = 101) is high when compared to the number of true positives (TP = 128), resulting in a low sensitivity of .56. Table 1 shows the confusion matrix. 
+It is easy to see in figure 2 that the interpretation of these distributions of scores is problematic. A large overlap is found in the lower region, both distributions have long tails and there are multiple intersections. Both patients with (1) and without (0) prostate cancer can have low or high PSA scores. Using the usual threshold of 4 micro gram per liter (red line), it is easy to see that there are a considerable number of miss classifications and especially the number of false negatives (FN = 101) is high when compared to the number of true positives (TP = 128), resulting in a low sensitivity of .56. Table 1 shows the confusion matrix of all 683 patients. 
 ```{r}
 t2 = table (psa2b$tpsa > 4, psa2b$d)
 rownames(t2) <- c('PSA <= 4', 'PSA > 4')
 library(knitr)
-kable(addmargins(t2), caption = "Table 1")
+kable(addmargins(t2), caption = "Table 1", padding = 20)
 ```
 
 The higher the PSA score, the more certain the presence of prostate cancer is, but patients without prostate cancer can have high PSA values as well. Only the highest PSA values (> 40) leave little doubt that these patients have prostate cancer, but choosing such a high threshold makes that the percentage of false negatives increases greatly.
 
 Determination of the most uncertain test scores may help. The function ui.nonpar dynamically calculates the sensitivity and specificity of the test scores around the intersection to determine the lower and upper threshold of this interval of uncertain scores. This function uses the rank order of the sampled test scores and is non-parametric. The default values for the sensitivity and specificity of the test scores within the uncertain interval is .55, which means that the ratios TP/FN and TN/FP are .55/(1-.45) = 1.22. 
 
-This interval is located around the intersection, which is determined in the ui.nonpar function by density estimation. This estimation is therefore semi-parametric. If needed, this estimation can be overridden by setting the intersection parameter of the ui.nonpar function.
+This interval is located around the intersection, which is determined in the ui.nonpar function by density estimation. The estimation of the point of intersection is therefore semi-parametric. If needed, this estimation can be overridden by setting the intersection parameter of the ui.nonpar function.
 ```{r}
 (res=ui.nonpar(psa2b$d, psa2b$tpsa))
 ```
-The thresholds found are 1.92 and 4.00 and 27 + 33 + 55 + 45 = 160 observations are considered as uncertain or indeterminate. The function quality.threshold provides the quality indices of the lower and upper less uncertain intervals (called MCI's or More Certain Intervals). In this case (using the default uncertain interval), the number of false negatives is reduced to 41.
+> Please note that a warning is generated. A second point of intersection is found. We ignore these secondary points, as there are low densities there.  
+
+The thresholds found are 1.92 and 4.00 and 27 + 33 + 55 + 45 = 160 observations are considered as uncertain or indeterminate. The function quality.threshold provides the quality indices of the lower and upper less uncertain intervals (called MCI's or More Certain Intervals). The MCI's concern the patients who actually receive a classification for or against the possible presence of the targeted condition. Patients with an uncertain test score do not receive such a classification. A classification as uncertain points to the necessity of additional data before making a decision. In this case (using the default uncertain interval), the number of false negatives is reduced to 41 of the 355 patients who receive a classification against the targeted condition.
 ```{r}
 (out=quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2]))
 ```
 The sensitivity for the patients who receive a decision for or against the disease has increased to .76. It was 128/228 = .56, so there is a big improvement but it is still a sensitivity that is wanting. Specificity is reduced slightly to .89, as the uncertain interval deselects 55 (TN) + 45 (FP) = 100 non-patients, for which the test score is considered as too uncertain.
+
+**NOTE 3:** In this case, the uncertain test scores are left out for the calculation of Se and Sp. The indicators Se and Sp are developed for use with a single cut-point. Using the upper and lower bound of the uncertain interval as single cut-points would lead to considering the uncertain test scores as classification errors, which would be nonsensical.
+
+**NOTE 4:** The size of the uncertain interval is open for discussion. In the case of PSA it is certainly possible to argue for a wider interval of uncertain test scores.
+
 
 The function quality.threshold.uncertain provides detailed quality indices for the uncertain interval when applied to the sample. These indices show a low quality, indicating that these test scores provide very uncertain information about the true status of these patients.
 ```{r}
@@ -139,32 +148,32 @@ The question how much uncertainty is acceptable, depends on the clinical setting
 
 In the case of prostate cancer, the cancer often grows slowly and is often not causing any symptoms, while treatment with surgery or radiation has serious risks such as incontinence and impotence and does not necessarily prolongs life. Active surveillance with examinations each six months or awaiting possible changes in symptoms is often the more desirable line of action. In that case, we need a high certainty for decisive actions and might accept a wider range of test scores that we consider as diagnostically insufficient. As the PSA bio-marker is a relatively weak indicator, a wide range of test scores in the middle offers insufficient indication for treatment or no treatment. In general, a diagnostic insufficient indication can lead to the decision to use better or additional measurements that offer a better indication.
 
-A wider uncertain interval is obtained by increasing the values of specificity and sensitivity of the uncertain test scores. Higher values makes the test scores in the uncertain interval less uncertain, while the test scores outside the uncertain interval provide increased certainty, that is a increased percentage of correct decisions considering the true status of the patient. In the next code block, specificity and sensitivity is increased to respectively .60, .65 and .70.
+A wider uncertain interval is obtained by increasing the values of specificity and sensitivity of the uncertain test scores. Higher values make the test scores in the uncertain interval less uncertain, while the test scores outside the uncertain interval provide increased certainty, that is an increased percentage of correct decisions considering the true status of the patient. In the next code block, specificity and sensitivity is increased to respectively .60, .65 and .70.
 
 ```{r echo=TRUE}
-(res=ui.nonpar(psa2b$d, psa2b$tpsa, sens=.60, spec=.60))
-quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('specificity',  'sensitivity')]
+(res=ui.nonpar(psa2b$d, psa2b$tpsa, UI.Se = .60, UI.Sp = .60))
+quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.Se')]
 
-(res=ui.nonpar(psa2b$d, psa2b$tpsa, sens=.65, spec=.65))
-quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('specificity',  'sensitivity')]
+(res=ui.nonpar(psa2b$d, psa2b$tpsa, UI.Se =.65, UI.Sp = .65))
+quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.Se')]
 
-(res=ui.nonpar(psa2b$d, psa2b$tpsa, sens=.70, spec=.70))
-quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('specificity',  'sensitivity')]
+(res=ui.nonpar(psa2b$d, psa2b$tpsa, UI.Se =.70, UI.Sp = .70))
+quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.Se')]
 ```
 
-The function quality.threshold produces several statistics to describe the qualities of the test scores outside the uncertain interval (MCI or More Certain Intervals). Clearly, when increasing the uncertain interval, outside the uncertain interval the specificity  improves faster than the sensitivity. However, in the last case, the sensitivity deteriorates for the more certain interval (MCI) outside the defined uncertain interval. The reason for this deterioration is that the number of correctly identified true patients does hardly increase, while the total number of true prostate cancer patients with scores outside the uncertain interval becomes smaller. Increasing the uncertain interval should therefore not be applied blindly. 
+The function quality.threshold produces several statistics to describe the qualities of the test scores outside the uncertain interval (MCI or More Certain Intervals). In this case, when increasing the uncertain interval, outside the uncertain interval the specificity  improves faster than the sensitivity. However, in the last case, the sensitivity deteriorates for the more certain interval (MCI) outside the defined uncertain interval. The reason for this deterioration is that the number of correctly identified true patients does hardly increase, while the total number of true prostate cancer patients with scores outside the uncertain interval becomes smaller. Increasing the uncertain interval should therefore not be applied blindly. 
 
 ### Usage tip: using negated values
 
 The UncertainInterval package uses an uniform definition of thresholds. When a single threshold is applied, test scores >= threshold indicate patients with the targeted disease and test scores < threshold indicate patients without the targeted disease. When an uncertain interval is determined, test scores >= lower threshold AND <= upper threshold are considered as uncertain. Test scores < lower threshold indicate the absence of the targeted disease and test scores > upper threshold indicate the presence of the targeted disease.
 
-**In the UncertainInterval package it is therefore assumed that the test values of the patients with the targeted condition are larger than the test values of the patients without the targeted condition.**
+**NOTE 5:** In the UncertainInterval package it is assumed that the test values of the patients with the targeted condition are larger than the test values of the patients without the targeted condition.
 
-When this is not the case, when **lower** values indicate the presence of the taregeted condition, one can simply negate the test values by putting a minus sign before the test values. This makes the interpretation straightforward; all quality indices remain applicable. If one wants to report the non-negated test values (for instance when plotting the distributions), it is sufficient to discard the negative sign. Of course, relative comparisons, such as test score -3 > -5, reverses: 3 < 5. When a single threshold of -4 is determined, test scores >= -4 indicate patients with the targeted disease. When one wants to report the non-negated value, test scores <= 4 indicate patients with the targeted disease.
+When this is not the case, when **lower** values indicate the presence of the targeted condition, one can simply negate the test values by putting a minus sign before the test values. This makes the interpretation straightforward; all quality indices remain applicable. If one wants to report the non-negated test values (for instance when plotting the distributions), it is sufficient to discard the negative sign. Of course, relative comparisons, such as test score -3 > -5, reverses: 3 < 5. When a single threshold of -4 is determined, test scores >= -4 indicate patients with the targeted disease. When one wants to report the non-negated value, test scores <= 4 indicate patients with the targeted disease.
 
 ### Using transformations
 
-When using a diagnostic test, the ultimate goal is to apply the test to new patients, other than the patients used for verification of the method. Therefore generalization is as important for any test as is its sensitivity, specificity or other validation indicators. Tests without a parametric model are optimized for the samples used, but lack a population model. Consequently, a non-parametric approach of a test necessitates considerable larger samples for validation to ensure that the quality indicators of the test results are not overly adapted to a small sample with particular characteristics. 
+When using a diagnostic test, the ultimate goal is to apply the test to new patients, other than the patients used for verification of the method. Therefore, generalization is as important for any test as is its sensitivity, specificity or other validation indicators. Most often, a parametric model is optimized for the samples used but lacks a population model. Consequently, a non-parametric approach of a test necessitates considerable larger samples for validation to ensure that the quality indicators of the test results are not overly adapted to a small sample with particular characteristics. 
 
 Generalization is easier when a valid parametric model can be applied, such as the bi-normal model. The advantage of a **valid** parametric model for the test is that we have a population model that allows for greater precision, accuracy and power. Results of a representative sample can be used to estimate population values and can be more easily generalized to other representative samples. The best results for generalization are achieved when a test is developed from the ground up with the use of a specific parametric model and a well defined population in mind. 
 
@@ -174,6 +183,7 @@ Another approach of this data-set is the use of a transformation, so that a para
 
 ```{r fig.cap="Figures 4 & 5", fig.show='hold',fig.align='center'}
 library(UncertainInterval)
+if (!require(car)) install.packages("car",dependencies=TRUE)
 library(car)
 data(psa2b)
 p1 = powerTransform(psa2b$tpsa)
@@ -200,7 +210,7 @@ invBoxCox <- function(x, lambda)
 invBoxCox(res1$solution, p1$roundlam)
 
 
-```
+ ```
 Of course, not all problems have disappeared; outliers are still there. The boxplot in figure 7 shows that the outliers in the lower tail are problematic: low scores < -3 indicate both a patient and a non-patient. These extreme scores in the sample also influence the estimates of the bi-normal distributions somewhat.
 
 ```{r fig.cap="Figure 7"}
@@ -214,7 +224,7 @@ boxplot(t_tpsa, main="", boxwex=0.1)
 
 Leaving out these extreme values may improve the estimates.
 
-Note: the exercises here are intended as **illustrations** how the UncertainInterval package can be used in the case of a test with a difficult distribution. The PSA test is not developed with this transformation or the bi-normal model in mind. Whether this transformation is the best way to deal specifically with PSA test scores would require additional research to ascertain that the transformation has more general validity. Furthermore, there is considerable discussion about the usefulness of PSA scores for early identification of prostate cancer. Some researchers have argued that the PSA test may have better predictive value for specific age subpopulations (Sadi, 2017).
+**NOTE 6:** the exercises here are intended as **illustrations** how the UncertainInterval package can be used in the case of a test with a difficult distribution. The PSA test is not developed with this transformation or the bi-normal model in mind. Whether this transformation is the best way to deal specifically with PSA test scores would require additional research to ascertain that the transformation has more general validity. Furthermore, there is considerable discussion about the usefulness of PSA scores for early identification of prostate cancer. Some researchers have argued that the PSA test may have better predictive value for specific age sub-populations (Sadi, 2017).
 
 ```{r}
 sel=t_tpsa > -3
@@ -228,23 +238,23 @@ invBoxCox(res55$solution, p1$roundlam)
 ```
 Of course, a wider range of test scores can be considered as diagnostically uncertain. In the next block we compare higher values for sensitivity and specificity of the uncertain test scores and show the obtained results for the outer, more certain regions:
 ```{r}
-res60=ui.binormal(psa2b$d[sel], t_tpsa[sel], Se=.60, Sp=.60)
+res60=ui.binormal(psa2b$d[sel], t_tpsa[sel], UI.Se=.60, UI.Sp=.60)
 res60$results
-quality.threshold.uncertain(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('specificity',  'sensitivity')]
-quality.threshold(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('specificity',  'sensitivity')]
+quality.threshold.uncertain(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('UI.Se',  'UI.Sp')]
+quality.threshold(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('MCI.Se',  'MCI.Sp')]
 
-res65=ui.binormal(psa2b$d[sel], t_tpsa[sel], Se=.65, Sp=.65)
+res65=ui.binormal(psa2b$d[sel], t_tpsa[sel], UI.Se=.65, UI.Sp=.65)
 res65$results
-quality.threshold.uncertain(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$indices[c('specificity',  'sensitivity')]
-quality.threshold(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$indices[c('specificity',  'sensitivity')]
+quality.threshold.uncertain(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$indices[c('UI.Se',  'UI.Sp')]
+quality.threshold(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$indices[c('MCI.Se',  'MCI.Sp')]
 
-res70=ui.binormal(psa2b$d[sel], t_tpsa[sel], Se=.70, Sp=.70)
+res70=ui.binormal(psa2b$d[sel], t_tpsa[sel], UI.Se=.70, UI.Sp=.70)
 res70$results
-quality.threshold.uncertain(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('specificity',  'sensitivity')]
-quality.threshold(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('specificity',  'sensitivity')]
+quality.threshold.uncertain(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('UI.Se',  'UI.Sp')]
+quality.threshold(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('MCI.Se',  'MCI.Sp')]
 
 ```
-The statistics estimated for the uncertain interval of the **modeled distribution** are exactly what we asked for: sensitivity and specificity are respectively .60, .65 and .70. These estimates are no longer solely based on the sample and the values in the sample deviate, as can be expected. In the last example, with sensitivity and specificity set to .7, the sample values are respectively .67 and .73. When the bi-normal model is valid for these test scores, the bi-normal estimates of .7 can be considered as better, but this requires additional prove.
+The statistics estimated for the uncertain interval of the **modeled distribution** are exactly what we asked for: sensitivity and specificity are respectively .60, .65 and .70. These estimates are no longer solely based on the sample and the values in the sample deviate, as can be expected. In the last example, with sensitivity and specificity set to .7, the sample values are respectively .73 and .67. When the bi-normal model is valid for these test scores, the bi-normal estimates of .7 can be considered as better, but this requires additional prove.
 
 The obtained **sample** values for the outer regions show systematic improvements when sensitivity and specificity for the uncertain test scores are higher. These sample values are provided by the quality.threshold function. In the last case, specificity has increased to .97 while sensitivity has increased to .84.
 
@@ -266,19 +276,19 @@ The PSA test is a weak bio-marker. A better predictive result is possible when u
 
 ## Ordinal scales and predictive values
 
-Recently, the function RPV has been added. This function calculates Predictive Values, Standardized Predictive Values, Interval Likelihood Ratios and Posttest Probabilities of  individual or intervals of test scores of discrete ordinal tests.
+Recently, the function RPV has been added to the UncertainInterval package. This function calculates Predictive Values, Standardized Predictive Values, Interval Likelihood Ratios and Post-test Probabilities of  individual or intervals of test scores of discrete ordinal tests. Another vignette (UI_RPV) illustrates its use.
 
 Furthermore, this function can correct for the unreliability of the test. It also trichotomizes the test results, with an uncertain interval where the test scores do not allow for an adequate distinction between the two groups of patients. This function is best applied to large samples with a sufficient number of patients for each test score.
 
-As predictive values are calculated for individual test scores, relatively large samples are required for its usage. When there is a sufficient number patients with and without a specific test score, it is possible to estimate whether this test score is uncertain. As in the other functions for the estimation of an uncertain interval, this is defined as densities of the test score as about equal in both the distributions of patients with and without the targeted disease. This function uses as a default the decision odds of ordinal
-test scores near 1 (default < 2). The limit for the Predictive Values =
-decision.odds / (decision.odds+1). Default: Predictive values < .6667. (Please note that this default is less stringent than Se = Sp = .55 and allows for less uncertainty of the uncertain interval. An less stringent limit of the predictive value would be .55, resulting in odds of .55/(1-.55) = 1.2222)
+As predictive values are calculated for individual test scores, relatively large samples are required for its usage. When there is a sufficient number of patients with and without a specific test score, it is possible to estimate whether this test score is uncertain. As in the other functions for the estimation of an uncertain interval, this is defined as densities of the test score as about equal in both the distributions of patients with and without the targeted disease. This function uses as a default the decision odds of ordinal test scores near 1 (default < 2). The limit for the Predictive Values = decision.odds / (decision.odds+1). Default: Predictive values < .6667. 
+
+**NOTE 7:** The default of .667 is less stringent than Se = Sp = .55 and allows for a wider uncertain interval. A limit of the predictive value of .55, would result in odds of .55/(1-.55) = 1.2222).
 
 The use of standardized predictive values are recommended for the estimation of the uncertain interval. Standardized predictive values can be calculated directly from the densities (relative frequencies) of the two distributions of patients with and without the targeted condition. The standardized negative predictive value (SNPV) is defined as SNPV(x) = d0(x) / (d0(x) + d1(x)) and the standardized positive predictive value (SPPV) as SPPV(x) = d1(x) / (d0(x) + d1(x)), where d0(x) is the density of test score x for patients without the targeted disease and d1(x) is the density of test score x for patients with the targeted disease. The two distributions are therefore weighed equally. In other words, the prevalence is standardized to .5. In this way, a predictive value can be considered as the probability that the patient's test score is selected from the distribution of test scores of patients with (positive predictive value) or from the distribution of test scores of patients without the targeted disease. When calculated for the same (interval of) test scores, SNPV = 1 - SPPV and NPV = 1 - PPV.
 
 Clearly, when prevalence is low, the number of patients with the disease for a specific test score can be very low. Estimates of the (standardized) predictive values of an individual test score for this low number of patients is in that case not very reliable or valid. This is the reason why large samples are needed.
 
-N.B. The posttest probability is equal to the positive predictive value when the pretest probability is set to the sample prevalence, while the standardized positive predictive value is equal to the posttest probability when the pretest probability is set to .5.
+N.B. The post-test probability is equal to the positive predictive value when the pretest probability is set to the sample prevalence, while the standardized positive predictive value is equal to the post-test probability when the pretest probability is set to .5.
 
 
 ## Short ordinal scales
@@ -300,7 +310,7 @@ plotMD(ref=tostbegg2$d, test=tostbegg2$y, model='ordinal')
 
 ```
 
-Visual inspection learns us that the score 3 is the most uncertain indicator. The radiologists used this to indicate the possibility of metastatic disease to the liver. This score is the most uncertain and is best used as an indication that further data collection is necessary. But it is also clear that all the scores provide some uncertainty concerning a decision for or against the presence of metastatic cancer.
+Visual inspection teaches us that the score 3 is the most uncertain indicator. The radiologists used this to indicate the possibility of metastatic disease to the liver. This score is the most uncertain and is best used as an indication that further data collection is necessary. But it is also clear that all the scores provide some uncertainty concerning a decision for or against the presence of metastatic cancer.
 
 ### Using the ui.ordinal function
 
@@ -310,7 +320,7 @@ It should be clear that when using this few scores, all quality indices concern 
 ui.ordinal(ref=tostbegg2$d, test=tostbegg2$y, return.all=TRUE)
 ```
 
-The warning indicates that no solution is found for the given (default) ratio constraints (lower ratio .8, upper ratio 1,25). These ratio's limit the ratio of patients with the disease and without the disease within the uncertain interval between .8 and 1.25. The selected candidate is the same as was chosen on the basis of visual inspection. The ui.ordinal function provides directly several quality indices for both possible uncertain intervals and for the test scores outside the uncertain interval (MCI's).
+The warning indicates that no solution is found for the given (default) ratio constraints (lower ratio .8, upper ratio 1.25). These ratio's limit the ratio of patients with the disease and without the disease within the uncertain interval between .8 and 1.25. The selected candidate is the same as was chosen on the basis of visual inspection. The ui.ordinal function provides directly several quality indices for both possible uncertain intervals and for the test scores outside the uncertain interval (MCI's).
 
 ## References
 Etzioni R, Pepe M, Longton G, Hu C, Goodman G (1999). Incorporating the time dimension in receiver operating characteristic curves: A case study of prostate cancer. Medical Decision Making 19:242-51.

@@ -1,6 +1,6 @@
 ---
 title:
-  formatted: 'Application of the RPV method and other functions of the \pkg{UncertainInterval} package'
+  formatted: 'Vignette: Application of the RPV method and other functions of the \pkg{UncertainInterval} package'
   plain: 'UncertainInterval: Trichotomous Threshold Determination for Medical Tests
     in R'
   short: '\pkg{UncertainInterval}: Trichotomous Threshold Determination'
@@ -34,7 +34,7 @@ documentclass: jss
 classoption: nojss
 preamble: |
   \usepackage{amsmath}
-abstract: This paper demonstrates the use of the \pkg{UncertainInterval} package for
+abstract: This vignette demonstrates the use of the \pkg{UncertainInterval} package for
   the determination of an interval of uncertain or inconclusive scores of medical
   tests. It is demonstrated using a large synthetic but realistic data set, with results
   of the Montreal Cognitive Assessment (MoCA) for the detection of cognitive impairment
@@ -62,7 +62,7 @@ abstract: This paper demonstrates the use of the \pkg{UncertainInterval} package
 ```{r, include=FALSE}
 options(tinytex.verbose = TRUE)
 ```
-This paper demonstrates the use of the RPV and other functions of the \pkg{UncertainInterval} package for the determination of test scores that are uncertain or inconclusive. This results in three classes: a class of patients with test scores that indicate with a large  probability the absence of the targeted impairment, a class of patients with test results that are uncertain or inconclusive, and a class of patients with test scores that most probable indicate the presence of the targeted impairment. This demonstration uses the test scores of the Montreal Cognitive Assessment (MoCA) for the screening of cognitive impairment. The hands-on examples start in paragraph 6.1.
+This paper demonstrates the use of the RPV and other functions of the \pkg{UncertainInterval} package for the determination of test scores that are uncertain or inconclusive. This results in three classes: a class of patients with test scores that indicate with a large  probability the absence of the targeted impairment, a class of patients with test results that are uncertain or inconclusive, and a class of patients with test scores that most probable indicate the presence of the targeted impairment. This demonstration uses the test scores of the Montreal Cognitive Assessment (MoCA) for the screening of cognitive impairment. The hands-on examples start in paragraph 6.1 and can be applied with version 0.6 or later of the \pkg{UncertainInterval} package.
 
   Typically, medical tests are applied to patients who come to a clinical center for their health complaints via referral or by their own choice. In contrast to research samples, these patients are not randomly selected nor can random selection be assumed. Moreover, the population or sub-populations to which they belong can only be defined by thorough investigation of their characteristics. In practice, such research is applied to a part of all patients, a clinical sample that may demonstrate the characteristics of that population.  
   A medical test is a procedure performed on a patient with a suspected illness to confirm or determine the presence of the illness. It is relevant for the determination of the targeted disease to know the prevalence or proportion of affected individuals within a population. For the group of patients for whom the disease is suspected, the probability of the disease is often considerably higher than the probability of the disease in the general population. For this reason, the prevalence is often estimated by using the prevalence in the clinical samples of patients, instead of the (much lower) prevalence in the general population. Unsurprisingly, these estimates based on clinical samples can vary widely. The basic question targeted in this paper is how to deal with widely varying estimates of prevalence. The method presented does not solve this problem but enables a classification that offers adequate accuracy in a larger number of clinical settings.
@@ -99,7 +99,7 @@ The prevalence of a disorder can vary widely between different clinical institut
   Prevalence has no effect on sensitivity and specificity, provided that the two patient samples are drawn from the same populations of patients with and without the targeted condition. This makes sensitivity and specificity excellent markers of the accuracy of the test, allowing  for the comparison of different samples with varying prevalence and allowing for comparing different tests using the same sample. It is however problematic that this does not inform us about the accuracy of the test result for the patients involved. $Se$ and $Sp$ provide information about the proportion of correctly diagnosed patients, *when given knowledge about the true status of the patient*. Obviously, this latter piece of information is not available when a new patient is screened [@gallagher_problem_2003]. Despite the prevalence problems mentioned above, a positive or negative predictive value ($PPV$ or $NPV$) provides a clear interpretation for patients: it indicates the probability of a correct classification, *given the test result* [@gallagher_problem_2003]. Predictive values consequently provide information about the accuracy of the classification obtained in the clinical setting.     
   Ransohoff & Feinstein [-@ransohoff_problems_1978] have stressed that the problem with prevalence is further complicated due to differences in spectrum bias, when the patients are selected from various (sub)populations with a different mix of patients. In that case, varying values can also be expected for $Se$ and $Sp$ and these values can be dependent on prevalence [@brenner_variation_1997; @usher-smith_spectrum_2016].    
   The predictive values ($PPV$ and $NPV$) provide the proportions of patients classified correctly in the clinical setting and a low proportion may give reason for concern. Fundamentally, this concern can be addressed by using better tests, but these may not be available. The raw classification performance expressed as $NPV$ and $PPV$ at one clinic is not predictive of the classification performance at another and clinics cannot be compared in this way. A proposal to address this comparability problem is to use standardized predictive values that recalculate the predictive values for an assumed prevalence of .5 [@heston_standardizing_2011; @heston_standardized_2014].  
-  It is difficult to estimate prevalence for clinical samples. It is clear that patients being tested for a specific disease are not randomly selected from the general population, but are selected by referral or self-referral. Furthermore, it is unknown from which (sub)population they are selected. Heston [-@heston_standardized_2014] argued that as diagnostic tests are most frequently ordered when the diagnosis is unclear (ie, the pretest likelihood of disease is around 50%), standardizing predictive values to a prevalence of 50% may be more meaningful to the practicing clinician than estimates based on prevelance. When doing so, these standardized estimates ($SNPV$ and $SPPV$) of the predictive values are no more dependent on prevalence than $Se$ and $Sp$ (for dichotomized estimates: $SPPV = Se / (Se + 1 - Sp)$ and $SNPV = Sp / (Sp + 1 - Se))$.  
+  It is difficult to estimate prevalence for clinical samples. It is clear that patients being tested for a specific disease are not randomly selected from the general population, but are selected by referral or self-referral. Furthermore, it is unknown from which (sub)population they are selected. Heston [-@heston_standardized_2014] argued that as diagnostic tests are most frequently ordered when the diagnosis is unclear (ie, the pretest likelihood of disease is around 50%), standardizing predictive values to a prevalence of 50% may be more meaningful to the practicing clinician than estimates based on prevalance. When doing so, these standardized estimates ($SNPV$ and $SPPV$) of the predictive values are no more dependent on prevalence than $Se$ and $Sp$ (for dichotomized estimates: $SPPV = Se / (Se + 1 - Sp)$ and $SNPV = Sp / (Sp + 1 - Se))$.  
   In this paper, another way is proposed to lessen the problem of prevalence. Although it is commonly known that tests offer the best predictions in the tails and predictions for the test scores in the middle are far less predictive, this knowledge is seldom applied when the cutoff scores are determined for the interpretation of the test results. In such a middle range, a relatively high proportion of classification errors can be expected. When such a range of uncertain scores is excluded from a decision for or against the targeted disease, a relatively large number of errors are prevented, and sufficient classification results for the scores outside this range can be found more often. 
   
 #	Managing uncertain test scores
@@ -143,6 +143,7 @@ The first step in the analysis of bi-distributed test scores is the plot of the 
 
 ```{r}
 library(UncertainInterval)
+packageVersion("UncertainInterval") # should be 0.6.0 or later
 data('synthdata_NACC')
 head(synthdata_NACC) 
 nrow(synthdata_NACC) 
@@ -151,7 +152,8 @@ nrow(synthdata_NACC)
 Next, we select the part of data with the first measurements. The gold standard is defined by two variables (see paragraph 2.2). These two variables can result in an inconclusive gold standard, which are excluded:
 
 ```{r}
-m1 = synthdata_NACC[!is.na(synthdata_NACC$MOCATOTS.1) & !is.na(synthdata_NACC$ref.1), ]
+m1 = synthdata_NACC[!is.na(synthdata_NACC$MOCATOTS.1) & 
+                      !is.na(synthdata_NACC$ref.1), ]
 
 ```
 Next, check the data for possible missing values and plot the data when everything is ok:
@@ -178,7 +180,7 @@ The concordance (or AUC) is .89. The Area under the Curve (AUC) is indicated as 
 get.intersection(m1$ref.1, -m1$MOCATOTS.1)
 ```
 
-As the Youden threshold maximizes the sum of $Se$ + $Sp$, the results are slightly better:
+As the Youden threshold maximizes the sum of $Se$ + $Sp$, the results are slightly better than when using 25 as a threshold:
 
 ```{r}
 quality.threshold(m1$ref.1, -m1$MOCATOTS.1, threshold = -23)
@@ -250,7 +252,7 @@ ddiff = (m1$vdate.2 - m1$vdate.1)
 summary(ddiff)
 library(psych)
 ICC(na.omit(cbind(m1$MOCATOTS.1, m1$MOCATOTS.2)))
-```
+ ```
 Over all, \code{ICC} is .86 for the subjects that have two measurements. The intended distance between the meausurements of the UDS is one year apart. When selecting the patients whose second measurements are between 11 and 13 months apart (335 and 395 days apart), 917 observations remain:
 
 ```{r}
@@ -275,40 +277,48 @@ The parameters of the analysis are presented in \code{\$parameters}. The size of
 
 ```{r}
 class23 = as.numeric(m1$MOCATOTS.1 <= 23)
-err = m1$ref.1 != class23
-sum(err[m1$MOCATOTS.1 >= 22 & m1$MOCATOTS.1 <= 25])/ sum(err)
+all.err = m1$ref.1 != class23 # errors when using the optimal cut-point
+sum(all.err[m1$MOCATOTS.1 >= 22 & m1$MOCATOTS.1 <= 25])/ sum(all.err)
 ```
 
 The results of this trichotomization for the individual centers are:   
 
 
 ```{r}
-indm2 = matrix(NA, 30, 4); i=1
-for (i in 1:30){
-  ref = m1[m1$center==center[i],]$ref.1
-  test = m1[m1$center==center[i],]$MOCATOTS.1 # reversed order
-  res = RPV(ref, test, pretest.prob = .53, reliability=.86, roll.length=5,
-            decision.odds = 2, preselected.thresholds = c(25,22))$result[4:6,]
-  res2=c(t(res))[c(1,3,4,9)]
-  indm2[i,] = as.numeric(c(sub("%","",res2[1]), sub("%","",res2[2]),
-                          sub("%","",res2[3]),sub("%","",res2[4])))/100
+indm2 = matrix(NA, 30, 9); i=1
+for (i in 1:30) {
+  ref = m1[m1$center == center[i], ]$ref.1
+  test = m1[m1$center == center[i], ]$MOCATOTS.1 # reversed order
+  # works only correctle with package version >= 0.6.0
+  res = RPV(
+    ref,
+    test,
+    pretest.prob = .53,
+    reliability = .86,
+    roll.length = 5,
+    decision.odds = 2,
+    preselected.thresholds = c(25, 22),
+    use.perc = F
+  )
+  indm2[i, ] = c(t(res$res[3:5, ]))
 }
-indm2=cbind(to['prev',1:30], indm2)
-colnames(indm2) = c('prev', 'NPV', 'PPV', 'Sp', 'Se')
-# SPPV = Se / (Se + 1 – Sp) and SNPV = Sp / (Sp + 1 – Se)).
-SNPV = indm2[,'Sp']/(indm2[,'Sp']+ 1 - indm2[,'Se'])
-SPPV = indm2[,'Se']/(indm2[,'Se']+ 1 - indm2[,'Sp'])
+indm2=cbind(to['prev',1:30], indm2[,c(1,3,4,9,7,6)])
+colnames(indm2) = c('prev', 'NPV', 'PPV', 'TNR', 'TPR', 'FNR', 'FPR')
+# Please note: SPPV != Se / (Se + 1 – Sp) and SNPV != Sp / (Sp + 1 – Se)).
+SNPV = indm2[,'TNR']/(indm2[,'TNR']+ indm2[,'FNR'])
+SPPV = indm2[,'TPR']/(indm2[,'TPR']+ indm2[,'FPR'])
 rownames(indm2)= 1:30
 indm2 = cbind(indm2, SNPV, SPPV)
 round(indm2, 3)
 ```
 
-The correlations between the predictive values and prevalence are reduced but still considerable:  
+In this case, it is possible to obtain the same values for $Sp = TNR$ using a single threshold: quality.threshold(ref, -test, -25)$indices['Sp'] and for $Se = TPR$  using quality.threshold(ref, -test, -21)$indices['Se'].
 
+The correlations between the predictive values and prevalence are reduced but still considerable:  
 
 ```{r}
 round(cor(indm2[,'prev'], 
-          indm2[,c('NPV', 'PPV', 'Sp', 'Se', 'SNPV', 'SPPV')]), 2)
+          indm2[,c('NPV', 'PPV', 'TNR', 'TPR', 'SNPV', 'SPPV')]), 2)
 ```
 
 However, there is an increase in the number of centers with sufficient classification accuracy:
@@ -321,7 +331,7 @@ which(indm2[,'PPV'] >= .8 & indm2[,'NPV'] >= .8)
 
 There are now 20 centers with $NPV$ >= .8 and 24 centers with $PPV$ >= .8. For both $PPV$ and $NPV$, 14 centers can use the MoCA in this manner to classify both patients with and without CI correctly in at least 4 out of 5 cases.
 
-The results for $Sp$ and $Se$ are lower compared to the table based on the optimal dichotomization. This is because for the calculation of $Sp$ and $Se$, the uncertain test scores are all incorrectly considered as unambiguous errors. Especially when using these uncertain scores for a positive or negative classification, many classification errors are made. When these test scores are considered as uncertain, another possible line of action can be chosen. In these cases, choosing a more cautious line of action can reduce over-treatment and treatment errors.
+The results for $TNR = Sp$ and $TPR = Se$ are lower compared to the table based on the optimal dichotomization. The indices $TNR = Sp, TPR = Se, FNR$ and $FPR$ are single cut-point indices. The application of the single cut-point indices $Se$ and $Sp$ is problematic in the context of trichotomization and underestimate the percentages of patients without and with the targeted disease that are identified correctly. The reason for this is that all test scores in the uncertain interval are treated as errors in stead of more cautious classifications. When these test scores are considered as uncertain, another possible line of action can be chosen. A more cautious line of action reduces over-treatment and treatment errors.
 
 The indices $Se$ and $Sp$ are meant for a dichotomous classification and are cumbersome to apply when using a three-way classification. A possible alternative is ignoring the uncertain test scores (function \code{quality.uncertain}) for the calculation of the test indices.
 

@@ -67,9 +67,7 @@ The graph shows the densities of the two distributions and their
   estimation has to be supplied.
 
   The function \code{plotMD} can also be used for visual inspection of the
-  Uncertain Interval (see examples). Please note that the sensitivity and
-  specificity values > .5 (including the default of .55) allows for some
-  positive bias.
+  Uncertain Interval (see examples).
 }
 \examples{
 # A test of intermediate quality

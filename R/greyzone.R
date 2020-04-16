@@ -52,7 +52,7 @@
 #'   probabilities differ strongly from the cumulative post-test probabilities
 #'   and criterion values can be much lower, especially when diseases are life
 #'   threatening and low-cost treatments are available. See Sonis (1999) for
-#'   further discussion of the interval interprestation.
+#'   further discussion of the interval interpretation.
 #'
 #' @return The function returns the lower and upper value of the range of test
 #'   scores that are considered 'grey' or inconclusive. When return.all = TRUE

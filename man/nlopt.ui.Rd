@@ -6,8 +6,8 @@
 inconclusive interval for bi-normal distributed test scores.}
 \usage{
 nlopt.ui(
-  Se = 0.55,
-  Sp = 0.55,
+  UI.Se = 0.55,
+  UI.Sp = 0.55,
   mu0 = 0,
   sd0 = 1,
   mu1 = 1,
@@ -18,10 +18,10 @@ nlopt.ui(
 )
 }
 \arguments{
-\item{Se}{(default = .55). Desired sensitivity of the test scores within the
+\item{UI.Se}{(default = .55). Desired sensitivity of the test scores within the
 uncertain interval. A value <= .5 is not allowed.}
 
-\item{Sp}{(default = .55). Desired specificity of the test scores within the
+\item{UI.Sp}{(default = .55). Desired specificity of the test scores within the
 uncertain interval. A value <= .5 is not allowed.}
 
 \item{mu0}{Population value or estimate of the mean of the test scores of the
@@ -54,12 +54,12 @@ controls.}
 List of values: \describe{ \item{$status: }{Integer value with the
   status of the optimization (0 is success).} \item{$message: }{More
   informative message with the status of the optimization} \item{$results:
-  }{Vector with the following values:} \itemize{ \item{exp.Sp.ui: }{The
+  }{Vector with the following values:} \itemize{ \item{exp.UI.Sp: }{The
   population value of the specificity in the Uncertain Interval, given mu0,
   sd0, mu1 and sd1. This value should be very near the supplied value of Sp.}
-  \item{exp.Sp.ui: }{The population value of the sensitivity in the Uncertain
+  \item{exp.UI.Se: }{The population value of the sensitivity in the Uncertain
   Interval, given mu0, sd0, mu1 and sd1. This value should be very near the
-  supplied value of Se.} \item{mu0: }{The value that has been supplied for
+  supplied value of UI.Se.} \item{mu0: }{The value that has been supplied for
   mu0.} \item{sd0: }{The value that has been supplied for sd0.} \item{mu1:
   }{The value that has been supplied for mu1.} \item{sd1: }{The value that
   has been supplied for sd1.} } \item{$solution: }{Vector with the following

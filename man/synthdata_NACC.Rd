@@ -13,10 +13,10 @@ NACC MoCA synthetic example data (2433 observations of patients
   Alphanumeric id of the clinical center where the data has been collected
   (30 centers) \item ref.1 Gold standard (true status) at the first
   measurement. 0: no cognitive impairment 1: cognitive impairment \item
-  MOCATOTS.1 Total MoCA score at the first measurwment (0 .. 30) \item
+  MOCATOTS.1 Total MoCA score at the first measurement (0 .. 30) \item
   vdate.1 Date of the first measurement \item ref.2 Gold standard (true
   status) at the second measurement. 0: no cognitive impairment 1: cognitive
-  impairment \item MOCATOTS.2 Total MoCA score at the second measurwment (0
+  impairment \item MOCATOTS.2 Total MoCA score at the second measurement (0
   .. 30) \item vdate.2 Date of the second measurement }
 }
 \details{

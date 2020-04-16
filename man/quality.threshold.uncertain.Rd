@@ -10,7 +10,8 @@ quality.threshold.uncertain(
   threshold,
   threshold.upper,
   intersection = NULL,
-  model = c("kernel", "binormal", "ordinal")
+  model = c("kernel", "binormal", "ordinal"),
+  tests = FALSE
 )
 }
 \arguments{
@@ -37,46 +38,63 @@ Default the kernel densities are used with adjust = 1, for ordinal models
 adjust = 2 is used. For binormal models the binormal estimate of the
 intersection is used. The model defines the intersection, which defines the
 output of this function.}
+
+\item{tests}{(default = FALSE). When TRUE the results of chi-square tests and
+t-tests are included in the results.}
 }
 \value{
-{ A list of} \describe{ \item{intersection}{The value used as estimate
-of the intersection (that is, the optimal threshold). NOTE: The
-trichotomization method TG-ROC has no defined position for its Intermediate
-Range, but usage of the point where Sensitivity=Specificity seems a
-reasonable choice.} \item{table}{The confusion table of {UI.class x ref} for
-the Uncertain Interval where the scores are expected to be inconclusive.
-UI.class is the classification of the UI scores divided by the intersection,
-0 (UI scores < intersection and 1 (UI scores >= intersection. This shows
-therefore the results when compared with applying the intersection is used
-(that is, the optimal dichotomous threshold). Both the reference standard
-(ref) and the classification based on the test scores (UI.class) have
-categories 0 and 1. Table cell {0, 0} shows the True Negatives (TN), cell {0,
-1} shows the False Negatives (FN), cell {1, 0} shows the False Positives
-(FP), and cell {1, 1} shows the True Positives (TP).} \item{cut}{The values
-of the thresholds.} \item{X2}{Table with the outcomes of three Chi-square
-tests of the confusion table:} \itemize{ \item{TN.FP: }{Chi-square test of
-the comparison of TN versus FP.} \item{FN.TP: }{Chi-square test of the
-comparison of FN versus TP.} \item{overall: }{Chi-square test of all four
-cells of the table.} } \item{t.test}{Table with t-test results for the
+{ A list of} \describe{ 
+\item{intersection}{The value used as estimate of the intersection (that is,
+the optimal threshold). NOTE: The trichotomization method
+\code{\link{TG.ROC}} has no defined position for its Intermediate Range, but
+usage of the point where Sensitivity=Specificity seems a reasonable choice.}
+\item{table}{The confusion table of {UI.class x ref} for the Uncertain
+Interval where the scores are expected to be inconclusive. The point of
+intersection is used as a dichotomous cut-point within the uncertain interval
+(UI). UI.class is the classification of the UI scores divided by the point of
+intersection, 0 (UI scores < point of intersection and 1 (UI scores >= point
+of intersection. Both the reference standard (ref) and the classification
+based on the test scores (UI.class) have categories 0 and 1. Table cell {0,
+0} shows the True Negatives (TN), cell {0, 1} shows the False Negatives (FN),
+cell {1, 0} shows the False Positives (FP), and cell {1, 1} shows the True
+Positives (TP).}
+\item{cut}{The values of the thresholds.}
+\item{X2}{When tests is TRUE, the table with the outcomes of three Chi-square
+tests of the confusion table is shown:} 
+\itemize{ \item{TN.FP: }{Chi-square test of
+the comparison of TN versus FP.} 
+\item{FN.TP: }{Chi-square test of the
+comparison of FN versus TP.} 
+\item{overall: }{Chi-square test of all four
+cells of the table.} } 
+\item{t.test}{When tests is TRUE, a table is shown with t-test results for the
 comparison of the means. Within the Uncertain Interval, the test scores are
 compared of individuals without the targeted condition (ref = 0) and
-individuals with the targeted condition (ref = 1).} \item{indices}{A named
-vector, with the following statistics for the test-scores within the
-Uncertain Interval:} \itemize{ \item{prevalence: }{Classifiable patients with
-the targeted condition / Total sample = (TP+FN)/(TN+FP+FN+TP)}
-\item{correct.classification.rate (or Accuracy): }{(TP+TN)/(TN+FP+FN+TP)}
-\item{balance.correct.incorrect: }{(TP+TN)/(FP+FN)} \item{specificity:
-}{TN/(TN+FN)} \item{sensitivity: }{TP/(TP+FN)}
-\item{negative.predictive.value: }{TN/(TN+FN)}
-\item{positive.predictive.value: }{TP/(TN+FN)} \item{SNPV: standardized
-negative predictive value = specificity / (1- sensitivity + specificity)}
-\item{SPPV: standardized positive predictive value = sensitivity /
-(sensitivity +  1 - specificity)} \item{neg.likelihood.ratio:
-}{(1-sensitivity)/specificity} \item{pos.likelihood.ratio:
-}{sensitivity/(1-specificity)} \item{concordance: }{The probability that a
+individuals with the targeted condition (ref = 1).} 
+\item{indices}{A named vector, with the following statistics for the
+test-scores within the Uncertain Interval, using the point of intersection
+(optimal threshold) as dichotomous cut-point within the uncertain interval.}
+\itemize{ \item{Proportion.True: }{Proportion of classified patients with the
+targeted condition (TP+FN)/(TN+FP+FN+TP). Equal to the sample prevalence when
+all patients are classified.}
+\item{UI.CCR: }{Correct Classification Rate or Accuracy (TP+TN)/(TN+FP+FN+TP)}
+\item{UI.balance: }{balance between correct and incorrect classified (TP+TN)/(FP+FN)} 
+\item{UI.Sp: }{Specificity TN/(TN+FN)}
+\item{UI.Se: }{Sensitivity TP/(TP+FN)}
+\item{UI.NPV: }{Negative Predictive Value TN/(TN+FN)}
+\item{UI.PPV: }{Positive Predictive Value TP/(TN+FN)} 
+\item{UI.SNPV: }{Standardized Negative Predictive Value}
+\item{UI.SPPV: }{Standardized Positive Predictive Value}
+\item{LR-: }{Negative Likelihood Ratio P(-|D+))/(P(-|D-)) The probability of a person with the
+condition receiving a negative classification / probability of a person without the
+condition receiving a negative classification.} 
+\item{LR+: }{Positive Likelihood Ratio (P(+|D+))/(P(+|D-)) The probability of a person with the
+condition receiving a positive classification / probability of a person without the
+condition receiving a positive classification.} 
+\item{UI.C: }{Concordance or C-Statistic or AUC: The probability that a
 random chosen patient with the condition is correctly ranked higher than a
 randomly chosen patient without the condition. Equal to AUC, with for the
-uncertain interval an expected outcome < .60. (Not equal to a partial AUC.)}
+uncertain interval an expected outcome smaller than .60. (Not equal to a partial AUC.)}
 } }
 }
 \description{
@@ -92,18 +110,10 @@ The Uncertain Interval is generally defined as an interval below and
   above the intersection, where the densities of the two distributions of
   patients with and without the targeted impairment are about equal. The
   various functions for the estimation of the uncertain interval use a
-  sensitivity and specificity below a desired value (default .55). This
-  function uses the intersection (the optimal dichotomous threshold) to
+  sensitivity and specificity below a desired value (default .55).   
+  This function uses the intersection (the optimal dichotomous threshold) to
   divide the uncertain interval and provides in this way the indices for the
   uncertain interval when the optimal threshold would have been applied.
-
-  As a result, it may be expected that Chi-square tests are not significant,
-  provided that the count of individuals within the Uncertain Interval is not
-  too large. Most often, the t-test is also non-significant, but as the power
-  of the t-test is considerably larger than the power of the Chi-square test,
-  this is less often the case. It is recommended to look at the difference of
-  the means of the two sub-samples and to visually inspect the
-  inter-mixedness of the densities of the test scores.
 
   The patients that have test scores within the Uncertain Interval are prone
   to be incorrectly classified on the basis of their test result. The results
@@ -112,6 +122,15 @@ The Uncertain Interval is generally defined as an interval below and
   scores too often have the opposite status. They receive the classification
   result 'Uncertain'; it is better to apply additional tests or to await
   further developments.
+
+  As the test scores have about equal densities, it may be expected that
+  Chi-square tests are not significant, provided that the count of
+  individuals within the Uncertain Interval is not too large. Most often, the
+  t-tests are also not significant, but as the power of the t-test is
+  considerably larger than the power of the Chi-square test, this is less
+  often the case. It is recommended to look at the difference of the means of
+  the two sub-samples and to visually inspect the inter-mixedness of the
+  densities of the test scores.
 
   When applying the method to the results of a logistic regression, one
   should be aware of possible problems concerning the determination of the
@@ -131,4 +150,8 @@ ref=c(rep(0,500), rep(1,500))
 test=c(rnorm(500,0,1), rnorm(500,1,sd=1))
 ua = ui.nonpar(ref, test)
 quality.threshold.uncertain(ref, test, ua[1], ua[2])
+}
+\seealso{
+\code{\link{UncertainInterval}} for an explanatory glossary of the 
+different statistics used within this package.
 }

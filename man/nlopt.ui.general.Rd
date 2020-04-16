@@ -6,8 +6,8 @@
 inconclusive interval for test scores with a known common distribution.}
 \usage{
 nlopt.ui.general(
-  Se = 0.55,
-  Sp = 0.55,
+  UI.Se = 0.55,
+  UI.Sp = 0.55,
   distribution = "norm",
   parameters.d0 = c(mean = 0, sd = 1),
   parameters.d1 = c(mean = 1, sd = 1),
@@ -18,11 +18,11 @@ nlopt.ui.general(
 )
 }
 \arguments{
-\item{Se}{(default = .55). Desired sensitivity of the test scores within the
+\item{UI.Se}{(default = .55). Desired sensitivity of the test scores within the
 uncertain interval. A value <= .5 is not allowed, while a value larger than
 .6 is not recommended.}
 
-\item{Sp}{(default = .55). Desired specificity of the test scores within the
+\item{UI.Sp}{(default = .55). Desired specificity of the test scores within the
 uncertain interval. A value <= .5 is not allowed, while a value larger than
 .6 is not recommended.}
 
@@ -70,12 +70,12 @@ List of values:
      informative message with the status of the optimization}
      \item{$results: }{Vector with the following values:}
      \itemize{
-         \item{exp.Sp.ui: }{The
+         \item{exp.UI.Sp: }{The
   population value of the specificity in the Uncertain Interval, given mu0,
   sd0, mu1 and sd1. This value should be very near the supplied value of Sp.}
-          \item{exp.Sp.ui: }{The population value of the sensitivity in the Uncertain
+          \item{exp.UI.Se: }{The population value of the sensitivity in the Uncertain
   Interval, given mu0, sd0, mu1 and sd1. This value should be very near the
-  supplied value of Se.}
+  supplied value of UI.Se.}
           \item{vector of parameter values of distribution d0,
   that is, the values that have been supplied in \code{parameters.d0}.}
           \item{vector of parameter values of distribution d1, that is, the values
@@ -116,7 +116,7 @@ The function can be used to determinate the uncertain interval of
 }
 \examples{
 # A simple test model:
-nlopt.ui.general(Se = .55, Sp = .55,
+nlopt.ui.general(UI.Se = .55, UI.Sp = .55,
                  distribution = "norm",
                  parameters.d0 = c(mean = 0, sd = 1),
                  parameters.d1 = c(mean = 1, sd = 1),
@@ -156,8 +156,8 @@ emp.AUC(d0, d1)
 # .60-.70 = poor (D)
 # .50-.60 = fail (F)
 # 5. Get uncertain interval
-(res=nlopt.ui.general (Se = .57,
-                       Sp = .57,
+(res=nlopt.ui.general (UI.Se = .57,
+                       UI.Sp = .57,
                        distribution = 'gamma',
                        parameters.d0 = parameters.d0,
                        parameters.d1 = parameters.d1,
@@ -200,8 +200,8 @@ emp.AUC(d0, d1)
 # .60-.70 = poor (D)
 # .50-.60 = fail (F)
 # 5. Get uncertain interval
-(res=nlopt.ui.general (Se = .55,
-                       Sp = .55,
+(res=nlopt.ui.general (UI.Se = .55,
+                       UI.Sp = .55,
                        distribution = 'weibull',
                        parameters.d0 = parameters.d0,
                        parameters.d1 = parameters.d1,

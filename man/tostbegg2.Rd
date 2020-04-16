@@ -3,7 +3,7 @@
 \docType{data}
 \name{tostbegg2}
 \alias{tostbegg2}
-\title{Hepatic metastasis ultrasound study - Tosteston & Begg study (96 patients)}
+\title{Hepatic metastasis ultrasound study - Tosteson & Begg study (96 patients)}
 \description{
 \itemize{ \item type primary cancer type: 0 Colon 1 Breast \item d hepatatic
 metastasis (0 no 1 yes). Non-cancer patients are controls. \item y rating 1

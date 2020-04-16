@@ -110,7 +110,7 @@ barplotMD <- function(ref, test, name.test='', fixed.range= c(NULL, NULL),
   legend(x=position.legend,
          c(paste(levels(ref)[1], target.condition, "Absent"),
            paste(levels(ref)[2], target.condition, "Present")),
-         fill = c("black", "white"), cex=cex.legend)
+         fill = c("white", "black"), cex=cex.legend)
 
   invisible(wm)
 }

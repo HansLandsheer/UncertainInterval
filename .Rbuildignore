@@ -1,2 +1,10 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^vignettes/UI_RPV_files$
+^vignettes/figure$
+^vignettes/UI_RPV\.tex$
+^vignettes/UI_RPV\.Rmd$
+^vignettes/jss.bst$
+^vignettes/jss.cls$
+^doc$
+^Meta$

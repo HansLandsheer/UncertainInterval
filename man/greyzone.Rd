@@ -80,7 +80,7 @@ This function is proposed by Coste et al. (2003). The current
   probabilities differ strongly from the cumulative post-test probabilities
   and criterion values can be much lower, especially when diseases are life
   threatening and low-cost treatments are available. See Sonis (1999) for
-  further discussion of the interval interprestation.
+  further discussion of the interval interpretation.
 }
 \examples{
  ref=c(rep(0, 250), rep(1, 250))

@@ -42,7 +42,7 @@ abline(v=4, col='red')
 t2 = table (psa2b$tpsa > 4, psa2b$d)
 rownames(t2) <- c('PSA <= 4', 'PSA > 4')
 library(knitr)
-kable(addmargins(t2), caption = "Table 1")
+kable(addmargins(t2), caption = "Table 1", padding = 20)
 
 ## ------------------------------------------------------------------------
 (res=ui.nonpar(psa2b$d, psa2b$tpsa))
@@ -63,17 +63,18 @@ kable(t2$table, caption = "Table 2")
 
 
 ## ----echo=TRUE-----------------------------------------------------------
-(res=ui.nonpar(psa2b$d, psa2b$tpsa, sens=.60, spec=.60))
-quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('specificity',  'sensitivity')]
+(res=ui.nonpar(psa2b$d, psa2b$tpsa, UI.Se = .60, UI.Sp = .60))
+quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.Se')]
 
-(res=ui.nonpar(psa2b$d, psa2b$tpsa, sens=.65, spec=.65))
-quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('specificity',  'sensitivity')]
+(res=ui.nonpar(psa2b$d, psa2b$tpsa, UI.Se =.65, UI.Sp = .65))
+quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.Se')]
 
-(res=ui.nonpar(psa2b$d, psa2b$tpsa, sens=.70, spec=.70))
-quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('specificity',  'sensitivity')]
+(res=ui.nonpar(psa2b$d, psa2b$tpsa, UI.Se =.70, UI.Sp = .70))
+quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.Se')]
 
 ## ----fig.cap="Figures 4 & 5", fig.show='hold',fig.align='center'---------
 library(UncertainInterval)
+if (!require(car)) install.packages("car",dependencies=TRUE)
 library(car)
 data(psa2b)
 p1 = powerTransform(psa2b$tpsa)
@@ -113,20 +114,20 @@ invBoxCox <- function(x, lambda)
 invBoxCox(res55$solution, p1$roundlam)
 
 ## ------------------------------------------------------------------------
-res60=ui.binormal(psa2b$d[sel], t_tpsa[sel], Se=.60, Sp=.60)
+res60=ui.binormal(psa2b$d[sel], t_tpsa[sel], UI.Se=.60, UI.Sp=.60)
 res60$results
-quality.threshold.uncertain(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('specificity',  'sensitivity')]
-quality.threshold(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('specificity',  'sensitivity')]
+quality.threshold.uncertain(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('UI.Se',  'UI.Sp')]
+quality.threshold(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('MCI.Se',  'MCI.Sp')]
 
-res65=ui.binormal(psa2b$d[sel], t_tpsa[sel], Se=.65, Sp=.65)
+res65=ui.binormal(psa2b$d[sel], t_tpsa[sel], UI.Se=.65, UI.Sp=.65)
 res65$results
-quality.threshold.uncertain(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$indices[c('specificity',  'sensitivity')]
-quality.threshold(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$indices[c('specificity',  'sensitivity')]
+quality.threshold.uncertain(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$indices[c('UI.Se',  'UI.Sp')]
+quality.threshold(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$indices[c('MCI.Se',  'MCI.Sp')]
 
-res70=ui.binormal(psa2b$d[sel], t_tpsa[sel], Se=.70, Sp=.70)
+res70=ui.binormal(psa2b$d[sel], t_tpsa[sel], UI.Se=.70, UI.Sp=.70)
 res70$results
-quality.threshold.uncertain(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('specificity',  'sensitivity')]
-quality.threshold(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('specificity',  'sensitivity')]
+quality.threshold.uncertain(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('UI.Se',  'UI.Sp')]
+quality.threshold(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('MCI.Se',  'MCI.Sp')]
 
 
 ## ------------------------------------------------------------------------

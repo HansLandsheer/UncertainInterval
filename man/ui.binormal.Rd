@@ -8,8 +8,8 @@ bi-normal distributed test scores that are considered as inconclusive.}
 ui.binormal(
   ref,
   test,
-  Se = 0.55,
-  Sp = 0.55,
+  UI.Se = 0.55,
+  UI.Sp = 0.55,
   intersection = NULL,
   start = NULL,
   print.level = 0
@@ -24,10 +24,10 @@ condition).}
 \item{test}{The index test or test under evaluation. A column in a dataset or
 vector indicating the test results in a continuous scale.}
 
-\item{Se}{(default = .55). Desired sensitivity of the test scores within the
+\item{UI.Se}{(default = .55). Desired sensitivity of the test scores within the
 uncertain interval. A value <= .5 is not allowed.}
 
-\item{Sp}{(default = .55). Desired specificity of the test scores within the
+\item{UI.Sp}{(default = .55). Desired specificity of the test scores within the
 uncertain interval. A value <= .5 is not allowed.}
 
 \item{intersection}{Default NULL. If not null, the supplied value is used as
@@ -48,12 +48,12 @@ function; 2)    1 + show value of (in)equalities; 3)    2 + show value of contro
 List of values: \describe{ \item{$status: }{Integer value with the
   status of the optimization (0 is success).} \item{$message: }{More
   informative message with the status of the optimization} \item{$results:
-  }{Vector with the following values:} \itemize{ \item{exp.Sp.ui: }{The
+  }{Vector with the following values:} \itemize{ \item{exp.UI.Sp: }{The
   population value of the specificity in the Uncertain Interval, given mu0,
   sd0, mu1 and sd1. This value should be very near the supplied value of Sp.}
-  \item{exp.Sp.ui: }{The population value of the sensitivity in the Uncertain
+  \item{exp.UI.Se: }{The population value of the sensitivity in the Uncertain
   Interval, given mu0, sd0, mu1 and sd1. This value should be very near the
-  supplied value of Se.} \item{mu0: }{The value that has been supplied for
+  supplied value of UI.Se.} \item{mu0: }{The value that has been supplied for
   mu0.} \item{sd0: }{The value that has been supplied for sd0.} \item{mu1:
   }{The value that has been supplied for mu1.} \item{sd1: }{The value that
   has been supplied for sd1.} } \item{$solution: }{Vector with the following
@@ -70,7 +70,7 @@ bi-normal distributed test scores that are considered as inconclusive.
 scores. The Uncertain Interval is generally defined as an interval below and
 above the intersection, where the densities of the two distributions of
 patients with and without the targeted condition are about equal. These test
-scores are considered as inconclusive for the decsion for or against the
+scores are considered as inconclusive for the decision for or against the
 targeted condition. This function uses for the definition of the uncertain
 interval a sensitivity and specificity of the uncertain test scores below a
 desired value (default .55).

@@ -8,8 +8,8 @@ scores}
 ui.nonpar(
   ref,
   test,
-  sens.ui = 0.55,
-  spec.ui = 0.55,
+  UI.Se = 0.55,
+  UI.Sp = 0.55,
   intersection = NULL,
   return.first = T,
   select = c("nearest", "limited")
@@ -24,11 +24,11 @@ condition)}
 \item{test}{The index test or test under evaluation. A column in a dataset or
 vector indicating the test results in a continuous scale.}
 
-\item{sens.ui}{(default = .55). The sensitivity of the test scores within the
+\item{UI.Se}{(default = .55). The sensitivity of the test scores within the
 uncertain interval is either limited to this value or is the nearest to this
 value. A value <= .5 is useless.}
 
-\item{spec.ui}{(default = .55). The specificity of the test scores within the
+\item{UI.Sp}{(default = .55). The specificity of the test scores within the
 uncertain interval is either limited to this value or is the nearest to this
 value. A value <= .5 is useless.}
 
@@ -43,9 +43,9 @@ sensitivity and specificity are returned. NOTE: This function does not
 always find a suitable interval and can return a vector of NULL values.}
 
 \item{select}{(default = 'nearest') If 'nearest', sensitivity and specificity
-of the uncertain interval are nearest sens.ui and spec.ui respectively. When
+of the uncertain interval are nearest UI.Se and UI.Sp respectively. When
 'limited' the solutions have an uncertain interval with a sensitivity and
-specificity limited by sens.ui and spec.ui respectively.}
+specificity limited by UI.Se and UI.Sp respectively.}
 }
 \value{
 {A \code{data.frame} of \describe{ \item{cp.l}{ Lower bound of the
@@ -54,8 +54,9 @@ specificity limited by sens.ui and spec.ui respectively.}
  \item{TP}{ Count of true positives within the Uncertain interval.}
  \item{TN}{ Count of true negatives within the Uncertain interval.}
  \item{FP}{ Count of false positives within the Uncertain interval.}
- \item{sensitivity}{ Sensitivity of the test scores within the Uncertain
- interval.} \item{specificity}{ Specificity of the test scores within the
+ \item{UI.Se}{ Sensitivity of the test scores within the Uncertain
+ interval.} 
+ \item{UI.Sp}{ Specificity of the test scores within the
  Uncertain interval.} } Only a single row is returned when parameter
  \code{return.first} = TRUE (default).}
 }
@@ -67,9 +68,9 @@ This function uses a non-parametric approach to determine an
  densities of the two distributions of patients with and without the targeted
  condition are about equal. These test scores are considered as inconclusive
  for the decision for or against the targeted condition. The interval is
- restricted both by a maximum sensitivity of the test scores within the
- uncertain interval (sens.ui) and by a maximum specificity of the test scores
- within the uncertain interval (spec.ui).
+ restricted both by a maximum UI.Se of the test scores within the
+ uncertain interval (UI.Se) and by a maximum specificity of the test scores
+ within the uncertain interval (UI.Sp).
 }
 \details{
 { This function can be used for a test without a defined distribution

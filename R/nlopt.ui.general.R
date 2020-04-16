@@ -1,10 +1,10 @@
 #' Function for the determination of the population thresholds an uncertain and
 #' inconclusive interval for test scores with a known common distribution.
 #'
-#' @param Se (default = .55). Desired sensitivity of the test scores within the
+#' @param UI.Se (default = .55). Desired sensitivity of the test scores within the
 #'   uncertain interval. A value <= .5 is not allowed, while a value larger than
 #'   .6 is not recommended.
-#' @param Sp (default = .55). Desired specificity of the test scores within the
+#' @param UI.Sp (default = .55). Desired specificity of the test scores within the
 #'   uncertain interval. A value <= .5 is not allowed, while a value larger than
 #'   .6 is not recommended.
 #' @param distribution Name of the continuous distribution, exact as used in R
@@ -64,12 +64,12 @@
 #'      informative message with the status of the optimization}
 #'      \item{$results: }{Vector with the following values:}
 #'      \itemize{
-#'          \item{exp.Sp.ui: }{The
+#'          \item{exp.UI.Sp: }{The
 #'   population value of the specificity in the Uncertain Interval, given mu0,
 #'   sd0, mu1 and sd1. This value should be very near the supplied value of Sp.}
-#'           \item{exp.Sp.ui: }{The population value of the sensitivity in the Uncertain
+#'           \item{exp.UI.Se: }{The population value of the sensitivity in the Uncertain
 #'   Interval, given mu0, sd0, mu1 and sd1. This value should be very near the
-#'   supplied value of Se.}
+#'   supplied value of UI.Se.}
 #'           \item{vector of parameter values of distribution d0,
 #'   that is, the values that have been supplied in \code{parameters.d0}.}
 #'           \item{vector of parameter values of distribution d1, that is, the values
@@ -98,10 +98,13 @@
 #' @importFrom rootSolve uniroot.all
 #' @importFrom nloptr nloptr
 #' @import stats
+#' @import MASS
+#' @import car 
+#' 
 #'
 #' @examples
 #' # A simple test model:
-#' nlopt.ui.general(Se = .55, Sp = .55,
+#' nlopt.ui.general(UI.Se = .55, UI.Sp = .55,
 #'                  distribution = "norm",
 #'                  parameters.d0 = c(mean = 0, sd = 1),
 #'                  parameters.d1 = c(mean = 1, sd = 1),
@@ -146,8 +149,8 @@
 #' # .50-.60 = fail (F)
 
 #' # 5. Get uncertain interval
-#' (res=nlopt.ui.general (Se = .57,
-#'                        Sp = .57,
+#' (res=nlopt.ui.general (UI.Se = .57,
+#'                        UI.Sp = .57,
 #'                        distribution = 'gamma',
 #'                        parameters.d0 = parameters.d0,
 #'                        parameters.d1 = parameters.d1,
@@ -198,8 +201,8 @@
 #' # .50-.60 = fail (F)
 
 #' # 5. Get uncertain interval
-#' (res=nlopt.ui.general (Se = .55,
-#'                        Sp = .55,
+#' (res=nlopt.ui.general (UI.Se = .55,
+#'                        UI.Sp = .55,
 #'                        distribution = 'weibull',
 #'                        parameters.d0 = parameters.d0,
 #'                        parameters.d1 = parameters.d1,
@@ -219,11 +222,11 @@
 #' emp.AUC(d0[!sel.d0], d1[!sel.d1])
 #' # AUC for deselected scores; these scores are almost indistinguishable
 
-# Se = .55; Sp = .55; distribution = 'norm'; parameters.d0 = c(mean = 0, sd = 1);
+# UI.Se = .55; UI.Sp = .55; distribution = 'norm'; parameters.d0 = c(mean = 0, sd = 1);
 # parameters.d1 = c(mean = 1, sd = 1); overlap.interval = NULL; intersection = NULL;
 # start = NULL; print.level = 0
-nlopt.ui.general <- function(Se = .55,
-                     Sp = .55,
+nlopt.ui.general <- function(UI.Se = .55,
+                     UI.Sp = .55,
                      distribution = 'norm',
                      parameters.d0 = c(mean = 0, sd = 1),
                      parameters.d1 = c(mean = 1, sd = 1),
@@ -232,13 +235,13 @@ nlopt.ui.general <- function(Se = .55,
                      start = NULL,
                      print.level = 0) {
 
-  if (Se <= .5) stop('Value <= .5 invalid for Se of the uncertain interval')
-  if (Sp <= .5) stop('Value <= .5 invalid for Sp of the uncertain interval')
-  # if (Se > .6) warning('Value > .6 not recommended for Se of the uncertain interval')
-  # if (Sp > .6) warning('Value > .6 not recommended for Sp of the uncertain interval')
+  if (UI.Se <= .5) stop('Value <= .5 invalid for UI.Se')
+  if (UI.Sp <= .5) stop('Value <= .5 invalid for UI.Sp')
+  # if (UI.Se > .6) warning('Value > .6 not recommended for UI.Se')
+  # if (UI.Sp > .6) warning('Value > .6 not recommended for UI.Sp')
 
-  c01 = Sp / (1 - Sp)
-  c11 = Se / (1 - Se)
+  c01 = UI.Sp / (1 - UI.Sp)
+  c11 = UI.Se / (1 - UI.Se)
 
   d0 = get(paste('d', distribution, sep = ""))
   args=formals(d0)
@@ -397,17 +400,17 @@ nlopt.ui.general <- function(Se = .55,
     )
   )
 
-  TN = p0(I) - p0(res0$solution[1])  # area check Sp: lower area / upper area
+  TN = p0(I) - p0(res0$solution[1])  # area check UI.Sp: lower area / upper area
   FP = p0(res0$solution[2]) - p0(I)
-  TP = p1(res0$solution[2]) - p1(I)  # area check Se: upper area / lower area
+  TP = p1(res0$solution[2]) - p1(I)  # area check UI.Se: upper area / lower area
   FN = p1(I) - p1(res0$solution[1])
   res = list()
   res$status = res0$status
   res$message = res0$message
   res$intersection = I
   res$results = c(
-    exp.Sp.ui = ifelse((TN > 1e-4), TN / (FP + TN), NA),
-    exp.Se.ui = ifelse(TP > 1e-4, TP / (FN + TP), NA),
+    exp.UI.Sp = ifelse((TN > 1e-4), TN / (FP + TN), NA),
+    exp.UI.Se = ifelse(TP > 1e-4, TP / (FN + TP), NA),
     parameters.d0,
     parameters.d1
   )

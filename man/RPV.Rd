@@ -2,19 +2,22 @@
 % Please edit documentation in R/reliable.predictive.values.R
 \name{RPV}
 \alias{RPV}
-\title{Trichotomization of ordinal test results using predictive values}
+\title{Function for the determination of an inconclusive interval for ordinal test scores
+using predictive values}
 \usage{
 RPV(
   ref,
   test,
   pretest.prob = NULL,
-  reliability,
+  reliability = NULL,
   roll.length = NULL,
   extend = TRUE,
   decision.odds = 2,
   decision.use = c("standardized.pv", "posttest.probability", "LR", "predictive.value"),
   preselected.thresholds = c(NULL, NULL),
-  digits = 3
+  digits = 2,
+  use.perc = TRUE,
+  show.table = FALSE
 )
 }
 \arguments{
@@ -31,20 +34,22 @@ concerning the calculation of the variance of the test when using a factor.}
 probability. It is used for the calculation of the post-test probabilities.
 If pretest.prob = NULL, the sample prevalence is used.}
 
-\item{reliability}{(no default) The known reliability of the test, used to
-calculate Standard Error of Measurement (SEM). The reliability is expressed
-as an applicable correlation coefficient, with values between 0 and 1. A
+\item{reliability}{(default NULL) The reliability of the test, used to calculate
+Standard Error of Measurement (SEM). The reliability is expressed as an
+applicable correlation coefficient, with values between 0 and 1. A
 Pearson's Product Moment correlation or an Intra-Class Coefficient (ICC)
-will do. N.B. Setting parameter \code{roll.length} to 1 causes the
-reliability of the test to be ignored.}
+will do. N.B. A value of 1 assumes perfect reliability, is not
+realistic and prevents smoothing as it sets \code{roll.length} to 1. N.B.
+Setting parameter \code{roll.length} to a value >= 1 causes the reliability
+of the test to be ignored.}
 
 \item{roll.length}{(default = NULL) The frame length of the interval of test
 scores scores for the calculation of the reliable predictive values. When
 NULL, it is calculated as \code{round(SEM)*2+1} (approximately a 68\%
 confidence interval around the observed test score in which the true score
 is expected). The roll.length needs to be uneven. When the result is even,
-you need to choose a value 1 larger or smaller. When roll.length is
-supplied, this is used instead of the calculated value. Furthermore,
+a lower value (-1) is assigned. When roll.length is supplied, this is used
+instead of the calculated value and reliability is ignored. Furthermore,
 roll.length has to be >= 1 and uneven. Applicable values are 1, 3, 5, etc.
 roll.length = 1 causes the reliability of the test to be ignored.}
 
@@ -57,17 +62,18 @@ Availables) are produced.}
 \item{decision.odds}{(default = 2). The minimum odds for and against the
 targeted impairment for a positive or negative classification. For the
 uncertain range of test scores both the odds for and the odds against are
-therefore between 2 and 1/2. A decision.odds of 1 causes all test
-scores to be used for either positive or negative decisions. The limit for
-the Predictive Value = decision.odds / (decision.odds+1); for a decision,
-the Predictive Values needs to be larger than this limit. NB 1 Decison.odds
-can be a broken number, such as .55/(1-.55), which defines the decision
-limit for predictive values as .55. The default is therefore (2/3) / (1
-- (2/3)) = 2. NB 2 When a test is more reliable and valid, a higher value for
-decision.odds can be applied. NB 3 For serious diseases with relatively
-uncomplicated cures, decision odds can be smaller than one. In that case, a
-large number of false positives is unavoidable and positive decisions are
-inherently uncertain. See Sonis(1999) for a discussion.}
+therefore between 2 and 1/2. A decision.odds of 1 causes all test scores to
+be used for either positive or negative decisions. The limit for the
+Predictive Value = decision.odds / (decision.odds+1); for a decision, the
+Predictive Values needs to be larger than this limit. NB 1 Decision.odds can
+be a broken number, such as .55/(1-.55), which defines the decision limit
+for predictive values as .55. The default is therefore (2/3) / (1 - (2/3))
+= 2, equal to a predictive value of .667. NB 2 When a test is more reliable
+and valid, a higher value for decision.odds can be applied. NB 3 For
+serious diseases with relatively uncomplicated cures, decision odds can be
+smaller than one. In that case, a large number of false positives is
+unavoidable and positive decisions are inherently uncertain. See
+Sonis(1999) for a discussion.}
 
 \item{decision.use}{(default = 'standardized.pv'). The probability to be used
 for decisions. When 'standardized.pv' is chosen, the standardized positive
@@ -93,7 +99,12 @@ decisions. An uncertain Interval of a single test score can be determined
 with in-between values. For instance c(1.5, 0.8) defines an uncertain
 interval of test score 1 for a descending ordinal test.}
 
-\item{digits}{the number of digits used in the output.}
+\item{digits}{(default = 3) the number of digits used in the output.}
+
+\item{use.perc}{(default = TRUE) Use percentages for the output. When set to
+FALSE, proportions are used.}
+
+\item{show.table}{(default = FALSE) Show confusion table.}
 }
 \value{
 { A list of: } \describe{ 
@@ -125,13 +136,18 @@ reporting sample results. }
 \item{rsppv: }{(more) reliable standardized positive predictive value.}
 \item{rilr: }{(more) reliable interval likelihood ratio.}
 \item{rpt.odds: }{(more) reliable posttest odds.}
-\item{rpt.prob: }{(more) reliable posttest probabilities.} } }
+\item{rpt.prob: }{(more) reliable posttest probabilities.} } 
+}
+\item{thresholds.UI: }{Numeric values for the thresholds of the uncertain
+interval. This is NA when there are multiple ranges of test for the uncertain
+interval.}
+\item{ranges: }{The ranges of test scores for the Negative Classifications, Uncertain, Positive
+Classifications.}
 \item{$result: }{Table of results for the current sample, calculated with the
 provided parameters. 
 \itemize{ 
 \item{columns: }{Negative Classifications, Uncertain, Positive
 Classifications.}
-\item{row scores: }{range of test scores for the three categories.}
 \item{row total.sample: }{percentage of the total sample.}
 \item{row correct.decisions: }{percentages of correct negative and positive
 decisions (NPV and PPV).}
@@ -142,7 +158,9 @@ status for the 3 categories.}
 \item{row realized.odds: }{The odds that are realized in the sample for each
 of the three categories. NB The odds of the uncertain range of test scores
 concerns the odds for the targeted condition.}
-} } }
+} } 
+\item{$table}{Show table of counts of decisions x true status.}
+}
 }
 \description{
 This function calculates Predictive Values, Standardized
@@ -165,9 +183,9 @@ This function can be applied to ordinal data. Uncertain test scores
 
   N.B. 1: Sp = Negative Decisions | true.neg.status; Se = Positive Decisions
   | true.pos.status. Please note that the values for Se and Sp are
-  underestimated, as the uncertain test scores are considered here as errors,
-  which they are not. (Se and Sp are dichotomous indices.). Use
-  \code{\link{quality.threshold}} and
+  underestimated, as the uncertain test scores are considered as errors,
+  which they are not. (Se and Sp are intended for dichotomous thresholds.).
+  Use \code{\link{quality.threshold}} and
   \code{\link{quality.threshold.uncertain}} for obtaining respectively
   quality indices for the test scores when ignoring test scores in the
   uncertain interval and the quality indices of the test scores within the
@@ -180,6 +198,10 @@ This function can be applied to ordinal data. Uncertain test scores
   N.B. 3: Set roll.length to 1 to ignore the test reliability and obtain raw
   predictive values, likelihood ratios, etc., that are not corrected for the
   unreliability of the test.
+  
+  N.B. 4: In contrast to the other functions, the \code{RPV}  function can
+  detect more than one uncertain interval. More than one uncertain interval
+  almost always signals bad test quality and interpretation difficulties.
 
   Raw predictive values compare the frequencies and provide exact sample
   values and are most suitable for evaluating the sample results. When
@@ -243,8 +265,6 @@ test=round(c(rnorm(1000, 5, 1), rnorm(1000, 8, 2)))
 # Positive Predictive Values. Parameter pretest.prob is set to sample prevalence.
 RPV(ref, test, reliability = .9, roll.length = 3)
 # Set roll.length = 1 to ignore test reliability (value of parameter
-# reliability is ignored, but must be set to some value.)
-RPV(ref, test, reliability = 0, roll.length = 1)
 # When pretest.prob is set to .5, the Post-test Probabilities are equal to
 # the Standardized Positive Predictive Values.
 RPV(ref, test, pretest.prob = .5, reliability = .9, roll.length = 3)
