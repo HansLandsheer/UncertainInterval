@@ -1,10 +1,10 @@
-## ----setup, include = FALSE--------------------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ---- fig.height = 5, fig.width = 7, results='asis'--------------------------------
+## ---- fig.height = 5, fig.width = 7, results='asis'---------------------------
 intersect.binormal <- function(m1, sd1, m2, sd2, p1=.5, p2=.5){
   
   B <- (m1/sd1^2 - m2/sd2^2)
@@ -30,7 +30,7 @@ text(1.9, 0.03, expression(alpha), col='green')
 text(0, 0.03, expression(beta), col='black')
 
 
-## ----fig2, fig.height = 5, fig.width = 7, fig.cap="Figure 2"-----------------------
+## ----fig2, fig.height = 5, fig.width = 7, fig.cap="Figure 2"------------------
 library(UncertainInterval)
 data(psa2b)
 names(psa2b)
@@ -38,35 +38,31 @@ plotMD(psa2b$d, psa2b$tpsa)
 abline(v=4, col='red')
 
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 t2 = table (psa2b$tpsa > 4, psa2b$d)
 rownames(t2) <- c('PSA <= 4', 'PSA > 4')
 library(knitr)
 kable(addmargins(t2), caption = "Table 1", padding = 20)
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 (res=ui.nonpar(psa2b$d, psa2b$tpsa))
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 (out=quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2]))
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 (t2 = quality.threshold.uncertain(psa2b$d, psa2b$tpsa, res[1], res[2]))
 
-## ----fig.cap="Figure 3"------------------------------------------------------------
+## ----fig.cap="Figure 3"-------------------------------------------------------
 sel = psa2b$tpsa >= res[1] & psa2b$tpsa <= res[2]
 plotMD(psa2b$d[sel], psa2b$tpsa[sel])
 
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 kable(t2$table, caption = "Table 2")
 
 
-<<<<<<< HEAD
-## ----echo=TRUE---------------------------------------------------------------------
-=======
-## ----echo=TRUE-----------------------------------------------------------
->>>>>>> 427f96c715ca009a240aa53cfbd3a3314c8b86b5
+## ----echo=TRUE----------------------------------------------------------------
 (res=ui.nonpar(psa2b$d, psa2b$tpsa, UI.Se = .60, UI.Sp = .60))
 quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.Se')]
 
@@ -76,7 +72,7 @@ quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.
 (res=ui.nonpar(psa2b$d, psa2b$tpsa, UI.Se =.70, UI.Sp = .70))
 quality.threshold(psa2b$d, psa2b$tpsa, res[1], res[2])$indices[c('MCI.Sp', 'MCI.Se')]
 
-## ----fig.cap="Figures 4 & 5", fig.show='hold',fig.align='center'-------------------
+## ----fig.cap="Figures 4 & 5", fig.show='hold',fig.align='center'--------------
 library(UncertainInterval)
 if (!require(car)) install.packages("car",dependencies=TRUE)
 library(car)
@@ -87,7 +83,7 @@ t_tpsa = bcPower(psa2b$tpsa, p1$roundlam)
 qqPlot(t_tpsa[psa2b$d==0])
 qqPlot(t_tpsa[psa2b$d==1])
 
-## ----fig.cap="Figure 6"------------------------------------------------------------
+## ----fig.cap="Figure 6"-------------------------------------------------------
 
 plotMD(psa2b$d, t_tpsa, model='binormal', position.legend = 'topleft')
 (res1=ui.binormal(psa2b$d, t_tpsa))
@@ -99,7 +95,7 @@ invBoxCox(res1$solution, p1$roundlam)
 
 
 
-## ----fig.cap="Figure 7"------------------------------------------------------------
+## ----fig.cap="Figure 7"-------------------------------------------------------
 outlier_values <- boxplot.stats(t_tpsa)$out  # outlier values.
 inds <- which(t_tpsa %in% outlier_values)
 table(outlier_values, psa2b$d[inds])
@@ -107,7 +103,7 @@ boxplot(t_tpsa, main="", boxwex=0.1)
 # mtext(paste("Outliers: ", paste(round(outlier_values, 2), collapse=", ")), # cex=0.6)
 
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 sel=t_tpsa > -3
 plotMD(psa2b$d[sel], t_tpsa[sel], model='binormal')
 (res55=ui.binormal(psa2b$d[sel], t_tpsa[sel]))
@@ -117,11 +113,7 @@ invBoxCox <- function(x, lambda)
   if (lambda == 0) exp(x) else (lambda*x + 1)^(1/lambda)
 invBoxCox(res55$solution, p1$roundlam)
 
-<<<<<<< HEAD
-## ----------------------------------------------------------------------------------
-=======
-## ------------------------------------------------------------------------
->>>>>>> 427f96c715ca009a240aa53cfbd3a3314c8b86b5
+## -----------------------------------------------------------------------------
 res60=ui.binormal(psa2b$d[sel], t_tpsa[sel], UI.Se=.60, UI.Sp=.60)
 res60$results
 quality.threshold.uncertain(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$indices[c('UI.Se',  'UI.Sp')]
@@ -138,7 +130,7 @@ quality.threshold.uncertain(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2
 quality.threshold(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$indices[c('MCI.Se',  'MCI.Sp')]
 
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 quality.threshold(psa2b$d, t_tpsa, res55$solution[1], res55$solution[2])$table
 quality.threshold(psa2b$d, t_tpsa, res60$solution[1], res60$solution[2])$table
 quality.threshold(psa2b$d, t_tpsa, res65$solution[1], res65$solution[2])$table
@@ -147,13 +139,13 @@ quality.threshold(psa2b$d, t_tpsa, res70$solution[1], res70$solution[2])$table
 res70$solution
 invBoxCox(res70$solution, p1$roundlam)
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 data("tostbegg2")
 sel = tostbegg2$type==0
 plotMD(ref=tostbegg2$d, test=tostbegg2$y, model='ordinal')
 
 
 
-## ----------------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 ui.ordinal(ref=tostbegg2$d, test=tostbegg2$y, return.all=TRUE)
 

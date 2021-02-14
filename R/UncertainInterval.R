@@ -99,3 +99,4 @@ NULL
 ##> [1] "_PACKAGE"
 ## Sys.setenv(R_GSCMD = "C:\\Program Files\\gs\\gs9.52\\bin\\gswin64c.exe")
 ## Sys.getenv("R_GSCMD")
+## devtools::build_vignettes()
