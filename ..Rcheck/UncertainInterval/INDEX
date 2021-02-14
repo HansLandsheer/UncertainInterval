@@ -1,0 +1,52 @@
+RPV                     Trichotomization of ordinal test results using
+                        predictive values
+TG.ROC                  Two-Graphs Receiving Operating Characteristics.
+UncertainInterval       Set of functions for the determination of an
+                        Uncertain Interval of test scores
+barplotMD               Barplot of frequencies, densities or both of
+                        the two distributions of patients with and
+                        without the targeted condition.
+check.data              Function to check the dataset of individuals
+                        with (1) and without (0) the targeted
+                        condition.
+get.intersection        get.intersection Obtain the intersection of two
+                        distributions using the kernel method
+greyzone                Function for the determination of a grey zone
+                        for quantitative diagnostic and screening tests
+nlopt.ui                Function for the determination of the
+                        population thresholds an uncertain and
+                        inconclusive interval for bi-normal distributed
+                        test scores.
+nlopt.ui.general        Function for the determination of the
+                        population thresholds an uncertain and
+                        inconclusive interval for test scores with a
+                        known common distribution.
+nomogram                Fagan's nomogram to show the relationships
+                        between the prior probability, the likelihood
+                        ratios, sensitivity and specificity, and the
+                        posterior probability.
+plotMD                  Function to plot the mixed densities of
+                        distributions of individuals with (1) and
+                        without (0) the targeted condition.
+psa2b                   CARET PSA Biomarker data - Etzioni substudy
+                        (454 control patients; 229 patients with
+                        prostate cancer)
+quality.threshold       Function for the description of the qualities
+                        of one or two decision thresholds or threshold.
+quality.threshold.uncertain
+                        Function for the description of the qualities
+                        of the Uncertain Interval.
+synthdata_NACC          synthdata NACC
+tostbegg2               Hepatic metastasis ultrasound study - Tosteston
+                        & Begg study (96 patients)
+ui.binormal             Function for the determination of the
+                        thresholds of an uncertain interval for
+                        bi-normal distributed test scores that are
+                        considered as inconclusive.
+ui.nonpar               Function for the determination of an
+                        inconclusive interval for continuous test
+                        scores
+ui.ordinal              Function to explore possible uncertain
+                        intervals of ordinal test results of
+                        individuals with (1) and without (0) the
+                        targeted condition.
