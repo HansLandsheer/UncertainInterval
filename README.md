@@ -1,4 +1,4 @@
 # UncertainInterval
 R package for three-way threshold determination of medical tests
-date: 11-2-2020
-version 0.5.2.0
+date: 14 feb 20121
+version 0.7.0.0
