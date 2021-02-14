@@ -2,15 +2,16 @@
 % Please edit documentation in R/greyzone.R
 \name{greyzone}
 \alias{greyzone}
-\title{Function for the determination of a grey zone for quantitative diagnostic and
+\title{Function for the determination of a grey zone for ordinal diagnostic and
 screening tests}
 \usage{
 greyzone(
   ref,
   test,
-  prevalence = NULL,
+  pretest.prob = NULL,
   criterion.values = c(0.05, 0.95),
-  return.all = F
+  return.all = F,
+  precision = 3
 )
 }
 \arguments{
@@ -19,86 +20,103 @@ indicating the reference or gold standard. The reference standard must be
 coded either as 0 (absence of the condition) or 1 (presence of the
 condition).}
 
-\item{test}{The ordinal test scores under evaluation. Higher scores indicate
-the presence of the targeted disease. Please use negated values when lower
-values indicate the presence of the targeted disease.}
+\item{test}{The numeric test scores under evaluation. When
+\code{mean(test[ref == 0]) > mean(test[ref == 1])} it is assumed that
+higher test scores indicate presence of the condition, otherwise that lower
+test scores indicate presence of the condition.}
 
-\item{prevalence}{The prevalence or pre-test probability to be used. When
+\item{pretest.prob}{The pre-test probability to be used. When
 NULL, the prevalence found in the sample is used.}
 
 \item{criterion.values}{The minimum desired values for respectively the
-positive and negative post-test probability.}
+negative and positive post-test probability.}
 
 \item{return.all}{Default = FALSE. When TRUE the full table of all results
 are returned.}
+
+\item{precision}{Default = 3. Precision used for comparison of the criterion
+values and the post-test probabilities.}
 }
 \value{
 The function returns the lower and upper value of the range of test
-  scores that are considered 'grey' or inconclusive. When return.all = TRUE
-  the full table of the results is returned.
+scores that are considered 'grey' or inconclusive. Only smaller or larger
+values are considered for a decision. When return.all = TRUE the full table
+of the results is returned.
 }
 \description{
-Function for the determination of a grey zone for quantitative diagnostic and
+Function for the determination of a grey zone for ordinal diagnostic and
 screening tests
 }
 \details{
 This function is proposed by Coste et al. (2003). The current
-  implementation only handles ordinal test values. This functions uses all
-  possible test scores as dichotomous thresholds to calculate Se, Sp,
-  positive and negative likelihood ratios and post-test probabilities. The
-  likelihood ratios are calculated for the cumulated densities of the test
-  scores and indicate the levels of seriousness of the disease for all possible
-  dichotomous thresholds. It uses therefore a cumulative interpretation of the
-  Likelihood Ratios and posttest probabilities. If a test has test scores 1
-  to 5 (with 5 indicating the largest probability of the disease), Se,
-  positive LR and positive posttest probabilities of the greyzone function
-  concern test results >= 1, >= 2, >= 3, >= 4 and >= 5, while Sp, negative LR
-  and negative posttest probabilities concern test results < 1, < 2, < 3, < 4
-  and < 5.
+implementation only handles ordinal test values. This functions uses all
+possible test scores as dichotomous thresholds to calculate Se, Sp,
+positive and negative likelihood ratios and post-test probabilities. The
+likelihood ratios are calculated for the accumulated densities of the test
+scores and indicate the levels of seriousness of the disease for all
+possible dichotomous thresholds. It uses therefore a cumulative
+interpretation of the Likelihood Ratios and posttest probabilities. If a
+test has test scores 1 to 5 (with 5 indicating the largest probability of
+the disease), Se, positive LR and positive posttest probabilities of the
+greyzone function uses dichotomous thresholds that concern  test results >=
+1, >= 2, >= 3, >= 4 and >= 5, while Sp, negative LR and negative posttest
+probabilities concern test results <= 1, <= 2, <= 3, <= 4 and <= 5. Please
+note that in these examples values <= 1 respectively <= 5 concern all
+possible test values and have by definition a dichotomous Sensitivity of 1.
 
-  Please note that the definition of a grey zone deviates from the definition
-  of an uncertain interval.
+Please note that the definition of a grey zone deviates from the definition
+of an uncertain interval.
 
-  The criterion is a required degree of closeness of post-test probabilities
-  to 1 or 0. These post-test probabilities of cumulated test scores may
-  require a value over 0.99 or even 0.999 (or under 0.01 or 0.001) to confirm
-  or exclude the presence of a target disease. The default criterion values
-  are .05 and .95 for respectively a negative and positive classification,
-  which may be sufficient for use by clinicians or Public Health
-  professionals for a first classification whether a target disease may be
-  present or not (Coste et al., 2003).
+The decision criteria are the required values of post-test probabilities.
+This has changed in version 0.7. In earlier versions the criteria was a
+value closest to the criterion, which could produce invalid results. These
+post-test probabilities of accumulated test scores may require a value over
+0.99 or even 0.999 (or under 0.01 or 0.001) to confirm or exclude the
+presence of a target disease. Only tests of the highest quality can reach
+such criteria. The default criterion values are .05 and .95 for
+respectively a negative and positive classification, which may be
+sufficient for use by clinicians or Public Health professionals for a first
+classification whether a target disease may be present or not (Coste et
+al., 2003).
 
-  As such the cumulative likelihood ratios differ from the Interval
-  Likelihood Ratios (see \code{\link{RPV}}), as proposed by Sonis (1999).
-  These likelihood ratios are calculated for each given interval of test
-  scores separately and uses their densities. In contrast to the greyzone
-  method, Interval Likelihood ratios and interval posttest probabilities
-  concern the separate intervals, that is in this example, the separate score
-  1 to 5. Interval likelihood ratios assign a specific value to each level of
-  abnormality, and this value is used to calculate the posttest probabilities
-  of disease for each given level of a test (Sonis, 1999). These post-test
-  probabilities differ strongly from the cumulative post-test probabilities
-  and criterion values can be much lower, especially when diseases are life
-  threatening and low-cost treatments are available. See Sonis (1999) for
-  further discussion of the interval interpretation.
+As such the cumulative likelihood ratios differ from the Interval
+Likelihood Ratios (see \code{\link{RPV}}), as proposed by Sonis (1999).
+These likelihood ratios are calculated for each given interval of test
+scores separately and uses their densities. In contrast to the greyzone
+method, Interval Likelihood ratios and interval posttest probabilities
+concern the separate intervals, that is in this example, the separate score
+1 to 5. Interval likelihood ratios assign a specific value to each level of
+abnormality, and this value is used to calculate the posttest probabilities
+of disease for each given level of a test (Sonis, 1999). These post-test
+probabilities differ strongly from the cumulative post-test probabilities
+and criterion values can be much lower, especially when diseases are life
+threatening and low-cost treatments are available. See Sonis (1999) for
+further discussion of the interval interpretation.
 }
 \examples{
  ref=c(rep(0, 250), rep(1, 250))
- test = c(rep(1:5, c(90,75,50,35,0)), c(rep(1:5, c(10,25,50,65,100))))
- table(ref, test)
- greyzone(ref, test, ret=TRUE)
+ test = c(rep(1:5, c(90,75,50,34,1)), c(rep(1:5, c(10,25,50,65,100))))
+ addmargins(table(ref, test))
+ greyzone(ref, test, ret=TRUE, criterion.values=c(.1, .9))
+
+ test = c(rep(14:31, c(0,0,0,0,0,0,3,3,5,7,10,20,30,40,50,24,10,10)),
+          rep(14:31, c(1,0,0,0,0,0,1,4,4,9, 6,13, 8, 6, 5, 4, 0, 0)))
+ ref = c(rep(0, 212), rep(1, 61))
+ barplotMD(ref, test)
+ addmargins(table(ref, test))
+ greyzone(ref, test, ret=TRUE, crit=c(.1,.9))
 }
 \references{
 { Coste, J., Jourdain, P., & Pouchot, J. (2006). A gray zone
-  assigned to inconclusive results of quantitative diagnostic tests:
-  application to the use of brain natriuretic peptide for diagnosis of heart
-  failure in acute dyspneic patients. Clinical Chemistry, 52(12), 2229-2235.
+assigned to inconclusive results of quantitative diagnostic tests:
+application to the use of brain natriuretic peptide for diagnosis of heart
+failure in acute dyspneic patients. Clinical Chemistry, 52(12), 2229-2235.
 
-  Coste, J., & Pouchot, J. (2003). A grey zone for quantitative diagnostic
-  and screening tests. International Journal of Epidemiology, 32(2), 304-313.
+Coste, J., & Pouchot, J. (2003). A grey zone for quantitative diagnostic
+and screening tests. International Journal of Epidemiology, 32(2), 304-313.
 
-  Sonis, J. (1999). How to use and interpret interval likelihood ratios.
-  Family Medicine, 31, 432-437. }
+Sonis, J. (1999). How to use and interpret interval likelihood ratios.
+Family Medicine, 31, 432-437. }
 }
 \seealso{
 \code{\link{RPV}}

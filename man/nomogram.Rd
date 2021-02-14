@@ -40,14 +40,14 @@ probabilities.}
 }
 \value{
 Vector of values: \describe{ \item{$pre: }{The given pre-test
-  probability.} \item{$min.LRpos: }{The given or calculated minimally
-  required positive likelihood ratio. If no value is provided, it is
-  calculated.} \item{$max.LRneg: }{The given or calculated maximally required
-  negative likelihood ratio. If no value is provided, it is calculated.}
-  \item{$post.pos: }{The given or calculated positive posttest probability.}
-  \item{$minSp: }{The minimum value for the specificity, needed to reach the
-  desired posttest probabilities.} \item{$minSe: }{The minimum value for the
-  sensitivity, needed to reach the desired posttest probabilities.} }
+probability.} \item{$min.LRpos: }{The given or calculated minimally
+required positive likelihood ratio. If no value is provided, it is
+calculated.} \item{$max.LRneg: }{The given or calculated maximally required
+negative likelihood ratio. If no value is provided, it is calculated.}
+\item{$post.pos: }{The given or calculated positive posttest probability.}
+\item{$minSp: }{The minimum value for the specificity, needed to reach the
+desired posttest probabilities.} \item{$minSe: }{The minimum value for the
+sensitivity, needed to reach the desired posttest probabilities.} }
 }
 \description{
 Next to plotting Fagan's nomogram, this function also calculates the
@@ -57,9 +57,9 @@ posttest probabilities (or likelihood ratios) for a grey zone (Coste et al.,
 }
 \details{
 Parameter probs.post.test or SeSp or LR must be supplied, the other
-  two values are calculated. When more than one parameter is given the other
-  two are ignored. The basis of this function is adapted from package
-  TeachingDemos.
+two values are calculated. When more than one parameter is given the other
+two are ignored. The basis of this function is adapted from package
+TeachingDemos.
 }
 \examples{
 # Show calculated results (first 3 times about the same)
@@ -85,14 +85,14 @@ out
 }
 \references{
 { Fagan, T. J. (1975). Nomogram for Bayes theorem. The New
-  England Journal of Medicine, 293(5), 257-257.
+England Journal of Medicine, 293(5), 257-257.
 
-  Coste, J., Jourdain, P., & Pouchot, J. (2006). A gray zone assigned to
-  inconclusive results of quantitative diagnostic tests: application to the
-  use of brain natriuretic peptide for diagnosis of heart failure in acute
-  dyspneic patients. Clinical Chemistry, 52(12), 2229-2235.
+Coste, J., Jourdain, P., & Pouchot, J. (2006). A gray zone assigned to
+inconclusive results of quantitative diagnostic tests: application to the
+use of brain natriuretic peptide for diagnosis of heart failure in acute
+dyspneic patients. Clinical Chemistry, 52(12), 2229-2235.
 
-  Coste, J., & Pouchot, J. (2003). A grey zone for quantitative diagnostic
-  and screening tests. International Journal of Epidemiology, 32(2),
-  304-313. }
+Coste, J., & Pouchot, J. (2003). A grey zone for quantitative diagnostic
+and screening tests. International Journal of Epidemiology, 32(2),
+304-313. }
 }

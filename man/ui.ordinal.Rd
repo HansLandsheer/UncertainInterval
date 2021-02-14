@@ -21,12 +21,12 @@ ui.ordinal(
 \item{ref}{The reference standard. A column in a data frame or a vector
 indicating the classification by the reference test. The reference standard
 must be coded either as 0 (absence of the condition) or 1 (presence of the
-condition).}
+condition). When \code{mean(test[ref == 0]) > mean(test[ref == 1])} it is
+assumed that higher test scores indicate presence of the condition,
+otherwise that lower test scores indicate presence of the condition.}
 
-\item{test}{The test or predictor under evaluation. A column in a dataset or
-vector indicating the test results on an ordinal scale. It is expected that
-true patients have higher scores than non-patients. If this is not the
-case, the test scores should be negated (test = -(test scores)).}
+\item{test}{The test or predictor under evaluation. A column in a data set or
+vector indicating the test results on an ordinal scale.}
 
 \item{select.max}{Selects the candidate thresholds on basis of a desired
 property of the More Certain Intervals (MCI). The criteria are: maximum
@@ -58,7 +58,9 @@ that make the corresponding error smaller while the area grows smaller.}
 
 \item{intersection}{(Default = NULL). Optional value to de used as value for
 the intersection. If no value is supplied, the intersection is calculated
-using  \code{get.intersection(ref = ref, test = test, model='ordinal').}}
+using the function \code{get.intersection(ref = ref, test = test,
+  model='ordinal'), that provides a gaussian kernel estimate of the
+  intersection.}}
 
 \item{return.all}{(Default = FALSE). When TRUE $data.table and
 $uncertain.interval are included in the output.}
@@ -67,211 +69,216 @@ $uncertain.interval are included in the output.}
 function.}
 }
 \value{
-List of values: 
-\describe{ 
+List of values:
+\describe{
 \item{$Youden}{A vector of statistics
-  concerning the maximized Youden index:} 
-  \itemize{ 
-  \item{max.Youden: }{The
-  value of the Maximized Youden Index (= max(tpr - fpr)).} 
-  \item{threshold:
-  }{The threshold associated with the Maximized Youden Index. Test values >=
-  threshold indicate the targeted condition.} 
-  \item{Sp: }{The Specificity of
-  the test when this threshold is applied.} 
-  \item{Se: }{The Sensitivity of
-  the test when this threshold is applied.} 
-  \item{Acc: }{The Accuracy of the
-  test when this threshold is applied.} 
-  \item{Loss: }{min(fnr + fpr) = min(1
-  - (Se + Sp -1)) = 1 - max(tpr - fpr) lower range ( < threshold): the summed
-  number of false positives for each test score, divided by the number of
-  persons that have received that test score. upper range ( >= threshold):
-  the summed number of false negatives, divided by the number of persons that
-  have received that test score. The Youden Loss is equal to 1-Youden.index.
-  } \
-  item{C: }{Concordance; equals AUROCC (Area Under Receiving Operating
-  Characteristics Curve or AUC)} } 
-  \item{$data.table}{A data.frame with the
-  following columns:} 
-  \itemize{ 
-  \item{test: }{The test scores.} 
-  \item{d0:
-  }{The frequencies of the test scores of the norm group.} 
-  \item{d1: }{The
-  frequencies of the test scores of the group with the targeted condition.}
-  \item{tot: }{The total frequency of each test scores.} 
-  \item{TP: }{The
-  number of True Positives when this test score is used as threshold.}
-  \item{FP: }{The number of False Positives when this test score is used as
-  threshold.} 
-  \item{tpr: }{The true positive rate when this test score is
-  used as threshold.} 
-  \item{fpr: }{The false positive rate when this test
-  score is used as threshold.} 
-  \item{Y: }{The Youden Index (= tpr - fpr) when
-  this test score is used as threshold.} } 
-  \item{$intersection}{The (rounded)
-  intersection for the distributions of the two groups. Most often, these
-  distributions have no true point of intersection and the rounded
-  intersection is an approximation. Often, this equals the Maximized Youden
-  threshold (see Schisterman 2005). Warning: When a limited range of scores
-  is available, it is more difficult to estimate the intersection. Different
-  estimates can easily differ plus minus 1. When using a non-rounded value
-  (for example 16.1), the effective threshold for the uncertain area is
-  round(intersection+.5), in the mentioned example: 16.1 becomes 17. }
-  \item{$uncertain.interval}{Data frame with the statistics of all possible
-  bounds of the uncertain interval. The columns are the following: }
-  \itemize{ 
-  \item{lowerbound: }{Lower bound of the possible uncertain
-  interval.} 
-  \item{upperbound: }{Upper bound of the possible uncertain
-  interval.} 
-  \item{UI.Sp: }{Specificity of the test scores between and
-  including the lower and upper boundary. Closer to .5 is 'better', that is,
-  more uncertain. This estimate is rough and dependent on the intersection
-  and cannot be recommended as a criterion for a short, ordinal scale. }
-  \item{UI.Se: }{Sensitivity of the test scores between and including the
-  lower and upper boundary. Closer to .5 is 'better', that is, more
-  uncertain. This estimate is rough and dependent on the intersection and
-  cannot be recommended as a criterion for a short, ordinal scale.}
-  \item{UI.Acc: }{Accuracy of the test scores between and including the lower
-  and upper boundary. Closer to .5 is 'better', that is, more uncertain. This
-  estimate is rough and dependent on the intersection and cannot be
-  recommended as a criterion for a short, ordinal scale.} 
-  \item{UI.C:
-  }{Concordance (AUROC) of the test scores between and including the lower
-  and upper boundary. Closer to .5 is 'better', that is, more uncertain. Rule
-  of thumb: <= .6} 
-  \item{UI.ratio: }{The ratio between the proportion of
-  patients in the uncertain area with and without the condition. Closer to
-  one is 'better', that is, more uncertain; 0.8 < UI.ratio < 1.25 as a rule
-  of fist.} 
-  \item{UI.n: }{Number of patients with test scores between and
-  including the lower and upper boundary.} 
-  \item{MCI.Sp: }{Specificity of the
-  more certain interval, i.e., the test scores lower than the lower boundary
-  and higher than the upper boundary.} 
-  \item{MCI.Se: }{Sensitivity of the
-  test scores lower than the lower boundary and higher than the upper
-  boundary.} 
-  \item{MCI.C: }{Concordance (AUROC) of the test scores outside
-  the uncertain interval. Closer to .5 is 'better', that is, more uncertain.
-  Rule of thumb: <= .6} 
-  \item{MCI.Acc: }{Accuracy of the test scores lower
-  than the lower boundary and higher than the upper boundary.} \item{MCI.n:
-  }{Number of patients with test scores lower than the lower boundary and
-  higher than the upper boundary.} 
-  \item{Loss: }{Loss of the
-  trichotomization. The total loss is the sum of the loss of the three areas:
-  lower MCI: the summed number of false positives for each test score,
-  divided by the number of persons that have received that test score.
-  uncertain interval: the sum of the absolute differences in the number of
-  people in the norm group d0 and the number of persons in the group with the
-  targeted condition (d1) per test score, divided by the total number of
-  persons.} upper MCI: the summed number of false negatives, divided by the
-  number of persons that have received that test score. The Loss can be
-  compared to the loss of the Youden threshold, provided that the
-  intersection is equal to the Youden threshold. If necessary, this can be
-  forced by attributing the value of the Youden threshold to the intersection
-  parameter. } 
-  \item{$candidates: }{Candidates with a loss lower than the
-  Youden loss which might be considered for the Uncertain Interval. The
-  candidates are selected based on the constraints parameter, that defines
-  the desired constraints of the uncertain area, and the select.max
-  parameter, that selects the desired properties of the lower and upper More
-  Certain Interval. } }
+concerning the maximized Youden index:}
+\itemize{
+\item{max.Youden: }{The
+value of the Maximized Youden Index (= max(tpr - fpr)).}
+\item{threshold:
+}{The threshold associated with the Maximized Youden Index. Test values >=
+threshold indicate the targeted condition.}
+\item{Sp: }{The Specificity of
+the test when this threshold is applied.}
+\item{Se: }{The Sensitivity of
+the test when this threshold is applied.}
+\item{Acc: }{The Accuracy of the
+test when this threshold is applied.}
+\item{Loss: }{min(fnr + fpr) = min(1
+\itemize{
+\item (Se + Sp -1)) = 1 - max(tpr - fpr) lower range ( < threshold): the summed
+number of false positives for each test score, divided by the number of
+persons that have received that test score. upper range ( >= threshold):
+the summed number of false negatives, divided by the number of persons that
+have received that test score. The Youden Loss is equal to 1-Youden.index.
+} \ item{C: }{Concordance; equals AUROCC (Area Under Receiving Operating
+Characteristics Curve or AUC)} } \item{$data.table}{A data.frame with the
+following columns:} \itemize{ \item{test: }{The test scores.} \item{d0:
+}{The frequencies of the test scores of the norm group.} \item{d1: }{The
+frequencies of the test scores of the group with the targeted condition.}
+\item{tot: }{The total frequency of each test scores.}
+\item{TP: }{The
+number of True Positives when this test score is used as threshold.}
+\item{FP: }{The number of False Positives when this test score is used as
+threshold.}
+\item{tpr: }{The true positive rate when this test score is
+used as threshold.}
+\item{fpr: }{The false positive rate when this test
+score is used as threshold.}
+\item{Y: }{The Youden Index (= tpr - fpr) when
+this test score is used as threshold.} }
+\item{$intersection}{The (rounded)
+intersection for the distributions of the two groups. Most often, these
+distributions have no true point of intersection and the rounded
+intersection is an approximation. Often, this equals the Maximized Youden
+threshold (see Schisterman 2005). Warning: When a limited range of scores
+is available, it is more difficult to estimate the intersection. Different
+estimates can easily differ plus minus 1. When using a non-rounded value
+(for example 16.1), the effective threshold for the uncertain area is
+round(intersection+.5), in the mentioned example: 16.1 becomes 17. }
+\item{$uncertain.interval}{Data frame with the statistics of all possible
+bounds of the uncertain interval. The columns are the following: }
+\itemize{
+\item{lowerbound: }{Lower bound of the possible uncertain
+interval.}
+\item{upperbound: }{Upper bound of the possible uncertain
+interval.}
+\item{UI.Sp: }{Specificity of the test scores between and
+including the lower and upper boundary. Closer to .5 is 'better', that is,
+more uncertain. This estimate is rough and dependent on the intersection
+and cannot be recommended as a criterion for a short, ordinal scale. }
+\item{UI.Se: }{Sensitivity of the test scores between and including the
+lower and upper boundary. Closer to .5 is 'better', that is, more
+uncertain. This estimate is rough and dependent on the intersection and
+cannot be recommended as a criterion for a short, ordinal scale.}
+\item{UI.Acc: }{Accuracy of the test scores between and including the lower
+and upper boundary. Closer to .5 is 'better', that is, more uncertain. This
+estimate is rough and dependent on the intersection and cannot be
+recommended as a criterion for a short, ordinal scale.}
+\item{UI.C:
+}{Concordance (AUROC) of the test scores between and including the lower
+and upper boundary. Closer to .5 is 'better', that is, more uncertain. Rule
+of thumb: <= .6}
+\item{UI.ratio: }{The ratio between the proportion of
+patients in the uncertain area with and without the condition. Closer to
+one is 'better', that is, more uncertain; 0.8 < UI.ratio < 1.25 as a rule
+of fist.}
+\item{UI.n: }{Number of patients with test scores between and
+including the lower and upper boundary.}
+\item{MCI.Sp: }{Specificity of the
+more certain interval, i.e., the test scores lower than the lower boundary
+and higher than the upper boundary.}
+\item{MCI.Se: }{Sensitivity of the
+test scores lower than the lower boundary and higher than the upper
+boundary.}
+\item{MCI.C: }{Concordance (AUROC) of the test scores outside
+the uncertain interval. Closer to .5 is 'better', that is, more uncertain.
+Rule of thumb: <= .6}
+\item{MCI.Acc: }{Accuracy of the test scores lower
+than the lower boundary and higher than the upper boundary.} \item{MCI.n:
+}{Number of patients with test scores lower than the lower boundary and
+higher than the upper boundary.}
+\item{Loss: }{Loss of the
+trichotomization. The total loss is the sum of the loss of the three areas:
+lower MCI: the summed number of false positives for each test score,
+divided by the number of persons that have received that test score.
+uncertain interval: the sum of the absolute differences in the number of
+people in the norm group d0 and the number of persons in the group with the
+targeted condition (d1) per test score, divided by the total number of
+persons.} upper MCI: the summed number of false negatives, divided by the
+number of persons that have received that test score. The Loss can be
+compared to the loss of the Youden threshold, provided that the
+intersection is equal to the Youden threshold. If necessary, this can be
+forced by attributing the value of the Youden threshold to the intersection
+parameter. }
+\item{$candidates: }{Candidates with a loss lower than the
+Youden loss which might be considered for the Uncertain Interval. The
+candidates are selected based on the constraints parameter, that defines
+the desired constraints of the uncertain area, and the select.max
+parameter, that selects the desired properties of the lower and upper More
+Certain Interval. } }
+}
 }
 \description{
-This function explores possible uncertain intervals (UI) of the
-  test results of the two groups. This functions allows for considerable
-  fine-tuning of the characteristics of the interval of uncertain test
-  scores, in comparison to other functions for the determination of the
-  uncertain interval and is intended for tests with a limited number of
-  ordered values and/or small samples.
+This function is intended to be used for ordinal tests with a
+small number of distinct test values (for instance 20 or less). This
+function explores possible uncertain intervals (UI) of the test results of
+the two groups. This functions allows for considerable fine-tuning of the
+characteristics of the interval of uncertain test scores, in comparison to
+other functions for the determination of the uncertain interval and is
+intended for tests with a limited number of ordered values and/or small
+samples.
 
-  This function is intended to be used for tests with 20 or less ordered test
-  values. The lower range of test scores identifies patients without the
-  targeted condition (lower More Certain Interval (MCI)), the upper interval
-  of test scores above the uncertain interval identifies the patients with
-  the condition (upper MCI). Due to the limited number of distinguishable
-  scores, the estimations are course. When more than 20 values can be
-  distinguished, \code{\link{ui.nonpar}} or \code{\link{ui.binormal}} may be
-  preferred. When a sufficiently large dataset is available, the function
-  \code{\link{RPV}} may be preferred for the analysis of discrete ordered data.
+When a limited number of distinguishable scores is available,
+estimates will be coarse. When more than 20 values can be distinguished,
+\code{\link{ui.nonpar}} or \code{\link{ui.binormal}} may be preferred. When
+a sufficiently large data set is available, the function \code{\link{RPV}}
+may be preferred for the analysis of discrete ordered data.
 }
 \details{
 Due to the limited possibilities of short scales, it is more
-  difficult to determine a suitable uncertain interval when compared to
-  longer scales. This problem is aggrevated when samples are small. For any
-  threshold determination, one needs a large representative sample (200 or
-  larger). If there are no test scores below the intersection in the
-  candidate uncertain area, Sp of the Uncertain Interval (UI.Sp) is not
-  available, while UI.Se equals 1. The essential question is always whether
-  the patients with the test scores inside the uncertain interval can be
-  sufficiently distinguished. The candidate intervals are selected on various
-  properties of the uncertain interval. The defaults are C (AUC) lower than
-  .6, Acc lower than .6, and the ratio of proportions of persons with /
-  without the targeted condition between .8 and 1.25. These criteria ensure
-  that all candidates for the uncertain interval have insufficient accuracy.
-  The second criterion is the desired property of the More Certain Intervals
-  (see select.max parameter). The model used is 'ordinal'. This model default
-  for the adjust parameter send to the density function is 2, but you can
-  enter another value such as adjust = 1.
+difficult to determine a suitable uncertain interval when compared to
+longer scales. This problem is aggravated when samples are small. For any
+threshold determination, one needs a large representative sample (200 or
+larger). If there are no test scores below the intersection in the
+candidate uncertain area, Sp of the Uncertain Interval (UI.Sp) is not
+available, while UI.Se equals 1. The essential question is always whether
+the patients with the test scores inside the uncertain interval can be
+sufficiently distinguished. The candidate intervals are selected on various
+properties of the uncertain interval. The defaults are C (AUC) lower than
+.6, Acc (accuracy) lower than .6, and the ratio of proportions of persons
+with / without the targeted condition between .8 and 1.25. These criteria
+ensure that all candidates for the uncertain interval have insufficient
+accuracy. The second criterion is the desired property of the More Certain
+Intervals (see select.max parameter). The model used is 'ordinal'. This
+model default for the adjust parameter send to the density function is 2,
+but you can enter another value such as adjust = 1.
 
-  Discussion of the first example (please run the code first): Visual
-  inspection of the mixed densities function \code{\link{plotMD}} shows that
-  distinguishing patients with and without the targeted condition is almost
-  impossible for test scores 2, 3 and 4. Sensitivity and Specificity of the
-  uncertain interval should be not too far from .5. In the first example, the
-  first interval (3:3) has no lower scores than the intersection (3), and
-  therefore UI.Sp is not available and UI.Se = 1. The UI.ratio indicates
-  whether the number of patients with and without the condition is equal in
-  this interval. For these 110 patients, a diagnosis of uncertainty is
-  probably the best choice. The second interval (3:4) has an UI.Sp of .22,
-  which is a large deviation from .5. In this slightly larger interval, the
-  patients with a test score of 3 have a slightly larger probability to
-  belong to the group without the condition. UI.Se is .8. UI.ratio is close
-  to 1, which makes it a feasible candidate. The third interval (2:4) has an
-  UI.Sp of .35 and an UI.Se of .70 and an UI.ratio still close to one. The
-  other intervals show either Se or Sp that deviate strongly from .5, which
-  makes them unsuitable choices. Probably the easiest way to determine the
-  uncertain interval is the interval with minimum loss. This is interval
-  (2:4). Dichotomization loss L2 can be defined as the sum of false negatives
-  and false positives. The Youden threshold minimizes these. The Loss formula
-  L3 for trichotomization of ordinal test scores is (created by
-  https://www.codecogs.com/latex/eqneditor.php): \deqn{L_3 =\frac{ \left
+Dichotomous thresholds are inclusive the threshold for positive scores
+(patients). The count of positive scores are therefore >= threshold when
+the mean score for ref == 0 is lower than for ref == 1 and <= threshold
+when the mean score for ref == 0 is higher.
+
+Both the Youden threshold and the (default used) gaussian kernel estimate
+of the intersection are estimates of the true intersection. In some
+circumstances the Youden threshold can be preferred, especially when the
+data show spikes for lowest and/or highest values. In many situations the
+gaussian kernel estimate is to be preferred, especially when there is more
+than one intersection.In many situations the two estimates are close to
+each other, but especially for coarse data they might differ.
+
+Discussion of the first example (please run the code first): Visual
+inspection of the mixed densities function \code{\link{plotMD}} shows that
+distinguishing patients with and without the targeted condition is almost
+impossible for test scores 2, 3 and 4. Sensitivity and Specificity of the
+uncertain interval should be not too far from .5. In the first example, the
+first interval (3:3) has no lower scores than the intersection (3), and
+therefore UI.Sp is not available and UI.Se = 1. The UI.ratio indicates
+whether the number of patients with and without the condition is equal in
+this interval. For these 110 patients, a diagnosis of uncertainty is
+probably the best choice. The second interval (3:4) has an UI.Sp of .22,
+which is a large deviation from .5. In this slightly larger interval, the
+patients with a test score of 3 have a slightly larger probability to
+belong to the group without the condition. UI.Se is .8. UI.ratio is close
+to 1, which makes it a feasible candidate. The third interval (2:4) has an
+UI.Sp of .35 and an UI.Se of .70 and an UI.ratio still close to one. The
+other intervals show either Se or Sp that deviate strongly from .5, which
+makes them unsuitable choices. Probably the easiest way to determine the
+uncertain interval is the interval with minimum loss. This is interval
+(2:4). Dichotomization loss L2 can be defined as the sum of false negatives
+and false positives. The Youden threshold minimizes these. The Loss formula
+L3 for trichotomization of ordinal test scores is (created by
+https://www.codecogs.com/latex/eqneditor.php): \deqn{L_3 =\frac{ \left
   (\sum_{i=l}^{u} \left |d0_{i}-d1_{i}  \right | + \sum_{i=u+1}^{h} d1_{i}+
   \sum_{i=1}^{l-1}d0_{i}\right )}{N}}{ L3 = 1/N * (sum(abs(d0[u:l] -
-  d1[u:l])) + sum(d1[1:(l-1)]) + sum(d0[(u+1):h]))}
-  where \emph{d0}
-  represents the test scores of the norm group, \emph{d1} represents the test
-  scores of the targeted patient group, \emph{l} is the lower limit of the
-  uncertain interval, \emph{u} the upper limit, the first test score is
-  enumerated 1 and the last test score is enumerated \emph{h}. \emph{N} is
-  the total number of all persons with test scores.
-  \itemize{
-  \item{\eqn{\sum_{i=l}^{u} \left |d0_{i}-d1_{i}  \right |}{sum(abs(d0[u:l] -
+  d1[u:l])) + sum(d1[1:(l-1)]) + sum(d0[(u+1):h]))} where \emph{d0}
+represents the test scores of the norm group, \emph{d1} represents the test
+scores of the targeted patient group, \emph{l} is the lower limit of the
+uncertain interval, \emph{u} the upper limit, the first test score is
+enumerated 1 and the last test score is enumerated \emph{h}. \emph{N} is
+the total number of all persons with test scores. \itemize{
+\item{\eqn{\sum_{i=l}^{u} \left |d0_{i}-d1_{i}  \right |}{sum(abs(d0[u:l] -
   d1[u:l])}}{ is the loss in the uncertain interval, that is, the total
-  deviation from equality.} \item{\eqn{\sum_{i=u+1}^{h}
+deviation from equality.} \item{\eqn{\sum_{i=u+1}^{h}
   d1_{i}}{sum(d1[1:(l-1)])}}{ is the loss in the lower More Certain Interval,
-  that is, the total of False Negatives, the number of patients with the
-  targeted condition with a test score lower than \emph{l}, and}
-  \item{\eqn{\sum_{i=u+1}^{h} d0_{i}}{sum(d0[(u+1):h])}}{ is the loss in the
-  upper More Certain Interval, that is, the total of False Positives, the
-  number of patients without the targeted condition with a test score higher
-  than \emph{u}.}}
+that is, the total of False Negatives, the number of patients with the
+targeted condition with a test score lower than \emph{l}, and}
+\item{\eqn{\sum_{i=u+1}^{h} d0_{i}}{sum(d0[(u+1):h])}}{ is the loss in the
+upper More Certain Interval, that is, the total of False Positives, the
+number of patients without the targeted condition with a test score higher
+than \emph{u}.}}
 
-  Loss L is higher when the deviation from equality is higher in the
-  uncertain area, higher when the number of False Negatives is higher, and
-  higher when the number of False Positives is higher. The loss of a single
-  threshold method equals 1 - its Accuracy. In this example, the minimum Loss
-  is found with interval (2:4). As this agrees with values for UI.C and
-  UI.ratio that sufficiently indicates the uncertainty of these test scores,
-  this seems the most suitable choice: the number of patients with test
-  scores 2 to 4 are almost as likely to come from either population. The
-  remaining cases outside the uncertain interval (2:4) show high C, Accuracy,
-  Specificity and Sensitivity.
+Loss L is higher when the deviation from equality is higher in the
+uncertain area, higher when the number of False Negatives is higher, and
+higher when the number of False Positives is higher. The loss of a single
+threshold method equals 1 - its Accuracy. In this example, the minimum Loss
+is found with interval (2:4). As this agrees with values for UI.C and
+UI.ratio that sufficiently indicates the uncertainty of these test scores,
+this seems the most suitable choice: the number of patients with test
+scores 2 to 4 are almost as likely to come from either population. The
+remaining cases outside the uncertain interval (2:4) show high C, Accuracy,
+Specificity and Sensitivity.
 }
 \examples{
 # A short test with 5 ordinal values
@@ -280,14 +287,16 @@ test1     = rep(1:5, times=c( 15,11,13,55,164)) # test results of patients
 ref = c(rep(0, length(test0)), rep(1, length(test1)))
 test = c(test0, test1)
 table(ref, test)
-plotMD(ref, test, model='ordinal') # visual inspection
-ui.ordinal(ref, test, select.max='All')
+plotMD(ref, test, model="ordinal") # visual inspection
+# In this case we may prefer the Youden estimate
+ui.ordinal(ref, test, intersection="Youden", select.max="All")
 # Same solution, but other layout of the results:
-ui.ordinal(ref, test, select.max=c('MCI.Sp+MCI.Se', 'MCI.C', 'MCI.Acc',
-                                   'MCI.Se', 'MCI.Sp', 'MCI.n'))
-# forcing the Youden threshold as intersection gives the same best result.
-# However, the estimates for ui.Se, ui.Sp and ui.Acc differ:
-ui.ordinal(ref, test, intersection='Youden', select.max='All')
+ui.ordinal(ref, test, select.max=c("MCI.Sp+MCI.Se", "MCI.C", "MCI.Acc",
+                                   "MCI.Se", "MCI.Sp", "MCI.n"))
+# Using a gaussian kernel estimate of the true intersection
+# gives the same best result for the uncertain interval.
+# The estimates for ui.Se, ui.Sp and ui.Acc differ for another intersection:
+ui.ordinal(ref, test, select.max="All")
 
 nobs=1000
 set.seed(6)

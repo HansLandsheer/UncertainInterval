@@ -53,21 +53,21 @@ No Value returned.
 }
 \description{
 This plot function shows the densities of the two distributions
-  and their overlap in a single graph.
+and their overlap in a single graph.
 }
 \details{
 The graph shows the densities of the two distributions and their
-  overlap. Many tests of intermediate quality have a considerable overlap.
-  Also, the distributions as estimated by the \code{density} function, using
-  the gaussian kernel is shown. The intersection is indicated by a vertical
-  line. This graph allows the visual inspection of the two distributions, as
-  well a visual inspection of the approximation of the \code{density}, based
-  on the gaussian kernel. When the density estimation is way off, the
-  standard estimation of the intersection will be incorrect, and another
-  estimation has to be supplied.
+overlap. Many tests of intermediate quality have a considerable overlap.
+Also, the distributions as estimated by the \code{density} function, using
+the gaussian kernel is shown. The intersection is indicated by a vertical
+line. This graph allows the visual inspection of the two distributions, as
+well a visual inspection of the approximation of the \code{density}, based
+on the gaussian kernel. When the density estimation is way off, the
+standard estimation of the intersection will be incorrect, and another
+estimation has to be supplied.
 
-  The function \code{plotMD} can also be used for visual inspection of the
-  Uncertain Interval (see examples).
+The function \code{plotMD} can also be used for visual inspection of the
+Uncertain Interval (see examples).
 }
 \examples{
 # A test of intermediate quality
@@ -115,14 +115,14 @@ plotMD(ref, test, breaks=c(min(test)-.5, seq(min(test), max(test), by=1)+.5),
 }
 \references{
 Landsheer, J. A. (2016). Interval of Uncertainty: An Alternative
-  Approach for the Determination of Decision Thresholds, with an Illustrative
-  Application for the Prediction of Prostate Cancer. PloS One, 11(11),
-  e0166007.
+Approach for the Determination of Decision Thresholds, with an Illustrative
+Application for the Prediction of Prostate Cancer. PloS One, 11(11),
+e0166007.
 
-  Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
-  Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
-  Decision-Making and Screening. Diagnostics, 8(2), 32.
-  https://doi.org/10.3390/diagnostics8020032
+Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
+Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
+Decision-Making and Screening. Diagnostics, 8(2), 32.
+https://doi.org/10.3390/diagnostics8020032
 }
 \seealso{
 \code{\link{barplotMD}}

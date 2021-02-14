@@ -6,13 +6,13 @@
 #' @param UI.Sp (default = .55). Desired specificity of the test scores within the
 #'   uncertain interval. A value <= .5 is not allowed.
 #' @param mu0 Population value or estimate of the mean of the test scores of the
-#'   persons without the targeted condition.
+#'   persons without the targeted condition (controls).
 #' @param sd0 Population value or estimate of the standard deviation of the test
-#'   scores of the persons without the targeted condition.
+#'   scores of the persons without the targeted condition (controls).
 #' @param mu1 Population value or estimate of the mean of the test scores of the
-#'   persons with the targeted condition.
+#'   persons with the targeted condition (patients).
 #' @param sd1 Population value or estimate of the standard deviation of the test
-#'   scores of the persons with the targeted condition.
+#'   scores of the persons with the targeted condition (patients).
 #' @param intersection Default NULL. If not null, the supplied value is used as
 #'   the estimate of the intersection of the two bi-normal distributions.
 #'   Otherwise, it is calculated.
@@ -28,14 +28,18 @@
 #' @details The function can be used to determinate the uncertain interval of
 #'   two bi-normal distributions. The Uncertain Interval is defined as an
 #'   interval below and above the intersection of the two distributions, with a
-#'   sensitivity and specificity below a desired value (default .55).
+#'   sensitivity and specificity below a desired value (default .55). 
 #'
 #'   Only a single intersection is assumed (or a second intersection where the
 #'   overlap is negligible).
-#'
+#'   
+#'   From version 0.7 onwards, mu0 can be larger than mu1. In earlier versions
+#'   correct (but negative) results could be obtained only when -mu0 and -mu1
+#'   were used.
+#'   
 #'   The function uses an optimization algorithm from the nlopt library
 #'   (https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/): the sequential
-#'   quadratic programming (SQP) algorithm for nonlinearly constrained
+#'   quadratic programming (SQP) algorithm for nonlinear constrained
 #'   gradient-based optimization (supporting both inequality and equality
 #'   constraints), based on the implementation by Dieter Kraft (1988; 1944).
 #'
@@ -63,7 +67,6 @@
 #'   pp. 262-281 (1994).
 
 #' @export
-#' @importFrom rootSolve uniroot.all
 #' @importFrom nloptr nloptr
 #' @importFrom stats dnorm pnorm sd
 #'
@@ -72,7 +75,12 @@
 #' nlopt.ui()
 #' # Using another bi-normal distribution:
 #' nlopt.ui(mu0=0, sd0=1, mu1=1.6, sd1=2)
-#'
+#' nlopt.ui(mu0=0, sd0=1, mu1=1.6, sd1=2)
+#' nlopt.ui(mu0=-1.6, sd0=2, mu1=0, sd1=1)
+#' # The example below (with mu0 > mu1) works correctly from version 0.7 onward
+#' nlopt.ui(mu0=1.6, sd0=2, mu1=0, sd1=1)
+ 
+
 # UI.Se = .55; UI.Sp = .55; mu0 = 0; sd0 = 1; mu1 = 1; sd1 = 1; intersection = NULL; start=NULL; print.level=0
 nlopt.ui <- function(UI.Se = .55, UI.Sp = .55,
                      mu0 = 0, sd0 = 1,
@@ -81,31 +89,38 @@ nlopt.ui <- function(UI.Se = .55, UI.Sp = .55,
                      start=NULL, print.level=0) {
   if (UI.Se <= .5) stop('Value <= .5 invalid for UI.Se')
   if (UI.Sp <= .5) stop('Value <= .5 invalid for UI.Sp')
-  # if (UI.Se > .6) warning('Value > .6 not recommended for UI.Se')
-  # if (UI.Sp > .6) warning('Value > .6 not recommended for UI.Sp')
+  
+  negate=FALSE
+  if (mu0 > mu1) {
+    negate = TRUE
+    mu0=-mu0
+    mu1=-mu1
+    if (!is.null(intersection)) intersection = -intersection
+  }
 
   c01 = UI.Sp / (1 - UI.Sp)
   c11 = UI.Se / (1 - UI.Se)
+  
+  intersect.binormal1 <-
+    function(mu0, sd0, mu1, sd1, p=0.5, q=0.5) {
+      B <- (mu0/sd0^2 - mu1/sd1^2)
+      A <- 0.5*(1/sd1^2 - 1/sd0^2)
+      C <- 0.5*(mu1^2/sd1^2 - mu0^2/sd0^2) - log((sd0/sd1)*(p/q))
+      
+      if (A!=0){
+        is = (-B + c(1,-1)*sqrt(B^2 - 4*A*C))/(2*A)
+      } else {is = -C/B}
+      
+      d = dnorm(is, mu0, sd0) + dnorm(is, mu1, sd0)
+      is[order(d)] # tail has highest density
+    }
+  
   if (is.null(intersection)) {
-    intersect.binormal1 <- function(mu0, sd0, mu1, sd1) {
-        if (sd0==sd1){
-          is <- (mu1+mu0)/2
-        }else{
-          B <- (mu0 / sd0 ^ 2 - mu1 / sd1 ^ 2)
-          A <- 0.5 * (1 / sd1 ^ 2 - 1 / sd0 ^ 2)
-          C <-
-            0.5 * (mu1 ^ 2 / sd1 ^ 2 - mu0 ^ 2 / sd0 ^ 2) - log(sd0 / sd1)
-
-          is = (-B + c(1, -1) * sqrt(B ^ 2 - 4 * A * C)) / (2 * A)
-        }
-        d = dnorm(is, mu0, sd0) + dnorm(is, mu1, sd1)
-        is[order(d)] # tail has highest density
-      }
 
       intersection = intersect.binormal1(mu0, sd0, mu1, sd1)
       if (length(intersection) > 1) {
         intersection=tail(intersection, n=1)
-        warning('More than one point of intersection. Highest used.')
+        warning('More than one point of intersection. Point with highest density used.')
       }
   }
 
@@ -182,6 +197,15 @@ nlopt.ui <- function(UI.Se = .55, UI.Sp = .55,
   FP = pnorm(res0$solution[2], mu0, sd0) - pnorm(intersection, mu0, sd0)
   TP = pnorm(res0$solution[2], mu1, sd1) - pnorm(intersection, mu1, sd1)  # area check UI.Se: upper area / lower area
   FN = pnorm(intersection, mu1, sd1) - pnorm(res0$solution[1], mu1, sd1)
+  
+  if (negate){
+    mu0=-mu0
+    mu1=-mu1
+    intersection = -intersection
+    temp= res0$solution[1] 
+    res0$solution[1] = -res0$solution[2]
+    res0$solution[2] = -temp
+  }
   res = list()
   res$status = res0$status
   res$message = res0$message

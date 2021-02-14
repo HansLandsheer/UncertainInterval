@@ -3,30 +3,28 @@
 #' @name ui.ordinal
 #' @importFrom grDevices rgb
 #' @importFrom graphics legend plot
-#' @description This function explores possible uncertain intervals (UI) of the
-#'   test results of the two groups. This functions allows for considerable
-#'   fine-tuning of the characteristics of the interval of uncertain test
-#'   scores, in comparison to other functions for the determination of the
-#'   uncertain interval and is intended for tests with a limited number of
-#'   ordered values and/or small samples.
+#' @description This function is intended to be used for ordinal tests with a
+#'   small number of distinct test values (for instance 20 or less). This
+#'   function explores possible uncertain intervals (UI) of the test results of
+#'   the two groups. This functions allows for considerable fine-tuning of the
+#'   characteristics of the interval of uncertain test scores, in comparison to
+#'   other functions for the determination of the uncertain interval and is
+#'   intended for tests with a limited number of ordered values and/or small
+#'   samples.
 #'
-#'   This function is intended to be used for tests with 20 or less ordered test
-#'   values. The lower range of test scores identifies patients without the
-#'   targeted condition (lower More Certain Interval (MCI)), the upper interval
-#'   of test scores above the uncertain interval identifies the patients with
-#'   the condition (upper MCI). Due to the limited number of distinguishable
-#'   scores, the estimations are course. When more than 20 values can be
-#'   distinguished, \code{\link{ui.nonpar}} or \code{\link{ui.binormal}} may be
-#'   preferred. When a sufficiently large dataset is available, the function
-#'   \code{\link{RPV}} may be preferred for the analysis of discrete ordered data.
+#'   When a limited number of distinguishable scores is available,
+#'   estimates will be coarse. When more than 20 values can be distinguished,
+#'   \code{\link{ui.nonpar}} or \code{\link{ui.binormal}} may be preferred. When
+#'   a sufficiently large data set is available, the function \code{\link{RPV}}
+#'   may be preferred for the analysis of discrete ordered data.
 #' @param ref The reference standard. A column in a data frame or a vector
 #'   indicating the classification by the reference test. The reference standard
 #'   must be coded either as 0 (absence of the condition) or 1 (presence of the
-#'   condition).
-#' @param test The test or predictor under evaluation. A column in a dataset or
-#'   vector indicating the test results on an ordinal scale. It is expected that
-#'   true patients have higher scores than non-patients. If this is not the
-#'   case, the test scores should be negated (test = -(test scores)).
+#'   condition). When \code{mean(test[ref == 0]) > mean(test[ref == 1])} it is
+#'   assumed that higher test scores indicate presence of the condition,
+#'   otherwise that lower test scores indicate presence of the condition.
+#' @param test The test or predictor under evaluation. A column in a data set or
+#'   vector indicating the test results on an ordinal scale.
 #' @param select.max Selects the candidate thresholds on basis of a desired
 #'   property of the More Certain Intervals (MCI). The criteria are: maximum
 #'   Se+Sp (default), maximum C (AUC), maximum Accuracy, maximum Sp, maximum Se,
@@ -47,21 +45,23 @@
 #'   accuracy as selection criterion. If no solution is found, the best is
 #'   showed together with  a warning message.
 #' @param weights (Default = c(1, 1, 1). Vector with weights for the loss
-#'   function. weights[1] is the weight of false negatives, weights[2] is the
+#'   function. weights\[1\] is the weight of false negatives, weights\[2\] is the
 #'   weight for loss in the uncertain interval (deviations from equal chances to
-#'   belong to either distribution), and weights[3] is the weight for false
+#'   belong to either distribution), and weights\[3\] is the weight for false
 #'   positives. When a weight is set to a larger value, thresholds are selected
 #'   that make the corresponding error smaller while the area grows smaller.
 #' @param intersection (Default = NULL). Optional value to de used as value for
 #'   the intersection. If no value is supplied, the intersection is calculated
-#'   using  \code{get.intersection(ref = ref, test = test, model='ordinal').}
+#'   using the function \code{get.intersection(ref = ref, test = test,
+#'   model='ordinal'), that provides a gaussian kernel estimate of the
+#'   intersection.}
 #' @param return.all (Default = FALSE). When TRUE $data.table and
 #'   $uncertain.interval are included in the output.
 #' @param ... Further parameters that can be transferred to the density
 #'   function.
 #' @details Due to the limited possibilities of short scales, it is more
 #'   difficult to determine a suitable uncertain interval when compared to
-#'   longer scales. This problem is aggrevated when samples are small. For any
+#'   longer scales. This problem is aggravated when samples are small. For any
 #'   threshold determination, one needs a large representative sample (200 or
 #'   larger). If there are no test scores below the intersection in the
 #'   candidate uncertain area, Sp of the Uncertain Interval (UI.Sp) is not
@@ -69,13 +69,26 @@
 #'   the patients with the test scores inside the uncertain interval can be
 #'   sufficiently distinguished. The candidate intervals are selected on various
 #'   properties of the uncertain interval. The defaults are C (AUC) lower than
-#'   .6, Acc lower than .6, and the ratio of proportions of persons with /
-#'   without the targeted condition between .8 and 1.25. These criteria ensure
-#'   that all candidates for the uncertain interval have insufficient accuracy.
-#'   The second criterion is the desired property of the More Certain Intervals
-#'   (see select.max parameter). The model used is 'ordinal'. This model default
-#'   for the adjust parameter send to the density function is 2, but you can
-#'   enter another value such as adjust = 1.
+#'   .6, Acc (accuracy) lower than .6, and the ratio of proportions of persons
+#'   with / without the targeted condition between .8 and 1.25. These criteria
+#'   ensure that all candidates for the uncertain interval have insufficient
+#'   accuracy. The second criterion is the desired property of the More Certain
+#'   Intervals (see select.max parameter). The model used is 'ordinal'. This
+#'   model default for the adjust parameter send to the density function is 2,
+#'   but you can enter another value such as adjust = 1.
+#'
+#'   Dichotomous thresholds are inclusive the threshold for positive scores
+#'   (patients). The count of positive scores are therefore >= threshold when
+#'   the mean score for ref == 0 is lower than for ref == 1 and <= threshold
+#'   when the mean score for ref == 0 is higher.
+#'
+#'   Both the Youden threshold and the (default used) gaussian kernel estimate
+#'   of the intersection are estimates of the true intersection. In some
+#'   circumstances the Youden threshold can be preferred, especially when the
+#'   data show spikes for lowest and/or highest values. In many situations the
+#'   gaussian kernel estimate is to be preferred, especially when there is more
+#'   than one intersection.In many situations the two estimates are close to
+#'   each other, but especially for coarse data they might differ.
 #'
 #'   Discussion of the first example (please run the code first): Visual
 #'   inspection of the mixed densities function \code{\link{plotMD}} shows that
@@ -101,14 +114,12 @@
 #'   https://www.codecogs.com/latex/eqneditor.php): \deqn{L_3 =\frac{ \left
 #'   (\sum_{i=l}^{u} \left |d0_{i}-d1_{i}  \right | + \sum_{i=u+1}^{h} d1_{i}+
 #'   \sum_{i=1}^{l-1}d0_{i}\right )}{N}}{ L3 = 1/N * (sum(abs(d0[u:l] -
-#'   d1[u:l])) + sum(d1[1:(l-1)]) + sum(d0[(u+1):h]))}
-#'   where \emph{d0}
+#'   d1[u:l])) + sum(d1[1:(l-1)]) + sum(d0[(u+1):h]))} where \emph{d0}
 #'   represents the test scores of the norm group, \emph{d1} represents the test
 #'   scores of the targeted patient group, \emph{l} is the lower limit of the
 #'   uncertain interval, \emph{u} the upper limit, the first test score is
 #'   enumerated 1 and the last test score is enumerated \emph{h}. \emph{N} is
-#'   the total number of all persons with test scores.
-#'   \itemize{
+#'   the total number of all persons with test scores. \itemize{
 #'   \item{\eqn{\sum_{i=l}^{u} \left |d0_{i}-d1_{i}  \right |}{sum(abs(d0[u:l] -
 #'   d1[u:l])}}{ is the loss in the uncertain interval, that is, the total
 #'   deviation from equality.} \item{\eqn{\sum_{i=u+1}^{h}
@@ -131,50 +142,44 @@
 #'   remaining cases outside the uncertain interval (2:4) show high C, Accuracy,
 #'   Specificity and Sensitivity.
 #'
-#' @return List of values: 
-#' \describe{ 
+#' @return List of values:
+#' \describe{
 #' \item{$Youden}{A vector of statistics
-#'   concerning the maximized Youden index:} 
-#'   \itemize{ 
+#'   concerning the maximized Youden index:}
+#'   \itemize{
 #'   \item{max.Youden: }{The
-#'   value of the Maximized Youden Index (= max(tpr - fpr)).} 
+#'   value of the Maximized Youden Index (= max(tpr - fpr)).}
 #'   \item{threshold:
 #'   }{The threshold associated with the Maximized Youden Index. Test values >=
-#'   threshold indicate the targeted condition.} 
+#'   threshold indicate the targeted condition.}
 #'   \item{Sp: }{The Specificity of
-#'   the test when this threshold is applied.} 
+#'   the test when this threshold is applied.}
 #'   \item{Se: }{The Sensitivity of
-#'   the test when this threshold is applied.} 
+#'   the test when this threshold is applied.}
 #'   \item{Acc: }{The Accuracy of the
-#'   test when this threshold is applied.} 
+#'   test when this threshold is applied.}
 #'   \item{Loss: }{min(fnr + fpr) = min(1
 #'   - (Se + Sp -1)) = 1 - max(tpr - fpr) lower range ( < threshold): the summed
 #'   number of false positives for each test score, divided by the number of
 #'   persons that have received that test score. upper range ( >= threshold):
 #'   the summed number of false negatives, divided by the number of persons that
 #'   have received that test score. The Youden Loss is equal to 1-Youden.index.
-#'   } \
-#'   item{C: }{Concordance; equals AUROCC (Area Under Receiving Operating
-#'   Characteristics Curve or AUC)} } 
-#'   \item{$data.table}{A data.frame with the
-#'   following columns:} 
-#'   \itemize{ 
-#'   \item{test: }{The test scores.} 
-#'   \item{d0:
-#'   }{The frequencies of the test scores of the norm group.} 
-#'   \item{d1: }{The
+#'   } \ item{C: }{Concordance; equals AUROCC (Area Under Receiving Operating
+#'   Characteristics Curve or AUC)} } \item{$data.table}{A data.frame with the
+#'   following columns:} \itemize{ \item{test: }{The test scores.} \item{d0:
+#'   }{The frequencies of the test scores of the norm group.} \item{d1: }{The
 #'   frequencies of the test scores of the group with the targeted condition.}
-#'   \item{tot: }{The total frequency of each test scores.} 
+#'   \item{tot: }{The total frequency of each test scores.}
 #'   \item{TP: }{The
 #'   number of True Positives when this test score is used as threshold.}
 #'   \item{FP: }{The number of False Positives when this test score is used as
-#'   threshold.} 
+#'   threshold.}
 #'   \item{tpr: }{The true positive rate when this test score is
-#'   used as threshold.} 
+#'   used as threshold.}
 #'   \item{fpr: }{The false positive rate when this test
-#'   score is used as threshold.} 
+#'   score is used as threshold.}
 #'   \item{Y: }{The Youden Index (= tpr - fpr) when
-#'   this test score is used as threshold.} } 
+#'   this test score is used as threshold.} }
 #'   \item{$intersection}{The (rounded)
 #'   intersection for the distributions of the two groups. Most often, these
 #'   distributions have no true point of intersection and the rounded
@@ -186,11 +191,11 @@
 #'   round(intersection+.5), in the mentioned example: 16.1 becomes 17. }
 #'   \item{$uncertain.interval}{Data frame with the statistics of all possible
 #'   bounds of the uncertain interval. The columns are the following: }
-#'   \itemize{ 
+#'   \itemize{
 #'   \item{lowerbound: }{Lower bound of the possible uncertain
-#'   interval.} 
+#'   interval.}
 #'   \item{upperbound: }{Upper bound of the possible uncertain
-#'   interval.} 
+#'   interval.}
 #'   \item{UI.Sp: }{Specificity of the test scores between and
 #'   including the lower and upper boundary. Closer to .5 is 'better', that is,
 #'   more uncertain. This estimate is rough and dependent on the intersection
@@ -202,30 +207,30 @@
 #'   \item{UI.Acc: }{Accuracy of the test scores between and including the lower
 #'   and upper boundary. Closer to .5 is 'better', that is, more uncertain. This
 #'   estimate is rough and dependent on the intersection and cannot be
-#'   recommended as a criterion for a short, ordinal scale.} 
+#'   recommended as a criterion for a short, ordinal scale.}
 #'   \item{UI.C:
 #'   }{Concordance (AUROC) of the test scores between and including the lower
 #'   and upper boundary. Closer to .5 is 'better', that is, more uncertain. Rule
-#'   of thumb: <= .6} 
+#'   of thumb: <= .6}
 #'   \item{UI.ratio: }{The ratio between the proportion of
 #'   patients in the uncertain area with and without the condition. Closer to
 #'   one is 'better', that is, more uncertain; 0.8 < UI.ratio < 1.25 as a rule
-#'   of fist.} 
+#'   of fist.}
 #'   \item{UI.n: }{Number of patients with test scores between and
-#'   including the lower and upper boundary.} 
+#'   including the lower and upper boundary.}
 #'   \item{MCI.Sp: }{Specificity of the
 #'   more certain interval, i.e., the test scores lower than the lower boundary
-#'   and higher than the upper boundary.} 
+#'   and higher than the upper boundary.}
 #'   \item{MCI.Se: }{Sensitivity of the
 #'   test scores lower than the lower boundary and higher than the upper
-#'   boundary.} 
+#'   boundary.}
 #'   \item{MCI.C: }{Concordance (AUROC) of the test scores outside
 #'   the uncertain interval. Closer to .5 is 'better', that is, more uncertain.
-#'   Rule of thumb: <= .6} 
+#'   Rule of thumb: <= .6}
 #'   \item{MCI.Acc: }{Accuracy of the test scores lower
 #'   than the lower boundary and higher than the upper boundary.} \item{MCI.n:
 #'   }{Number of patients with test scores lower than the lower boundary and
-#'   higher than the upper boundary.} 
+#'   higher than the upper boundary.}
 #'   \item{Loss: }{Loss of the
 #'   trichotomization. The total loss is the sum of the loss of the three areas:
 #'   lower MCI: the summed number of false positives for each test score,
@@ -238,7 +243,7 @@
 #'   compared to the loss of the Youden threshold, provided that the
 #'   intersection is equal to the Youden threshold. If necessary, this can be
 #'   forced by attributing the value of the Youden threshold to the intersection
-#'   parameter. } 
+#'   parameter. }
 #'   \item{$candidates: }{Candidates with a loss lower than the
 #'   Youden loss which might be considered for the Uncertain Interval. The
 #'   candidates are selected based on the constraints parameter, that defines
@@ -275,14 +280,16 @@
 #' ref = c(rep(0, length(test0)), rep(1, length(test1)))
 #' test = c(test0, test1)
 #' table(ref, test)
-#' plotMD(ref, test, model='ordinal') # visual inspection
-#' ui.ordinal(ref, test, select.max='All')
+#' plotMD(ref, test, model="ordinal") # visual inspection
+#' # In this case we may prefer the Youden estimate
+#' ui.ordinal(ref, test, intersection="Youden", select.max="All")
 #' # Same solution, but other layout of the results:
-#' ui.ordinal(ref, test, select.max=c('MCI.Sp+MCI.Se', 'MCI.C', 'MCI.Acc',
-#'                                    'MCI.Se', 'MCI.Sp', 'MCI.n'))
-#' # forcing the Youden threshold as intersection gives the same best result.
-#' # However, the estimates for ui.Se, ui.Sp and ui.Acc differ:
-#' ui.ordinal(ref, test, intersection='Youden', select.max='All')
+#' ui.ordinal(ref, test, select.max=c("MCI.Sp+MCI.Se", "MCI.C", "MCI.Acc",
+#'                                    "MCI.Se", "MCI.Sp", "MCI.n"))
+#' # Using a gaussian kernel estimate of the true intersection
+#' # gives the same best result for the uncertain interval.
+#' # The estimates for ui.Se, ui.Sp and ui.Acc differ for another intersection:
+#' ui.ordinal(ref, test, select.max="All")
 #'
 #' nobs=1000
 #' set.seed(6)
@@ -300,15 +307,16 @@
 #' plotMD(ref, test, model='binormal')
 #' ui.ordinal(ref, test)
 #' ui.binormal(ref, test) # compare application of the bi-normal model
+#' @export
 
 # data(tostbegg2)
 # ref=tostbegg2$d; test=tostbegg2$y
-# intersection=NULL; weights=c(1,1,1);
-# constraints=c( Acc=.6, lower.ratio=.8, upper.ratio=1.25)
+# intersection=3; weights=c(1,1,1);
+# constraints=c(C=.57, Acc=.6, lower.ratio=.8, upper.ratio=1.25)
 # select.max = c('MCI.Sp+MCI.Se', 'MCI.C', 'MCI.Acc', 'MCI.Se', 'MCI.Sp', 'MCI.n')
 # select.max="All"
+# test=-test
 
-#' @export
 ui.ordinal <- function(ref, test,
                        select.max = c('MCI.Sp+MCI.Se', 'MCI.C', 'MCI.Acc', 'MCI.Se', 'MCI.Sp', 'MCI.n', 'All'),
                        constraints=c(C=.57, Acc=.6, lower.ratio=.8, upper.ratio=1.25),
@@ -317,25 +325,16 @@ ui.ordinal <- function(ref, test,
                        return.all = FALSE, ...){
 
 
-  # emp.AUC <- function(norm, abnorm) {
-  #   o = outer(abnorm, norm, "-")
-  #   mean((o > 0) + .5 * (o == 0))
-  # }
-
   find.closest <- function(M, crit){
     M[which(is.na(M))] = Inf # crit+10e10
     mindiff=min(abs(M-crit)) # warning: no non-missing arguments to min; returning Inf
     which((M == crit+mindiff) | (M == crit-mindiff), arr.ind=T)
   }
 
-  AUC <- function(norm, abnorm){
-    n1 = as.numeric(length(abnorm));
-    n0 = as.numeric(length(norm));
-    r = rank(c(abnorm,norm))
-    (sum(r[1:n1]) - n1*(n1+1)/2) / (n1*n0)
-  }
+  controlshigher = mean(test[ref==0]) > mean(test[ref==1])
 
-  tlim = c(C=.57, Acc=.6, lower.ratio=.8, upper.ratio=1.25)
+  tlim = c(C=.57, Acc=.6, lower.ratio=.8, upper.ratio=1.25) # default
+
   if (is.null(names(constraints))) {
     tlim[1:length(constraints)] = constraints
   } else {
@@ -346,45 +345,37 @@ ui.ordinal <- function(ref, test,
   # if (!(exists(constraints['C'] & exists(constraints['Acc'])))) stop('constraints must be named correctly.')
   select.max <- match.arg(select.max, c('MCI.Sp+MCI.Se', 'MCI.C', 'MCI.Acc','MCI.Se', 'MCI.Sp', 'MCI.n', 'All'), several.ok = TRUE)
 
-
-  tab=as.matrix(table( test, ref))
-  # print(addmargins(tab))
-  totpos=sum(tab[,2])                          # The total number of positives (one number)
-  totneg=sum(tab[,1])                          # The total number of negatives (one number)
-
-  d=data.frame(test=unique(sort(test)), d0=tab[,'0'], d1=tab[,'1'], row.names=1:nrow(tab))
-  d$tot=rowSums(tab)                             # Number of patients w/ each test result
-  d$TP=unname(rev(cumsum(rev(tab[,2]))))     # Number of true positives, start with maximum
-  d$FP=unname(rev(cumsum(rev(tab[,1]))))     # Number of false positives, start with maximum
+  d=simple_roc3(test[ref==0], test[ref==1]) #head(d)
+  totpos=length(test[ref==1])                          # The total number of positives (one number)
+  totneg=length(test[ref==0])                          # The total number of negatives (one number)
+  d$tot=rowSums(d[,c('d0','d1')])                             # Number of patients w/ each test result
   # d$TN=unname(cumsum(tab[,1]))
   d$TN=totneg-d$FP
   d$FN=totpos-d$TP
 
-  d$tpr=d$TP/totpos          # Sensitivity (fraction true positives)
-  d$fpr=d$FP/totneg  # 1-d$FP/totneg         # 1 - specificity (false positives)
   # d$fnr=d$FN/totpos  # 1-d$FP/totneg         # 1 - specificity (false positives)
   d$Y = d$tpr-d$fpr # Youden index
   Yt= which.max(d$Y) # Youden threshold as row number
   # Hmisc::find.matches(d$Y, max(d$Y), tol=c(.0001))
   # d$Y[4] > d$Y[3]
   # which( d$Y == max(d$Y) )
-  Acc.Y = (sum(d$d0[1:(Yt-1)])+sum(d$d1[(Yt):nrow(d)]))/ (totpos+totneg)
-  # Conc = emp.AUC(test[ref==0], test[ref==1])
-  Conc = AUC(test[ref==0], test[ref==1])
 
-  lr = nrow(tab)
-  t=prop.table(addmargins(table(test, ref),2),2)
+  # getrangeTP(c(1,5))
+  if (controlshigher) r = 1:Yt else r = Yt:nrow(d) # r = true pos; -r = true neg
+  Acc.Y = (sum(d$d0[-r])+sum(d$d1[r]))/ (totpos+totneg)
+  # Conc = emp.AUC(test[ref==0], test[ref==1])
+  Conc = simple_auc(test[ref==0], test[ref==1]) # norm=test[ref==0]; abnorm=test[ref==1]
+
+  lr = nrow(d)
+  tab = as.matrix(d[,c('d0','d1')])
+  pt=prop.table(addmargins(tab,2),2)
   p0 = totneg/(totpos+totneg); p1=totpos/(totpos+totneg) # p0=p1=.5
-  # r0 = p0*t[,'0']/(p0*t[,'0']+p1*t[,'1'])
+  # r0 = p0*pt[,1]/(p0*pt[,1]+p1*pt[,2])
   # R = cbind(r0, r1 = 1-r0)
 
   # A=Yt
-  Loss1 = function(A) {
-    lr = nrow(t)
-    weights[1]*sum(t[-(A:lr), '1']) +  # FN
-      weights[3]*sum(t[A:lr, '0'])   # FP
-  }
-  Loss.Y = Loss1(Yt) # Yt = rownumber; Loss = 1 - max.Youden
+  Loss.Y = weights[1]*sum(pt[r, 1]) +  # FP
+        weights[3]*sum(pt[-r, 2])   # FN
 
   # is = Yt # is = get.intersection(ref = ref, test = test, model='ordinal')
   # intersection='Youden'
@@ -396,60 +387,97 @@ ui.ordinal <- function(ref, test,
     is = d$test[Yt]
   }  # closest test value
   isr = round(is[length(is)]) # tail has highest density
-  wr = which(d$test==isr) # row number
+  wr = which(d$testscores==isr) # row number # isr=-4
+  drows=nrow(d)
 
-  dl=nrow(d)
-  upperbound = c(wr:dl) # row numbers, not test scores!
+  # limits=c(1,5); getselTP(limits)
+  getselTP = function(limits){
+    selTP = logical(drows)
+    if (wr < limits[1] | wr > limits[2]) {NA
+    } else {if (controlshigher) {selTP[limits[1]:wr] = TRUE
+    } else {selTP[wr:limits[2]] = TRUE} }
+    selTP
+  }
+  upperbound = c(wr:drows) # row numbers, not test scores!
   lowerbound = c(wr:1)
   ui= as.data.frame(expand.grid(lowerbound,upperbound))
   colnames(ui) <- c('lowerbound', 'upperbound')
+  ui.grid = ui[,1:2]
 
-  # x = c(1,5)
-  fUI.Sp = function (x){ifelse(x[1] < wr, sum(tab[x[1]:(wr-1),1]), 0)/sum(tab[x[1]:x[2],1])}
-  fUI.Se = function (x){sum(tab[wr:x[2],2])/sum(tab[x[1]:x[2],2])}
+  # x = c(3,3) # two values
+  fUI.Sp = function (x) {
+    sel = logical(drows); sel[x[1]:x[2]] = TRUE
+    selSp = !getselTP(x) & sel
+    sum(tab[selSp, 1]) / sum(tab[x[1]:x[2], 1])
+  }
+  fUI.Se = function (x){
+    selSe = getselTP(x);
+    sum(tab[selSe,2])/sum(tab[x[1]:x[2],2])
+  }
   fUI.Acc = function(x) {
-    (ifelse(x[1] < wr, sum(tab[x[1]:(wr-1),1]), 0)+sum(tab[wr:x[2],2]))/
-      sum(tab[(x[1]:x[2]),1]+tab[(x[1]:x[2]),2]) }
+    sel = logical(drows); sel[x[1]:x[2]] = TRUE
+    selTP = getselTP(x)
+    (sum(tab[!selTP & sel,1])+sum(tab[selTP,2]))/
+      sum(tab[(x[1]:x[2]),c(1,2)])
+    }
   fUI.ratio = function (x){(sum(tab[x[1]:x[2],2])/totpos)/(sum(tab[x[1]:x[2],1])/totneg)}
   # fUI.C = function (x){sel = test>=d$test[x[1]] & test<=d$test[x[2]] # cbind(test,sel)
   #                         emp.AUC(test[sel & ref==0], test[sel & ref==1])} # ref=ref[sel]; test=test[sel]
-  fUI.C2 = function (x){sel = test>=d$test[x[1]] & test<=d$test[x[2]] # cbind(test,sel)
-      AUC(test[sel & ref==0], test[sel & ref==1])} # ref=ref[sel]; test=test[sel]
+  fUI.C2 = function (x){x2 = sort(c(d$test[x[1]], d$test[x[2]]))
+      sel = (test>=x2[1] & test<=x2[2]) # cbind(test,sel)
+      simple_auc(test[sel & ref==0], test[sel & ref==1])} # ref=ref[sel]; test=test[sel]
   f.UI.n = function(x){ sum(d$tot[x[1]:x[2]]) }
-  ui$UI.Sp = apply(ui, 1, fUI.Sp) # x = unlist(ui[1,])
-  ui$UI.Se = apply(ui, 1, fUI.Se)
-  ui$UI.Acc = apply(ui[,1:2], 1, fUI.Acc)
-  ui$UI.ratio = apply(ui[,1:2], 1, fUI.ratio) # x=c(3,3); fUI.ratio(x)
-  # ui$UI.C2 = apply(ui[,1:2], 1, fUI.C)
-  ui$UI.C = apply(ui[,1:2], 1, fUI.C2)
-  ui$UI.n = apply(ui[,1:2], 1, f.UI.n)
+
+  ui$UI.Sp = apply(ui.grid, 1, fUI.Sp) # x = unlist(ui[1,]); fUI.Sp(x)
+  ui$UI.Se = apply(ui.grid, 1, fUI.Se)
+  ui$UI.Acc = apply(ui.grid, 1, fUI.Acc)
+  ui$UI.ratio = apply(ui.grid, 1, fUI.ratio) # x=c(3,3); fUI.ratio(x)
+  # ui$UI.C2 = apply(ui.grid, 1, fUI.C)
+  ui$UI.C = apply(ui.grid, 1, fUI.C2) # x = unlist(ui.grid[2,])
+  ui$UI.n = apply(ui.grid, 1, f.UI.n)
 
   f.Sp = function(x) {
-    sum(d$d0[-(x[1]:dl)])/sum(d$d0[-(x[1]:x[2])]) }
+    if (controlshigher) r=-(1:x[2]) else r = -(x[1]:drows)
+    sum(d$d0[r])/sum(d$d0[-(x[1]:x[2])]) }
   f.Se = function(x) {
-    sum(d$d1[-(1:x[2])])/sum(d$d1[-(x[1]:x[2])]) }
+    if (controlshigher) r = -(x[1]:drows) else r = -(1:x[2])
+    sum(d$d1[r])/sum(d$d1[-(x[1]:x[2])]) }
   f.Acc = function(x) {
-    (sum(d$d0[-(x[1]:dl)])+sum(d$d1[-(1:x[2])]))/
-      sum(d$d0[-(x[1]:x[2])]+d$d1[-(x[1]:x[2])]) }
+    tot = sum(d$d0[-(x[1]:x[2])]+d$d1[-(x[1]:x[2])])
+    if (controlshigher){
+      (sum(d$d0[-(1:x[2])])+sum(d$d1[-(x[1]:drows)]))/tot
+    } else {
+      (sum(d$d0[-(x[1]:drows)])+sum(d$d1[-(1:x[2])]))/tot
+    }
+  }
   # f.C = function (x){sel = test>=d$test[x[1]] & test<=d$test[x[2]] # cbind(test,sel)
   #    emp.AUC(test[!sel & ref==0], test[!sel & ref==1])} # ref=ref[sel]; test=test[sel]
-  f.C2 = function (x){sel = test>=d$test[x[1]] & test<=d$test[x[2]] # cbind(test,sel)
-    AUC(test[!sel & ref==0], test[!sel & ref==1])} # ref=ref[sel]; test=test[sel]
+  f.C2 = function (x){
+    x2 = sort(c(d$test[x[1]], d$test[x[2]]))
+    sel = test>= x2[1] & test<=x2[2] # cbind(test,sel)
+    simple_auc(test[!sel & ref==0], test[!sel & ref==1])
+    } # ref=ref[sel]; test=test[sel]
 
   f.Loss = function(x) {
-    weights[1]*sum(t[-(x[1]:lr), '1']) + # FNR
-      weights[2]*sum(abs(t[x[1]:x[2], '0'] - t[x[1]:x[2], '1'])) + # errors for the uncertain interval
-        weights[3]*sum(t[-(1:x[2]), '0'])  # FPR
+    if (controlshigher) {
+      weights[1]*sum(pt[-(x[1]:lr), 1]) + # FPR
+        weights[2]*sum(abs(pt[x[1]:x[2], 2] - pt[x[1]:x[2], 1])) + # errors for the uncertain interval
+        weights[3]*sum(pt[-(1:x[2]), 2])  # FNR
+    } else {
+      weights[1]*sum(pt[-(x[1]:lr), 2]) + # FNR
+        weights[2]*sum(abs(pt[x[1]:x[2], 1] - pt[x[1]:x[2], 2])) + # errors for the uncertain interval
+          weights[3]*sum(pt[-(1:x[2]), 1])  # FPR
+    }
   }
   f.MCI.n = function(x){ sum(d$tot[-(x[1]:x[2])]) } # x=c(4,4); f.Loss(x)
 
-  ui$MCI.Sp = apply(ui, 1, f.Sp)
-  ui$MCI.Se = apply(ui, 1, f.Se)
-  ui$MCI.Acc = apply(ui[,1:2], 1, f.Acc)
-  # ui$MCI.C = apply(ui[,1:2], 1, f.C)
-  ui$MCI.C = apply(ui[,1:2], 1, f.C2)
-  ui$MCI.n = apply(ui[,1:2], 1, f.MCI.n)
-  ui$Loss = apply(ui[,1:2], 1, f.Loss)
+  ui$MCI.Sp = apply(ui.grid, 1, f.Sp)
+  ui$MCI.Se = apply(ui.grid, 1, f.Se) # x=c(1,3); f.Se(x)
+  ui$MCI.Acc = apply(ui.grid, 1, f.Acc)
+  # ui$MCI.C = apply(ui.grid, 1, f.C)
+  ui$MCI.C = apply(ui.grid, 1, f.C2)
+  ui$MCI.n = apply(ui.grid, 1, f.MCI.n)
+  ui$Loss = apply(ui.grid, 1, f.Loss)
 
   # ui$Random.loss= Acc.Y - ((round(ui$MCI.Acc*ui$MCI.n)+
   #                                p1*ui$UI.n)/ (totpos+totneg))
@@ -465,6 +493,14 @@ ui.ordinal <- function(ref, test,
   C.lim = ui$UI.C[find.closest(ui$UI.C, constraints['C'])][1]
   Acc.lim = ui$UI.Acc[find.closest(ui$UI.Acc, constraints['Acc'])][1]
 
+  # if (controlshigher){
+  #   d$test = -d$test
+  #   isr = -isr
+  #   ui[,'lowerbound']= -ui[,'lowerbound']
+  #   ui[,'upperbound']= -ui[,'upperbound']
+  #   colnames(ui)[1:2] = c('upperbound', 'lowerbound')
+  # }
+
   sel = ui$UI.C <= C.lim &  ui$UI.Acc <= Acc.lim
   ui2 = ui[sel,]
 
@@ -474,9 +510,9 @@ ui.ordinal <- function(ref, test,
   if (sum(sel) >= 1) {ui2 = ui2[sel,]} else warning('No solution found for the ui ratio constraints. \n')
   # select at least one
 
-  if ('All' %in% select.max)
+  if ('All' %in% select.max){
     ui3 = ui2[order(ui2$Loss),]
-  else {
+  } else {
     if ('MCI.Sp+MCI.Se' %in% select.max){
       sel = ui$Loss <= Loss.Y
       if (sum(sel) == 0) warning('No solution found with less loss than Youden threshold. \n')
@@ -496,23 +532,25 @@ ui.ordinal <- function(ref, test,
     }
   }
 
-  # ui2 ; ui3
-
   if (return.all) { return(
-    list(Youden=c(max.Youden=d$Y[Yt], # max Youden index
+    list(#direction=direction,
+      Youden=c(max.Youden=d$Y[Yt], # max Youden index
     threshold=d$test[Yt], # cut-point test values
     Sp=1-d$fpr[Yt], Se=d$tpr[Yt],Acc=Acc.Y, Loss=Loss.Y, C = Conc),
     data.table = d,
     intersection=isr,
     uncertain.interval=ui,
     candidates=ui3) )
-  } else   return(
-    list(Youden=c(max.Youden=d$Y[Yt], # max Youden index
+  } else  { return(
+    list(#direction=direction,
+      Youden=c(max.Youden=d$Y[Yt], # max Youden index
                   threshold=d$test[Yt], # cut-point test values
                   sp=1-d$fpr[Yt], se=d$tpr[Yt],acc=Acc.Y, loss=Loss.Y, C = Conc),
          intersection=isr,
          candidates=ui3)
   )
+  }
+
 }
 
 

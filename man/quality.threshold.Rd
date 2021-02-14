@@ -9,7 +9,8 @@ quality.threshold(
   test,
   threshold,
   threshold.upper = NULL,
-  model = c("kernel", "binormal", "ordinal")
+  model = c("kernel", "binormal", "ordinal"),
+  direction = c("auto", "<", ">")
 )
 }
 \arguments{
@@ -29,10 +30,16 @@ trichotomization method. When NULL, the test scores are dichotomized and
 only threshold is used for the dichotomization.}
 
 \item{model}{The model to use. Default = 'kernel' for continuous data. For
-discrete data 'ordinal' is the better choice.}
+discrete data 'ordinal' can be the better choice.}
+
+\item{direction}{Default = 'auto'. Direction when comparing controls with
+cases. Commonly, the controls have lower values than the cases (direction =
+'<'). When 'auto', mean comparison is used to determine the direction.}
 }
 \value{
-{ A list of} \describe{ 
+{ A list of} \describe{
+\item{$direction}{Shows whether controls (0) are expected to have higher or
+lower scores than patients (1).}
 \item{$table}{The confusion table of {class x ref}, where class is the
 classification based on the test, when applying the threshold(s). The
 reference standard (ref) has categories 0 and 1, while the classification
@@ -43,14 +50,14 @@ trichotomization. In the case of the Uncertain Interval trichotomization
 method, the row 'Uncertain / NC' shows the count of test scores within the
 Uncertain Interval. When applying the trichotomization method TG-ROC, the row
 'Uncertain / NC' shows the count of the test scores within the Intermediate
-Range. Table cell {0, 0} shows the True Negatives (TN), cell {0, 1} shows the
-False Negatives (FN), cell {1, 0} shows the False Positives (FP), and cell
-{1, 1} shows the True Positives (TP).}
+Range. Table cell (0, 0) shows the True Negatives (TN), cell (0, 1) shows the
+False Negatives (FN), cell (1, 0) shows the False Positives (FP), and cell
+(1, 1) shows the True Positives (TP).}
 \item{$cut}{The values of the threshold(s).}
 \item{$indices}{A named vector, with prefix MCI when only the test scores in
 the more certain intervals are considered. The following statistics are
 calculated for the test-scores with classifications 0 or 1:
-\itemize{ 
+\itemize{
 \item{Proportion.True: }{Proportion of true patients of all patients who
 receive an positive or negative classification: (TP+FN)/(TN+FP+FN+TP). Equal
 to the sample prevalence in the case of dichotomization when all patients
@@ -60,15 +67,15 @@ receive a positive or negative classification.}
 \item{Sp: } {specificity of the positive and negative classifications: TN/(TN+FN).}
 \item{Se: } {sensitivity of the positive and negative classifications: TP/(TP+FN).}
 \item{NPV: }{Negative Predictive Value of the negative class: TN/(TN+FN).}
-\item{PPV: }{Positive Predictive Value of the positive class: TP/(TN+FN).} 
+\item{PPV: }{Positive Predictive Value of the positive class: TP/(TN+FN).}
 \item{SNPV: }{standardized negative predictive value of the negative class.}
-\item{SPPV: }{standardized positive predictive value of the positive class.} 
+\item{SPPV: }{standardized positive predictive value of the positive class.}
 \item{LR-: }{Negative Likelihood Ratio P(-|D+))/(P(-|D-)) The probability of a person with the
 condition receiving a negative classification / probability of a person without the
-condition receiving a negative classification.} 
+condition receiving a negative classification.}
 \item{LR+: }{Positive Likelihood Ratio (P(+|D+))/(P(+|D-)) The probability of a person with the
 condition receiving a positive classification / probability of a person without the
-condition receiving a positive classification.} 
+condition receiving a positive classification.}
 \item{C: }{Concordance, C-Statistic or AUC. The probability that a
 random chosen patient with the condition is correctly ranked higher than a
 randomly chosen patient without the condition. Equal to AUC, with for the
@@ -77,53 +84,54 @@ more certain interval a higher outcome than the overall concordance.}
 }
 \description{
 This function can be used for both dichotomization methods (single
-  threshold or cut-point)  and for trichotomization methods (two thresholds or
-  cut-points). In the case of the Uncertain Interval trichotomization
-  method, it provides descriptive statistics for the test scores outside the
-  Uncertain Interval. For the TG-ROC trichotomization method it provides the
-  descriptive statistics for TG-ROC's Valid Ranges.
+threshold or cut-point) and for trichotomization methods (two thresholds or
+cut-points). In the case of the Uncertain Interval trichotomization
+method, it provides descriptive statistics for the test scores outside the
+Uncertain Interval. For the TG-ROC trichotomization method it provides the
+descriptive statistics for TG-ROC's Valid Ranges.
 }
 \details{
 The Uncertain Interval is generally defined as an interval around
-  the intersection, where the densities of the two distributions of patients
-  with and without the targeted impairment are about equal. The various
-  ui-functions for the estimation of the uncertain interval use a sensitivity
-  and specificity below a desired value (default .55). Please refer to the
-  specific function descriptions how the middle section is defined.
+the intersection, where the densities of the two distributions of patients
+with and without the targeted impairment are about equal. The various
+ui-functions for the estimation of the uncertain interval use a sensitivity
+and specificity below a desired value (default .55). Please refer to the
+specific function descriptions how the middle section is defined.
 
-  The uncertain area is defined as the scores >= threshold and <=
-  threshold.upper. When a single threshold is supplied and no uncertain area
-  is defined, positive classifications (1) are considered for test scores >=
-  threshold. 
-  
-  Please note that the indices are calculated for those who
-  receive a decision for or against the targeted disease: the test data in
-  the uncertain interval are ignored. When the lower test scores indicate the
-  targeted condition, please use the negated test values (-test).
+The uncertain area is defined as the scores >= threshold and <=
+threshold.upper. When a single threshold is supplied and no uncertain area
+is defined, positive classifications (1) are considered for test scores >=
+threshold when the test direction is '<' (controls have smaller values than
+cases).
 
-  The unstandardized predictive values (negative and positive; NPV and PPV)
-  present the comparison of the observed frequencies of the two observed
-  samples, for respectively the negative (0) and positive class (1). 
+Please note that the indices are calculated for those who
+receive a decision for or against the targeted disease: the test data in
+the uncertain interval are ignored. When higher test scores indicate the
+presence of the targeted condition, please use the direction '>' (or 'auto').
 
-  The standardized predictive values (SNPV and SPPV) present the comparison
-  of the densities (or relative frequencies) of the two distributions, for
-  the evaluated range of test scores. These predictive values are called
-  standardized, because the two samples are compared as two independently
-  drawn samples, not considering prevalence. It offers the estimated
-  probability that the person (given the classification) comes from the
-  population with (1) or from the population without (0) the target disease.
+The non-standardized predictive values (negative and positive; NPV and PPV)
+present the comparison of the observed frequencies of the two observed
+samples, for respectively the negative (0) and positive class (1).
 
-  SNPV and SPPV provide the estimated relative probabilities that a patient
-  is selected from the population of patients without the targeted condition
-  or from the population of patients with the targeted condition, given that
-  the patients test score is in the evaluated range of test scores. Of
-  course, these estimates are better when the sample sizes are larger. 
-  
-  N.B. 1 When negative and predictive values would be calculated for the same
-  range of test scores, NPV = 1 - PPV, SNPV = 1 - SPPV and PPV = 1- NPV, SPPV
-  = 1 - SNPV.   
-  N.B. 2 SNPV and SPPV are as independent of the prevalence as specificity 
-  and sensitivity, as well as negative and positive probability ratios.
+The standardized predictive values (SNPV and SPPV) present the comparison
+of the densities (or relative frequencies) of the two distributions, for
+the evaluated range of test scores. These predictive values are called
+standardized, because the two samples are compared as two independently
+drawn samples, not considering prevalence. It offers the estimated
+probability that the person (given the classification) comes from the
+population with (1) or from the population without (0) the target disease.
+
+SNPV and SPPV provide the estimated relative probabilities that a patient
+is selected from the population of patients without the targeted condition
+or from the population of patients with the targeted condition, given that
+the patients test score is in the evaluated range of test scores. Of
+course, these estimates are better when the sample sizes are larger.
+
+N.B. 1 When negative and predictive values would be calculated for the same
+range of test scores, NPV = 1 - PPV, SNPV = 1 - SPPV and PPV = 1- NPV, SPPV
+= 1 - SNPV.
+N.B. 2 SNPV and SPPV are as independent of the prevalence as specificity
+and sensitivity, as well as negative and positive probability ratios.
 }
 \examples{
 # A simple test
@@ -135,6 +143,6 @@ quality.threshold(ref, test, threshold=ua[1], threshold.upper=ua[2])
 quality.threshold(ref, test, threshold=ua[1])
 }
 \seealso{
-\code{\link{UncertainInterval}} for an explanatory glossary of the 
+\code{\link{UncertainInterval}} for an explanatory glossary of the
 different statistics used within this package.
 }

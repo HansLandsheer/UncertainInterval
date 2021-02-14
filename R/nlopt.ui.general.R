@@ -1,12 +1,10 @@
 #' Function for the determination of the population thresholds an uncertain and
 #' inconclusive interval for test scores with a known common distribution.
 #'
-#' @param UI.Se (default = .55). Desired sensitivity of the test scores within the
-#'   uncertain interval. A value <= .5 is not allowed, while a value larger than
-#'   .6 is not recommended.
-#' @param UI.Sp (default = .55). Desired specificity of the test scores within the
-#'   uncertain interval. A value <= .5 is not allowed, while a value larger than
-#'   .6 is not recommended.
+#' @param UI.Se (default = .55). Desired sensitivity of the test scores within
+#'   the uncertain interval. A value <= .5 is not allowed.
+#' @param UI.Sp (default = .55). Desired specificity of the test scores within
+#'   the uncertain interval. A value <= .5 is not allowed.
 #' @param distribution Name of the continuous distribution, exact as used in R
 #'   package stats. Equal to density function minus d. For instance when the
 #'   density function is 'dnorm', then the distribution is 'norm'.
@@ -41,6 +39,15 @@
 #'   interval below and above the intersection of the two distributions, with a
 #'   sensitivity and specificity below a desired value (default .55).
 #'
+#'   Important: The test scores of d1 should have higher values than d0. If not,
+#'   use -(test scores). The distribution with parameters d1 should have the
+#'   higher test scores.
+#'
+#'   Important: This is a highly complex function, which is less user friendly
+#'   and more error prone than other functions. It is included to show that the
+#'   technique also works with continuous distributions other than bi-normal.
+#'   Use for bi-normal distributions always ui.binormal.
+#'
 #'   Only a single intersection is assumed (or a second intersection where the
 #'   overlap is negligible).
 #'
@@ -49,39 +56,28 @@
 #'   (https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/).
 #'
 #'   It uses the sequential quadratic programming (SQP) algorithm for
-#'   nonlinearly constrained gradient-based optimization (supporting both
+#'   nonlinear constrained gradient-based optimization (supporting both
 #'   inequality and equality constraints), based on the implementation by Dieter
 #'   Kraft (1988; 1944).
 #'
 #'   N.B. When a normal distribution is expected, the functions
 #'   \code{\link{nlopt.ui}} and \code{\link{ui.binormal}} are recommended.
 #'
-#' @return List of values:
-#' \describe{
-#' \item{$status: }{Integer value with the
-#'   status of the optimization (0 is success).}
-#'     \item{$message: }{More
-#'      informative message with the status of the optimization}
-#'      \item{$results: }{Vector with the following values:}
-#'      \itemize{
-#'          \item{exp.UI.Sp: }{The
+#' @return List of values: \describe{ \item{$status: }{Integer value with the
+#'   status of the optimization (0 is success).} \item{$message: }{More
+#'   informative message with the status of the optimization} \item{$results:
+#'   }{Vector with the following values:} \itemize{ \item{exp.UI.Sp: }{The
 #'   population value of the specificity in the Uncertain Interval, given mu0,
 #'   sd0, mu1 and sd1. This value should be very near the supplied value of Sp.}
-#'           \item{exp.UI.Se: }{The population value of the sensitivity in the Uncertain
+#'   \item{exp.UI.Se: }{The population value of the sensitivity in the Uncertain
 #'   Interval, given mu0, sd0, mu1 and sd1. This value should be very near the
-#'   supplied value of UI.Se.}
-#'           \item{vector of parameter values of distribution d0,
-#'   that is, the values that have been supplied in \code{parameters.d0}.}
-#'           \item{vector of parameter values of distribution d1, that is, the values
-#'   that have been supplied in \code{parameters.d1}.}}
-#'    \item{$solution:
-#'   }{Vector with the following values:}
-#'      \itemize{
-#'         \item{L: }{The population
-#'   value of the lower threshold of the uncertain interval.}
-#'         \item{U: }{The
-#'   population value of the upper threshold of the uncertain interval.} }
-#'   }
+#'   supplied value of UI.Se.} \item{vector of parameter values of distribution
+#'   d0, that is, the values that have been supplied in \code{parameters.d0}.}
+#'   \item{vector of parameter values of distribution d1, that is, the values
+#'   that have been supplied in \code{parameters.d1}.}} \item{$solution:
+#'   }{Vector with the following values:} \itemize{ \item{L: }{The population
+#'   value of the lower threshold of the uncertain interval.} \item{U: }{The
+#'   population value of the upper threshold of the uncertain interval.} } }
 #' @references Dieter Kraft, "A software package for sequential quadratic
 #'   programming", Technical Report DFVLR-FB 88-28, Institut für Dynamik der
 #'   Flugsysteme, Oberpfaffenhofen, July 1988.
@@ -95,12 +91,11 @@
 #'   Decision-Making and Screening. Diagnostics, 8(2), 32.
 #'   https://doi.org/10.3390/diagnostics8020032
 #' @export
-#' @importFrom rootSolve uniroot.all
 #' @importFrom nloptr nloptr
-#' @import stats
-#' @import MASS
-#' @import car 
-#' 
+#' @importFrom MASS fitdistr
+#' @importFrom car qqPlot
+#' @importFrom stats uniroot
+#'
 #'
 #' @examples
 #' # A simple test model:
@@ -112,27 +107,21 @@
 #' # Standard procedure when using a continuous distribution:
 #' nlopt.ui.general(parameters.d0 = c(mean = 0, sd = 1),
 #'                  parameters.d1 = c(mean = 1.6, sd = 2))
-#' # Function to calculate the Area under the Receiving Operating Characteristics
-#' # Curve (AUC or C-statistic)
-#' emp.AUC <- function(norm, abnorm) {
-#'   o = outer(abnorm, norm, "-")
-#'   mean((o > 0) + .5 * (o == 0))
-#' }
 #'
-#' library(MASS)
-#' library(car)
+#' # library(MASS)
+#' # library(car)
 #' # gamma distributed data
 #' set.seed(4)
 #' d0 = rgamma(100, shape=2, rate=.5)
 #' d1 = rgamma(100, shape=7.5, rate=1)
 
 #' # 1. obtain parameters
-#' parameters.d0=fitdistr(d0, 'gamma')$estimate
-#' parameters.d1=fitdistr(d1, 'gamma')$estimate
+#' parameters.d0=MASS::fitdistr(d0, 'gamma')$estimate
+#' parameters.d1=MASS::fitdistr(d1, 'gamma')$estimate
 
 #' # 2. test if supposed distributions (gamma) is fitting
-#' qqPlot(d0, distribution='gamma', shape=parameters.d0['shape'])
-#' qqPlot(d1, distribution='gamma', shape=parameters.d1['shape'])
+#' car::qqPlot(d0, distribution='gamma', shape=parameters.d0['shape'])
+#' car::qqPlot(d1, distribution='gamma', shape=parameters.d1['shape'])
 
 #' # 3. draw curves and determine overlap
 #' curve(dgamma(x, shape=parameters.d0['shape'], rate=parameters.d0['rate']), from=0, to=16)
@@ -140,7 +129,7 @@
 #' overlap.interval=c(1, 15) # ignore intersection at 0; observe large overlap
 
 #' # 4. get empirical AUC
-#' emp.AUC(d0, d1)
+#' simple_auc(d0, d1)
 #' # about .65 --> Poor
 #' # .90-1 = excellent (A)
 #' # .80-.90 = good (B)
@@ -165,9 +154,9 @@
 #' sel.d1 = d1 < res$solution[1] |  d1 > res$solution[2]
 #' (percentage.selected.d0 = sum(sel.d0) / length(d0))
 #' (percentage.selected.d1 = sum(sel.d1) / length(d1))
-#' emp.AUC(d0[sel.d0], d1[sel.d1])
+#' simple_auc(d0[sel.d0], d1[sel.d1])
 #' # AUC for selected scores outside the uncertain interval
-#' emp.AUC(d0[!sel.d0], d1[!sel.d1])
+#' simple_auc(d0[!sel.d0], d1[!sel.d1])
 #' # AUC for deselected scores; worst are deselected
 
 
@@ -177,12 +166,12 @@
 #' d1 = rweibull(100, shape=3, scale=70)
 
 #' # 1. obtain parameters
-#' parameters.d0=fitdistr(d0, 'weibull')$estimate
-#' parameters.d1=fitdistr(d1, 'weibull')$estimate
+#' parameters.d0=MASS::fitdistr(d0, 'weibull')$estimate
+#' parameters.d1=MASS::fitdistr(d1, 'weibull')$estimate
 
 #' # 2. test if supposed distributions (gamma) is fitting
-#' qqPlot(d0, distribution='weibull', shape=parameters.d0['shape'])
-#' qqPlot(d1, distribution='weibull', shape=parameters.d1['shape'])
+#' car::qqPlot(d0, distribution='weibull', shape=parameters.d0['shape'])
+#' car::qqPlot(d1, distribution='weibull', shape=parameters.d1['shape'])
 
 #' # 3. draw curves and determine overlap
 #' curve(dweibull(x, shape=parameters.d0['shape'],
@@ -192,7 +181,7 @@
 #' overlap.interval=c(1, 100) # ignore intersection at 0; observe overlap
 
 #' # 4. get empirical AUC
-#' emp.AUC(d0, d1)
+#' simple_auc(d0, d1)
 #' # about .65 --> Poor
 #' # .90-1 = excellent (A)
 #' # .80-.90 = good (B)
@@ -217,9 +206,9 @@
 #' sel.d1 = d1 < res$solution[1] |  d1 > res$solution[2]
 #' (percentage.selected.d0 = sum(sel.d0) / length(d0))
 #' (percentage.selected.d1 = sum(sel.d1) / length(d1))
-#' emp.AUC(d0[sel.d0], d1[sel.d1])
+#' simple_auc(d0[sel.d0], d1[sel.d1])
 #' # AUC for selected scores outside the uncertain interval
-#' emp.AUC(d0[!sel.d0], d1[!sel.d1])
+#' simple_auc(d0[!sel.d0], d1[!sel.d1])
 #' # AUC for deselected scores; these scores are almost indistinguishable
 
 # UI.Se = .55; UI.Sp = .55; distribution = 'norm'; parameters.d0 = c(mean = 0, sd = 1);
@@ -235,6 +224,23 @@ nlopt.ui.general <- function(UI.Se = .55,
                      start = NULL,
                      print.level = 0) {
 
+  uniroot.all.copy <- function (f, interval, lower = min(interval), upper = max(interval), 
+            tol = .Machine$double.eps^0.2, maxiter = 1000, n = 100, ...) 
+  {
+    if (!missing(interval) && length(interval) != 2) 
+      stop("'interval' must be a vector of length 2")
+    if (!is.numeric(lower) || !is.numeric(upper) || lower >= 
+        upper) 
+      stop("lower < upper  is not fulfilled")
+    xseq <- seq(lower, upper, len = n + 1)
+    mod <- f(xseq, ...)
+    Equi <- xseq[which(mod == 0)]
+    ss <- mod[1:n] * mod[2:(n + 1)]
+    ii <- which(ss < 0)
+    for (i in ii) Equi <- c(Equi, uniroot(f, lower = xseq[i], 
+                                          upper = xseq[i + 1], ...)$root)
+    return(Equi)
+  }
   if (UI.Se <= .5) stop('Value <= .5 invalid for UI.Se')
   if (UI.Sp <= .5) stop('Value <= .5 invalid for UI.Sp')
   # if (UI.Se > .6) warning('Value > .6 not recommended for UI.Se')
@@ -316,7 +322,7 @@ nlopt.ui.general <- function(UI.Se = .55,
     f <- function(x) d0(x)-d1(x)
 
     # library(rootSolve) # overlap.interval=c(-2, 2)
-    I = uniroot.all(f, interval = overlap.interval)
+    I = uniroot.all.copy(f, interval = overlap.interval)
     if (length(I) > 1) {
       d = d0(I)
       I = I[which.max(d)]

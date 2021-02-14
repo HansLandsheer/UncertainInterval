@@ -46,20 +46,20 @@ function; 2)    1 + show value of (in)equalities; 3)    2 + show value of contro
 }
 \value{
 List of values: \describe{ \item{$status: }{Integer value with the
-  status of the optimization (0 is success).} \item{$message: }{More
-  informative message with the status of the optimization} \item{$results:
-  }{Vector with the following values:} \itemize{ \item{exp.UI.Sp: }{The
-  population value of the specificity in the Uncertain Interval, given mu0,
-  sd0, mu1 and sd1. This value should be very near the supplied value of Sp.}
-  \item{exp.UI.Se: }{The population value of the sensitivity in the Uncertain
-  Interval, given mu0, sd0, mu1 and sd1. This value should be very near the
-  supplied value of UI.Se.} \item{mu0: }{The value that has been supplied for
-  mu0.} \item{sd0: }{The value that has been supplied for sd0.} \item{mu1:
-  }{The value that has been supplied for mu1.} \item{sd1: }{The value that
-  has been supplied for sd1.} } \item{$solution: }{Vector with the following
-  values:} \itemize{ \item{L: }{The population value of the lower threshold
-  of the Uncertain Interval.} \item{U: }{The population value of the upper
-  threshold of the Uncertain Interval.} } }
+status of the optimization (0 is success).} \item{$message: }{More
+informative message with the status of the optimization} \item{$results:
+}{Vector with the following values:} \itemize{ \item{exp.UI.Sp: }{The
+population value of the specificity in the Uncertain Interval, given mu0,
+sd0, mu1 and sd1. This value should be very near the supplied value of Sp.}
+\item{exp.UI.Se: }{The population value of the sensitivity in the Uncertain
+Interval, given mu0, sd0, mu1 and sd1. This value should be very near the
+supplied value of UI.Se.} \item{mu0: }{The value that has been supplied for
+mu0.} \item{sd0: }{The value that has been supplied for sd0.} \item{mu1:
+}{The value that has been supplied for mu1.} \item{sd1: }{The value that
+has been supplied for sd1.} } \item{$solution: }{Vector with the following
+values:} \itemize{ \item{L: }{The population value of the lower threshold
+of the Uncertain Interval.} \item{U: }{The population value of the upper
+threshold of the Uncertain Interval.} } }
 }
 \description{
 Function for the determination of the thresholds of an uncertain interval for
@@ -93,23 +93,28 @@ constraints), based on the implementation by Dieter Kraft (1988; 1944).
 }
 }
 \examples{
-# A simple test model
+test=c(rnorm(500,0,1), rnorm(500,1.6,1))
 ref=c(rep(0,500), rep(1,500))
-test=c(rnorm(500,0,1), rnorm(500,1,1))
+plotMD(ref, test, model='binormal')
 ui.binormal(ref, test)
+# test scores controls > patients works correctly from version 0.7 or higher
+ui.binormal(ref, -test) 
+ref=c(rep(1,500), rep(0,500))
+plotMD(ref, test, model='binormal')
+ui.binormal(ref, test) 
 
 }
 \references{
 Dieter Kraft, "A software package for sequential quadratic
-  programming", Technical Report DFVLR-FB 88-28, Institut für Dynamik der
-  Flugsysteme, Oberpfaffenhofen, July 1988.
+programming", Technical Report DFVLR-FB 88-28, Institut für Dynamik der
+Flugsysteme, Oberpfaffenhofen, July 1988.
 
-  Dieter Kraft, "Algorithm 733: TOMP–Fortran modules for optimal control
-  calculations," ACM Transactions on Mathematical Software, vol. 20, no. 3,
-  pp. 262-281 (1994).
+Dieter Kraft, "Algorithm 733: TOMP–Fortran modules for optimal control
+calculations," ACM Transactions on Mathematical Software, vol. 20, no. 3,
+pp. 262-281 (1994).
 
-  Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
-  Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
-  Decision-Making and Screening. Diagnostics, 8(2), 32.
-  https://doi.org/10.3390/diagnostics8020032
+Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
+Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
+Decision-Making and Screening. Diagnostics, 8(2), 32.
+https://doi.org/10.3390/diagnostics8020032
 }

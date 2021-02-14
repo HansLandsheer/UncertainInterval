@@ -14,6 +14,16 @@
 #'   This range is typically found around the optimal cut-point, that is the
 #'   point of intersection or Youden index (Schisterman et al., 2005).
 #'
+#'   From version 0.7 onward, tests with lower values that indicate the presence
+#'   of the targeted condition can be analyzed without having to take negative
+#'   values for the test. Version 0.7 also corrects four bugs (see
+#'   \href{https://github.com/HansLandsheer/UncertainInterval/issues}{Github
+#'   UncertainInterval Issues}). Lastly, version 0.7 introduces four ShinyApps
+#'   that allow for hands-on simulation of the methods ui.binormal, TG.ROC,
+#'   grey-zone and ROC. These examples are documented within the ShinyApp's and
+#'   show how they work with a large variety of different tests of varying
+#'   qualities.
+#'
 #'   \describe{ \item{Criteria}{Most functions in this package use a specified
 #'   low value for the sensitivity and specificity of the test scores within the
 #'   uncertain interval to find this uncertain interval (default UI.Se = UI.Sp =
@@ -30,44 +40,37 @@
 #'   \item{Glossary}{ In general, the prefix MCI is used when a statistic is
 #'   calculated for the test scores that are used for a positive or negative
 #'   classification. The prefix UI is used when the statistic is applied to the
-#'   test scores in the uncertain interval.   
-#'   \itemize{ \item{Se and Sp}{Se and Sp are statistics
-#'   that are developed for a single dichotomous cut-point.} 
-#'   \item{MCI.Se and
-#'   MCI.Sp}{ Sensitivity and specificity calculated for the More
-#'   Certain Intervals (MCIs) outside the Uncertain Interval (UI), that is,
-#'   omitting the test scores in the UI. The meaning of Se and Sp changes from sensitivity
-#'   and specificity of the test (or all test scores) to sensitivy and specificity of the test scores
-#'   used for classification.} 
-#'   \item{UI.Se and
-#'   UI.Sp}{Sensitivity and specificity for the test scores inside the uncertain
-#'   interval. Please note that the uncertain interval always falls around the
-#'   point of intersection (optimal threshold or Youden threshold) and that for
-#'   the calculation of UI.Se and UI.Sp the point of intersection is used as
-#'   threshold within the uncertain interval.} 
-#'   \item{NPV and PPV}{Predictive values for respectively the negative and the
-#'   positive class. Can be used with both dichotomous and trichotomous sections
-#'   of the test scores. The prefix MCI is sometimes used, but is superfluous.}
-#'   \item{PV.class}{Predictive value for
-#'   class when the meaning of class is selfexplanatory.}
-#'   \item{NPV.class and PPV.class} {Negative and Positive Predictive value when the scores in class
-#'   are used for a negative, respectively positive classification. When
-#'   predictive values are calculated for the same class, NPV.class = 1 -
-#'   PPV.class. }
-#'   \item{NPV.ui and PPV.ui} {Negative and Positive Predictive value when all test
-#'   scores in the uncertain interval would be used for a negative, respectively
-#'   positive classification. These values can be expected to be close to .5.
-#'   When predictive values are calculated for the same class, NPV.ui = 1 -
-#'   PPV.ui.} 
+#'   test scores in the uncertain interval. \itemize{ \item{Se and Sp}{Se and Sp
+#'   are statistics that are developed for a single dichotomous cut-point.}
+#'   \item{MCI.Se and MCI.Sp}{ Sensitivity and specificity calculated for the
+#'   More Certain Intervals (MCIs) outside the Uncertain Interval (UI), that is,
+#'   omitting the test scores in the UI. The meaning of Se and Sp changes from
+#'   sensitivity and specificity of the test (or all test scores) to sensitivy
+#'   and specificity of the test scores used for classification.} \item{UI.Se
+#'   and UI.Sp}{Sensitivity and specificity for the test scores inside the
+#'   uncertain interval. Please note that the uncertain interval always falls
+#'   around the point of intersection (optimal threshold or Youden threshold)
+#'   and that for the calculation of UI.Se and UI.Sp the point of intersection
+#'   is used as threshold within the uncertain interval.} \item{NPV and
+#'   PPV}{Predictive values for respectively the negative and the positive
+#'   class. Can be used with both dichotomous and trichotomous sections of the
+#'   test scores. The prefix MCI is sometimes used, but is superfluous.}
+#'   \item{PV.class}{Predictive value for class when the meaning of class is
+#'   selfexplanatory.} \item{NPV.class and PPV.class} {Negative and Positive
+#'   Predictive value when the scores in class are used for a negative,
+#'   respectively positive classification. When predictive values are calculated
+#'   for the same class, NPV.class = 1 - PPV.class. } \item{NPV.ui and PPV.ui}
+#'   {Negative and Positive Predictive value when all test scores in the
+#'   uncertain interval would be used for a negative, respectively positive
+#'   classification. These values can be expected to be close to .5. When
+#'   predictive values are calculated for the same class, NPV.ui = 1 - PPV.ui.}
 #'   \item{UI.NPV and UI.PPV}{Negative and Positive Predictive value when test
 #'   scores in the uncertain interval respectively above and below the point of
 #'   intersection would be used for a negative, respectively positive
-#'   classification. These values can be expected to be close to .5, but 
-#'   slightly higher than NPV.ui and PPV.ui}
-#'   \item{SNPV, SPPV, SPV.class, SNPV.class, SPPV.class, SNPV.ui, SPPV.ui,
-#'   UI.SNPV and UI.SPPV}{The standardized versions of the predictive values
-#'   mentioned above.}
-#'   } } }
+#'   classification. These values can be expected to be close to .5, but
+#'   slightly higher than NPV.ui and PPV.ui} \item{SNPV, SPPV, SPV.class,
+#'   SNPV.class, SPPV.class, SNPV.ui, SPPV.ui, UI.SNPV and UI.SPPV}{The
+#'   standardized versions of the predictive values mentioned above.} } } }
 #' @references Landsheer, J. A. (2016). Interval of Uncertainty: An Alternative
 #'   Approach for the Determination of Decision Thresholds, with an Illustrative
 #'   Application for the Prediction of Prostate Cancer. PloS One, 11(11),
@@ -94,3 +97,5 @@ NULL
 #> NULL
 ## "_PACKAGE"
 ##> [1] "_PACKAGE"
+## Sys.setenv(R_GSCMD = "C:\\Program Files\\gs\\gs9.52\\bin\\gswin64c.exe")
+## Sys.getenv("R_GSCMD")

@@ -13,12 +13,12 @@ normal; and 1 definitely normal. }
 }
 \details{
 A liver metastasis is a malignant tumor in the liver that has spread
-  from another organ that has been affected by cancer.
+from another organ that has been affected by cancer.
 }
 \references{
 Tosteson AN, & CB Begg (1988). A general regression methodology
-  for ROC curve estimation. Medical Decision Making 8, 204-215
-  \url{https://research.fhcrc.org/diagnostic-biomarkers-center/en/datasets.html}
-   \url{http://journals.sagepub.com/doi/abs/10.1177/0272989X8800800309}
+for ROC curve estimation. Medical Decision Making 8, 204-215
+\url{https://research.fhcrc.org/diagnostic-biomarkers-center/en/datasets.html}
+\url{http://journals.sagepub.com/doi/abs/10.1177/0272989X8800800309}
 }
 \keyword{data}

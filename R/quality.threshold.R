@@ -3,7 +3,7 @@
 #' @name quality.threshold
 #'
 #' @description This function can be used for both dichotomization methods (single
-#'   threshold or cut-point)  and for trichotomization methods (two thresholds or
+#'   threshold or cut-point) and for trichotomization methods (two thresholds or
 #'   cut-points). In the case of the Uncertain Interval trichotomization
 #'   method, it provides descriptive statistics for the test scores outside the
 #'   Uncertain Interval. For the TG-ROC trichotomization method it provides the
@@ -20,9 +20,14 @@
 #'   trichotomization method. When NULL, the test scores are dichotomized and
 #'   only threshold is used for the dichotomization.
 #' @param model The model to use. Default = 'kernel' for continuous data. For
-#'   discrete data 'ordinal' is the better choice.
+#'   discrete data 'ordinal' can be the better choice.
+#' @param direction Default = 'auto'. Direction when comparing controls with
+#'   cases. Commonly, the controls have lower values than the cases (direction =
+#'   '<'). When 'auto', mean comparison is used to determine the direction.
 #'
-#' @return{ A list of} \describe{ 
+#' @return{ A list of} \describe{
+#' \item{$direction}{Shows whether controls (0) are expected to have higher or
+#' lower scores than patients (1).}
 #' \item{$table}{The confusion table of {class x ref}, where class is the
 #' classification based on the test, when applying the threshold(s). The
 #' reference standard (ref) has categories 0 and 1, while the classification
@@ -33,14 +38,14 @@
 #' method, the row 'Uncertain / NC' shows the count of test scores within the
 #' Uncertain Interval. When applying the trichotomization method TG-ROC, the row
 #' 'Uncertain / NC' shows the count of the test scores within the Intermediate
-#' Range. Table cell {0, 0} shows the True Negatives (TN), cell {0, 1} shows the
-#' False Negatives (FN), cell {1, 0} shows the False Positives (FP), and cell
-#' {1, 1} shows the True Positives (TP).}
+#' Range. Table cell (0, 0) shows the True Negatives (TN), cell (0, 1) shows the
+#' False Negatives (FN), cell (1, 0) shows the False Positives (FP), and cell
+#' (1, 1) shows the True Positives (TP).}
 #' \item{$cut}{The values of the threshold(s).}
 #' \item{$indices}{A named vector, with prefix MCI when only the test scores in
 #' the more certain intervals are considered. The following statistics are
 #' calculated for the test-scores with classifications 0 or 1:
-#' \itemize{ 
+#' \itemize{
 #' \item{Proportion.True: }{Proportion of true patients of all patients who
 #' receive an positive or negative classification: (TP+FN)/(TN+FP+FN+TP). Equal
 #' to the sample prevalence in the case of dichotomization when all patients
@@ -50,15 +55,15 @@
 #' \item{Sp: } {specificity of the positive and negative classifications: TN/(TN+FN).}
 #' \item{Se: } {sensitivity of the positive and negative classifications: TP/(TP+FN).}
 #' \item{NPV: }{Negative Predictive Value of the negative class: TN/(TN+FN).}
-#' \item{PPV: }{Positive Predictive Value of the positive class: TP/(TN+FN).} 
+#' \item{PPV: }{Positive Predictive Value of the positive class: TP/(TN+FN).}
 #' \item{SNPV: }{standardized negative predictive value of the negative class.}
-#' \item{SPPV: }{standardized positive predictive value of the positive class.} 
+#' \item{SPPV: }{standardized positive predictive value of the positive class.}
 #' \item{LR-: }{Negative Likelihood Ratio P(-|D+))/(P(-|D-)) The probability of a person with the
 #' condition receiving a negative classification / probability of a person without the
-#' condition receiving a negative classification.} 
+#' condition receiving a negative classification.}
 #' \item{LR+: }{Positive Likelihood Ratio (P(+|D+))/(P(+|D-)) The probability of a person with the
 #' condition receiving a positive classification / probability of a person without the
-#' condition receiving a positive classification.} 
+#' condition receiving a positive classification.}
 #' \item{C: }{Concordance, C-Statistic or AUC. The probability that a
 #' random chosen patient with the condition is correctly ranked higher than a
 #' randomly chosen patient without the condition. Equal to AUC, with for the
@@ -75,16 +80,17 @@
 #'   The uncertain area is defined as the scores >= threshold and <=
 #'   threshold.upper. When a single threshold is supplied and no uncertain area
 #'   is defined, positive classifications (1) are considered for test scores >=
-#'   threshold. 
-#'   
+#'   threshold when the test direction is '<' (controls have smaller values than
+#'   cases).
+#'
 #'   Please note that the indices are calculated for those who
 #'   receive a decision for or against the targeted disease: the test data in
-#'   the uncertain interval are ignored. When the lower test scores indicate the
-#'   targeted condition, please use the negated test values (-test).
+#'   the uncertain interval are ignored. When higher test scores indicate the
+#'   presence of the targeted condition, please use the direction '>' (or 'auto').
 #'
-#'   The unstandardized predictive values (negative and positive; NPV and PPV)
+#'   The non-standardized predictive values (negative and positive; NPV and PPV)
 #'   present the comparison of the observed frequencies of the two observed
-#'   samples, for respectively the negative (0) and positive class (1). 
+#'   samples, for respectively the negative (0) and positive class (1).
 #'
 #'   The standardized predictive values (SNPV and SPPV) present the comparison
 #'   of the densities (or relative frequencies) of the two distributions, for
@@ -98,14 +104,14 @@
 #'   is selected from the population of patients without the targeted condition
 #'   or from the population of patients with the targeted condition, given that
 #'   the patients test score is in the evaluated range of test scores. Of
-#'   course, these estimates are better when the sample sizes are larger. 
-#'   
+#'   course, these estimates are better when the sample sizes are larger.
+#'
 #'   N.B. 1 When negative and predictive values would be calculated for the same
 #'   range of test scores, NPV = 1 - PPV, SNPV = 1 - SPPV and PPV = 1- NPV, SPPV
-#'   = 1 - SNPV.   
-#'   N.B. 2 SNPV and SPPV are as independent of the prevalence as specificity 
+#'   = 1 - SNPV.
+#'   N.B. 2 SNPV and SPPV are as independent of the prevalence as specificity
 #'   and sensitivity, as well as negative and positive probability ratios.
-#' @seealso \code{\link{UncertainInterval}} for an explanatory glossary of the 
+#' @seealso \code{\link{UncertainInterval}} for an explanatory glossary of the
 #' different statistics used within this package.
 #' @examples
 #' # A simple test
@@ -115,17 +121,32 @@
 #' quality.threshold(ref, test, threshold=ua[1], threshold.upper=ua[2])
 #' # single threshold
 #' quality.threshold(ref, test, threshold=ua[1])
-
 #' @export
-# threshold=-25; threshold.upper=NULL; model='kernel'; 
+
+# threshold=-4; threshold.upper=-2; model='ordinal';
 quality.threshold <- function(ref, test, threshold, threshold.upper=NULL,
-                              model = c('kernel', 'binormal', 'ordinal')){
+                              model = c('kernel', 'binormal', 'ordinal'),
+                              direction = c('auto','<', '>') ){
 
   model <- match.arg(model)
+  direction = match.arg(direction)
   df=check.data(ref, test, model=model)
+  if (direction == 'auto'){
+    if (mean(df$test[ref==0]) > mean(df$test[ref==1])) {
+      direction = '>'
+    } else {
+      direction = '<'
+    }
+  }
+  negate = (direction == '>')
+  ia = !is.null(threshold.upper)
+  if (negate) {
+    df$test = -df$test
+    threshold = -threshold
+    if (ia) threshold.upper = -threshold.upper
+  }
   ref=df$ref
   test=df$test
-  ia = !is.null(threshold.upper)
   # raw=T
   threshold=unname(unlist(threshold)) # threshold=ua[1]
   threshold.upper=unname(unlist(threshold.upper)) # threshold.upper=NULL
@@ -158,7 +179,8 @@ quality.threshold <- function(ref, test, threshold, threshold.upper=NULL,
   FP = sum(y.hat==1 & ref==0, na.rm=T)
   TP = sum(y.hat==1 & ref==1, na.rm=T)
 
-  prevalence=(TP+FN)/(TP+FP+FN+TN)
+  prevalence=(TP+FN+ND1)/(TP+FP+FN+TN+ND0+ND1)
+  # prop.true = (TP+TN)/(TP+FP+FN+TN) # CCR
   sensitivity = TP/(TP+FN)
   specificity = TN/(FP+TN)
   positive.predictive.value=TP/(TP+FP)
@@ -169,13 +191,20 @@ quality.threshold <- function(ref, test, threshold, threshold.upper=NULL,
   o = outer(test[certain.sel & ref==1], test[certain.sel & ref==0], "-")
   cstat=mean((o>0) + .5*(o==0))
 
-  inames = c('Proportion.True', 'CCR', 'balance', 'Sp', 'Se', 'NPV', 
+  inames = c('CCR', 'balance', 'Sp', 'Se', 'NPV',
              'PPV', 'SNPV', 'SPPV', 'LR-', 'LR+', 'C')
   if (ia) {
-    lowername = '0 (test < threshold.lower)'
-    uppername = '1 (test > threshold.upper)'
+    if (!negate){
+      lowername = '0 (test < threshold.lower)'
+      uppername = '1 (test > threshold.upper)'
+      cut=c(threshold.lower=threshold, threshold.upper=threshold.upper)
+    } else {
+      lowername = '0 (test > threshold.upper)'
+      uppername = '1 (test < threshold.lower)'
+      cut=c(threshold.lower=-threshold.upper, threshold.upper=-threshold)
+    }
     t = matrix(data=c(TN, FN, ND0, ND1, FP, TP), ncol=2, byrow=T,
-               dimnames=list(class=c(lowername, 'Uncertain / NC', uppername), 
+               dimnames=list(class=c(lowername, 'Uncertain / NC', uppername),
                              ref=c('0', '1')))
     cut=c(threshold.lower=threshold, threshold.upper=threshold.upper)
     pt = addmargins(prop.table(t, margin = 2)	)
@@ -184,8 +213,13 @@ quality.threshold <- function(ref, test, threshold, threshold.upper=NULL,
     SNPV = pt[1,1]/pt[1,3]
     SPPV = pt[3,2]/pt[3,3]
   }else{
-    lowername = '0 (test < threshold)'
-    uppername = '1 (test >= threshold)'
+    if (!negate){
+      lowername = '0 (test < threshold)'
+      uppername = '1 (test >= threshold)'
+    } else {
+      lowername = '0 (test >= threshold)'
+      uppername = '1 (test < threshold)'
+    }
     t = matrix(data=c(TN, FN, FP, TP), ncol=2, byrow=T,
                dimnames=list(y.hat=c(lowername, uppername), ref=c('0', '1')))
     cut=c(threshold=threshold)
@@ -194,9 +228,10 @@ quality.threshold <- function(ref, test, threshold, threshold.upper=NULL,
     likelihood.ratio.neg = pt[1,2]/pt[1,1]
     likelihood.ratio.pos = pt[2,2]/pt[2,1]
     SNPV = pt[1,1]/pt[1,3]
-    SPPV = pt[2,1]/pt[2,3]
+    SPPV = pt[2,2]/pt[2,3] # error removed 20-8-2020
   }
-  
+
+  # prevalence=prevalence
   indices=c(prevalence=prevalence,
             correct.classification.rate=correct.classification.rate,
             balance.correct.incorrect=balance.correct.incorrect,
@@ -209,11 +244,11 @@ quality.threshold <- function(ref, test, threshold, threshold.upper=NULL,
             neg.likelihood.ratio = likelihood.ratio.neg,
             pos.likelihood.ratio = likelihood.ratio.pos,
             concordance=cstat)
-  
+
   if (ia){
-    names(indices) = paste('MCI.', inames, sep = '')
+    names(indices) = c('Prevalence', paste('MCI.', inames, sep = ''))
   }else
-    names(indices) = inames
-  return(list(table=addmargins(t), cut=cut,
+    names(indices) = c('Prevalence', inames)
+  return(list(direction=direction, table=addmargins(t), cut=cut,
               indices=indices))
 }

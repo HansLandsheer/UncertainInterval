@@ -18,18 +18,19 @@ TG.ROC(
 \arguments{
 \item{ref}{The reference standard. A column in a data frame or a vector
 indicating the classification by the reference test. The reference standard
-must be coded either as 0 (absence of the condition) or 1 (presence of the
-condition).}
+must be coded either as 0 (absence of the condition; controls) or 1
+(presence of the condition; deviation from controls).}
 
-\item{test}{The numeric test scores under evaluation. Higher scores indicate
-the presence of the targeted disease. Please use negated values when lower
-values indicate the presence of the targeted disease.}
+\item{test}{The numeric test scores under evaluation. When
+\code{mean(test[ref == 0]) > mean(test[ref == 1])} it is assumed that
+higher test scores indicate presence of the condition, otherwise that lower
+test scores indicate presence of the condition.}
 
 \item{Se.criterion}{Default = .95. Minimum desired value of Se.}
 
 \item{Sp.criterion}{Default = .95. Minimum desired value of Sp.}
 
-\item{model}{Default = 'none'. Model to use, either binormal or none
+\item{model}{Default = 'none'. Model to use, either bi-normal or none
 (non-parametric)}
 
 \item{plot}{Defaults= FALSE. Whether a plot is shown for Se and Sp against
@@ -42,34 +43,50 @@ values: "left", "right".}
 }
 \value{
 Thresholds for the intermediate zone. Lower threshold < Test scores <
-  Upper threshold is the intermediate range. The range of test values >=
-  lower limit provides the desired positive accuracy (Se.criterion), while the
-  range of test values <= upper limit provides the desired negative accuracy
-  (Sp.criterion).
+Upper threshold is the intermediate range. The range of test values >=
+lower limit provides the desired positive accuracy (Se.criterion), while
+the range of test values <= upper limit provides the desired negative
+accuracy (Sp.criterion).
 }
 \description{
 The function supports the determination and plot of the
-  sensitivity and specificity against the possible thresholds and shows an
-  intermediate range of test results that is considered as less accurate.
+sensitivity and specificity against the possible thresholds and shows an
+intermediate range of test results that is considered as less accurate.
 }
 \details{
 This function implements a non-parametric and a bi-normal model. See
-  Landsheer(2018) for an evaluative description.
+Landsheer(2018) for an evaluative description. When model='none' and the
+data have a limited number of values, the upper and lower threshold show
+the first values which comply with the criteria.
 
-  Warning: Although the test scores <= the lower limit and the test scores >=
-  the upper limit are interpreted for respectively negative and positive
-  classifications, the range of test values >= lower limit provides the
-  desired positive accuracy (Se.criterion), while the range of test values <=
-  upper limit provides the desired negative accuracy (Sp.criterion). This is
-  problematic for its double count: the values in the intermediate zone are
-  needed both for the desired Se and for the desired Sp value.
+Warning 1: Whn using test scores where higher test scores indicate presence
+of a disease, the whole range of test scores starting at the lowest test
+score have perfect Sensitivity (1.00), at the cost of a maximal number of
+false positives; the sensitivity is 0.00. When moving to higher test
+scores, the value of sensitivity decreases and the value of specificity
+increases. Therefore, the lowest test scores are best used for negative
+classifications, but these are precisely the test scores with the highest
+sensitivity. In TG-ROC the test scores <= the lower limit are interpreted
+for negative classifications. However, the whole range of test values >=
+lower limit provides the minimal desired positive accuracy (Se.criterion)
+(at the cost of a large number of false positives). Similarly, the test
+scores >= the upper limit are interpreted for positive classifications,
+while the whole range of test values <= upper limit provides the minimal
+desired negative accuracy (Sp.criterion) (at the cost of a large number of
+false negatives). Of course, this is also true for tests where the lowest
+scores indicate the presence of the disease, but only reversed.
 
-  Please note that the definition of the intermediate interval deviates from
-  the definition of an uncertain interval.
+Warning 2: The Intermediate range can cover a relatively small part of the
+area of overlap between the two distributions. In that case test scores
+with relative low number of false classifications are considered as
+intermediate.
 
-  The TG-ROC (Two Graphs Receiver Operating Characteristics) plot shows the
-  diminishing values of Se and increasing values of Sp against the possible
-  thresholds.
+Please note that the definition of the intermediate interval deviates
+substantially from the definition of an uncertain interval.
+
+The TG-ROC (Two Graphs Receiver Operating Characteristics) plot shows the
+diminishing values of Se and increasing values of Sp against the possible
+thresholds.
 }
 \examples{
 ref = c(rep(0,100), rep(1,100))
@@ -79,16 +96,16 @@ TG.ROC(ref, test, model='none', plot=TRUE)
 }
 \references{
 Greiner, M. (1995). Two-graph receiver operating characteristic
-  (TG-ROC): A Microsoft-EXCEL template for the selection of cut-off values in
-  diagnostic tests. Journal of Immunological Methods, 185(1), 145-146.
+(TG-ROC): A Microsoft-EXCEL template for the selection of cut-off values in
+diagnostic tests. Journal of Immunological Methods, 185(1), 145-146.
 
-  Greiner, M. (1996). Two-graph receiver operating characteristic (TG-ROC):
-  Update version supports optimisation of cut-off values that minimise
-  overall misclassification costs. Journal of Immunological Methods, 191(1),
-  93-94.
+Greiner, M. (1996). Two-graph receiver operating characteristic (TG-ROC):
+Update version supports optimisation of cut-off values that minimise
+overall misclassification costs. Journal of Immunological Methods, 191(1),
+93-94.
 
-  Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
-  Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
-  Decision-Making and Screening. Diagnostics, 8(2), 32.
-  https://doi.org/10.3390/diagnostics8020032
+Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
+Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
+Decision-Making and Screening. Diagnostics, 8(2), 32.
+https://doi.org/10.3390/diagnostics8020032
 }

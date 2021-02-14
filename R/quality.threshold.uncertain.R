@@ -21,16 +21,20 @@
 #'   parameter, this value is used instead.
 #' @param model (default = 'kernel'). The model used defines the intersection.
 #'   Default the kernel densities are used with adjust = 1, for ordinal models
-#'   adjust = 2 is used. For binormal models the binormal estimate of the
+#'   adjust = 2 is used. For bi-normal models the bi-normal estimate of the
 #'   intersection is used. The model defines the intersection, which defines the
 #'   output of this function.
 #' @param tests (default = FALSE). When TRUE the results of chi-square tests and
 #'   t-tests are included in the results.
-#' @return{ A list of} \describe{ 
+#' @param direction Default = "auto". Direction when comparing controls with
+#'   cases. When the controls have lower values than the cases
+#'   \code{(direction = "<")}. When "auto", mean comparison is used to determine
+#'   the direction.
+#'   
+#' @return{ A list of} \describe{ \item{direction}{Shows whether controls (0)
+#' are expected to have higher or lower scores than patients (1).}
 #' \item{intersection}{The value used as estimate of the intersection (that is,
-#' the optimal threshold). NOTE: The trichotomization method
-#' \code{\link{TG.ROC}} has no defined position for its Intermediate Range, but
-#' usage of the point where Sensitivity=Specificity seems a reasonable choice.}
+#' the optimal threshold).}
 #' \item{table}{The confusion table of {UI.class x ref} for the Uncertain
 #' Interval where the scores are expected to be inconclusive. The point of
 #' intersection is used as a dichotomous cut-point within the uncertain interval
@@ -116,6 +120,10 @@
 #'   using the inverse logit of the intersection and the two cut-points. The
 #'   logistic predictions and the linear predictions have the same rank
 #'   ordering.
+#'   
+#' NOTE: Other trichotomization methods such as \code{\link{TG.ROC}} have no
+#' defined position for its Intermediate Range. For \code{\link{TG.ROC}} usage
+#' of the point where Sensitivity=Specificity seems a reasonable choice.
 #' @seealso \code{\link{UncertainInterval}} for an explanatory glossary of the 
 #' different statistics used within this package.
 #'
@@ -128,17 +136,47 @@
 #' ua = ui.nonpar(ref, test)
 #' quality.threshold.uncertain(ref, test, ua[1], ua[2])
 # 
-# threshold = ua[1]; threshold.upper=ua[2]; intersection=NULL; model = 'kernel'; tests = FALSE
+# threshold = -4; threshold.upper=-2; intersection=-3; model = 'ordinal';
+# test=-test; tests=F; direction='auto'
+# threshold=-ua[1]; threshold.upper=-ua[2]; intersection=NULL;
+# tests=T; model='kernel'; direction='auto'
+
 quality.threshold.uncertain <- function(ref, test,
                                        threshold, threshold.upper, intersection=NULL,
                                        model = c('kernel', 'binormal', 'ordinal'),
-                                       tests = FALSE){
-  # threshold = threshold.upper = 19; intersection=NULL
+                                       tests = FALSE,
+                                       direction = c('auto','<', '>') ){
+
   model <- match.arg(model)
+  direction <- match.arg(direction)
+  
   df=check.data(ref, test, model=model)
+  stopifnot(!is.null(threshold.upper))
+  
+  if (is.null(intersection)) {
+    intersection = tail(get.intersection(ref, test, model=model),1)
+    if (length(intersection) > 1) {
+      intersection=tail(intersection, n=1)
+      warning('More than one point of intersection. Highest used.')
+    }
+  }
+  
+  if (direction == 'auto'){
+    if (mean(df$test[ref==0]) > mean(df$test[ref==1])) {
+      direction = '>'
+    } else {
+      direction = '<'
+    } 
+  }
+  negate = (direction == '>')
+  if (negate) {
+    df$test = -df$test
+    threshold = -threshold
+    threshold.upper = -threshold.upper
+    intersection = -intersection
+  }
   ref=df$ref
   test=df$test
-  stopifnot(!is.null(threshold.upper))
 
   if (tests){
     # chisq test equal probability of two frequencies
@@ -158,7 +196,7 @@ quality.threshold.uncertain <- function(ref, test,
       rs <- rowSums(x)
       cs <- colSums(x)
       if(n==0) return(c(n0=cs[1], n1=cs[2], sum=sum(cs), X2=NA, df= 1, p=NA))
-      E <- outer(rs, cs, "*") / n
+      E <- outer(rs, cs, FUN="*") / n
       if (all(E >= 5)) {
         YATES <- min(0.5, abs(x - E))
         X2=sum((abs(x - E) - YATES) ^ 2 / E)
@@ -167,22 +205,17 @@ quality.threshold.uncertain <- function(ref, test,
       } else return(c(n0=cs[1], n1=cs[2], sum=sum(cs), X2=NA, df= 1, p=NA))
     }
   }
+  
+  
   if (threshold.upper < threshold) { temp=threshold; threshold=threshold.upper; 
   threshold.upper=temp}
 
   threshold=unname(unlist(threshold)) # threshold=ua[1]
   threshold.upper=unname(unlist(threshold.upper)) # threshold.upper=NULL
 
-    if (is.null(intersection)) {
-      intersection = tail(get.intersection(ref, test, model=model),1)
-      if (length(intersection) > 1) {
-        intersection=tail(intersection, n=1)
-        warning('More than one point of intersection. Highest used.')
-      }
-    }
-    stopifnot(threshold <= intersection | threshold.upper >= intersection)
+  stopifnot(threshold <= intersection | threshold.upper >= intersection)
 
-  thresholdnew = intersection # center point inside the uncertain interval
+  # intersection is center point inside the uncertain interval
 
   certain.sel = (test < threshold) | (test > threshold.upper)
   # uncertain.obs = sum(!certain.sel)
@@ -195,14 +228,10 @@ quality.threshold.uncertain <- function(ref, test,
   test.uc = test[!certain.sel] # sum(!certain.sel); length(test.uc)
   ref.uc = ref[!certain.sel] # length(ref.uc)
 
-  y.hat=rep(0, length(ref.uc))
+  y.hat=numeric(length(ref.uc))
   # only one relevant intersection assumed!
 
-  y.hat[test.uc >= thresholdnew]=1
-  #X2=NA
-  #X2=try(chisq.test(table(y.hat,ref.uc), simulate.p.value = FALSE), silent=T)
-  #(chisq.test(table(y.hat,ref.uc)[,1], simulate.p.value = FALSE))
-  #(chisq.test(table(y.hat,ref.uc)[,2], simulate.p.value = FALSE))
+  y.hat[test.uc >= intersection]=1
 
   TP = sum(y.hat==1 & ref.uc==1)
   FP = sum(y.hat==1 & ref.uc==0)
@@ -213,21 +242,6 @@ quality.threshold.uncertain <- function(ref, test,
   t0 = test.uc[ref.uc==0]; n0 = as.numeric(length(t0));
   t1 = test.uc[ref.uc==1]; n1 = as.numeric(length(t1));
 
-  if (tests){
-    TN.FP=chisq1(c(TN, FP))
-    FN.TP=chisq1(c(FN, TP))
-    overall=chisq2(matrix(c(TN,FP,FN,TP), byrow=T, nrow=2))
-  
-    if (n0 > 1 & n1 > 1 & threshold!=threshold.upper) {
-      res = t.test(t0, t1)
-      t = c(mean.0 = unname(res$estimate[1]),mean.1 = unname(res$estimate[2]),
-            res$statistic, res$parameter, p = res$p.value)
-    } else {
-      t = c(mean.0 = mean(t0),
-            mean.1 = mean(t1), t = NA, df = NA, p = NA)
-    }
-  }
-  
   prevalence=(TP+FN)/(TP+FP+FN+TN)
   sensitivity = TP/(TP+FN)
   specificity = TN/(FP+TN)
@@ -238,10 +252,21 @@ quality.threshold.uncertain <- function(ref, test,
   # bww = sum(ref.uc==1)/sum(ref.uc==0) # 1/bww
 
   ta=addmargins(matrix(c(TN,FP,FN,TP),2,2))
-  lowername = '0 (threshold.lower <= test < intersection)'
-  uppername = '1 (intersection <= test <= threshold.upper)'
+  if (negate) {
+    threshold = -threshold
+    threshold.upper = - threshold.upper
+    intersection = -intersection
+    lowername = '0 (intersection < test <= threshold.upper)'
+    uppername = '1 (threshold.lower <= test <= intersection)'
+  } else {
+    lowername = '0 (threshold.lower <= test < intersection)'
+    uppername = '1 (intersection <= test <= threshold.upper)'
+  }
   dimnames(ta)=list(UI.class=c(lowername, uppername, 'Sum'), ref= c('0', '1', 'Sum'))
-
+  
+  if (threshold.upper < threshold) { temp=threshold; threshold=threshold.upper; 
+  threshold.upper=temp}
+  
   pt = addmargins(prop.table(ta[1:2,1:2], margin=2))
   SNPV = pt[1,1]/pt[1,3] # specificity / (specificity + 1 - sensitivity)
   SPPV = pt[2,2]/pt[2,3] # sensitivity / (sensitivity + 1 - specificity)
@@ -252,7 +277,20 @@ quality.threshold.uncertain <- function(ref, test,
   cstat = (sum(r[1:n1]) - n1*(n1+1)/2) / (n1*n0)
 
   if (tests){
-    out = list(intersection=thresholdnew,
+      TN.FP=chisq1(c(TN, FP))
+      FN.TP=chisq1(c(FN, TP))
+      overall=chisq2(matrix(c(TN,FP,FN,TP), byrow=T, nrow=2))
+      
+      if (n0 > 1 & n1 > 1 & threshold!=threshold.upper) {
+        if (negate) res = t.test(-t0, -t1) else res = t.test(t0, t1)
+        t = c(mean.0 = unname(res$estimate[1]),mean.1 = unname(res$estimate[2]),
+              res$statistic, res$parameter, p = res$p.value)
+      } else {
+        t = c(mean.0 = mean(t0),
+              mean.1 = mean(t1), t = NA, df = NA, p = NA)
+      }
+    out = list(direction=direction,
+               intersection=intersection,
                table=ta,
                cut=c(threshold.lower=threshold, threshold.upper=threshold.upper),
                X2=rbind(TN.FP, FN.TP, overall),
@@ -272,7 +310,8 @@ quality.threshold.uncertain <- function(ref, test,
                          # UI.balance.with.without = bww,
                          UI.C=cstat)) 
   } else {
-      out = list(intersection=thresholdnew,
+      out = list(direction=direction,
+                 intersection=intersection,
                  table=ta,
                  cut=c(threshold.lower=threshold, threshold.upper=threshold.upper),
                  indices=c(Proportion.True=prevalence,

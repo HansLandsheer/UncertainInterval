@@ -45,7 +45,7 @@ of the test to be ignored.}
 
 \item{roll.length}{(default = NULL) The frame length of the interval of test
 scores scores for the calculation of the reliable predictive values. When
-NULL, it is calculated as \code{round(SEM)*2+1} (approximately a 68\%
+NULL, it is calculated as \code{round(SEM)*2+1} (approximately a 68\\%
 confidence interval around the observed test score in which the true score
 is expected). The roll.length needs to be uneven. When the result is even,
 a lower value (-1) is assigned. When roll.length is supplied, this is used
@@ -92,9 +92,9 @@ when pre-test probability = .5.}
 comparisons, when preselected.thresholds has valid values these values are
 used for the determination of the cut-points. The two cut-points indicate
 the limits of the uncertain area. Parameter decision.use is ignored. When
-preselected.thresholds[2] > preselected.thresholds[1], the higher scores
-are used for positive decisions. When preselected.thresholds[2] <
-preselected.thresholds[1], the lower scores are used for positive
+\code{preselected.thresholds[2] > preselected.thresholds[1]}, the higher scores
+are used for positive decisions. When \code{preselected.thresholds[2] <
+  preselected.thresholds[1]}, the lower scores are used for positive
 decisions. An uncertain Interval of a single test score can be determined
 with in-between values. For instance c(1.5, 0.8) defines an uncertain
 interval of test score 1 for a descending ordinal test.}
@@ -107,9 +107,9 @@ FALSE, proportions are used.}
 \item{show.table}{(default = FALSE) Show confusion table.}
 }
 \value{
-{ A list of: } \describe{ 
+{ A list of: } \describe{
 \item{$parameters: }{ A named vector:
-\itemize{ 
+\itemize{
 \item{pretest.prob: }{provided or calculated pre-test probability. Default,
 the calculated sample prevalence is used.}
 \item{sample.prevalence: }{the calculated sample prevalence.}
@@ -128,7 +128,7 @@ LR) that are used for decisions.}
 \item{$rel.pred.values: }{A table the test scores as columns and with rows:
 N.B. When roll.length is set to 1, the test reliability is ignored and the
 outcomes are not corrected for unreliability.
-\itemize{ 
+\itemize{
 \item{rnpv: }{(more) reliable negative predictive value. Fitting for
 reporting sample results. }
 \item{rppv: }{(more) reliable positive predictive value.}
@@ -136,7 +136,7 @@ reporting sample results. }
 \item{rsppv: }{(more) reliable standardized positive predictive value.}
 \item{rilr: }{(more) reliable interval likelihood ratio.}
 \item{rpt.odds: }{(more) reliable posttest odds.}
-\item{rpt.prob: }{(more) reliable posttest probabilities.} } 
+\item{rpt.prob: }{(more) reliable posttest probabilities.} }
 }
 \item{thresholds.UI: }{Numeric values for the thresholds of the uncertain
 interval. This is NA when there are multiple ranges of test for the uncertain
@@ -144,8 +144,8 @@ interval.}
 \item{ranges: }{The ranges of test scores for the Negative Classifications, Uncertain, Positive
 Classifications.}
 \item{$result: }{Table of results for the current sample, calculated with the
-provided parameters. 
-\itemize{ 
+provided parameters.
+\itemize{
 \item{columns: }{Negative Classifications, Uncertain, Positive
 Classifications.}
 \item{row total.sample: }{percentage of the total sample.}
@@ -158,103 +158,103 @@ status for the 3 categories.}
 \item{row realized.odds: }{The odds that are realized in the sample for each
 of the three categories. NB The odds of the uncertain range of test scores
 concerns the odds for the targeted condition.}
-} } 
+} }
 \item{$table}{Show table of counts of decisions x true status.}
 }
 }
 \description{
 This function calculates Predictive Values, Standardized
-  Predictive Values, Interval Likelihood Ratios and Posttest Probabilities of
-  intervals or individual test scores of discrete ordinal tests. This
-  function can correct for the unreliability of the test. It also
-  trichotomizes the test results, with an uncertain interval where the test
-  scores do not allow for an adequate distinction between the two groups of
-  patients. This function is best applied to large samples with a sufficient
-  number of patients for each test score.
+Predictive Values, Interval Likelihood Ratios and Posttest Probabilities of
+intervals or individual test scores of discrete ordinal tests. This
+function can correct for the unreliability of the test. It also
+trichotomizes the test results, with an uncertain interval where the test
+scores do not allow for an adequate distinction between the two groups of
+patients. This function is best applied to large samples with a sufficient
+number of patients for each test score.
 }
 \details{
 This function can be applied to ordinal data. Uncertain test scores
-  are scores that have about the same density in the two distributions of
-  patients with and without the targeted condition. This range is typically
-  found around the optimal cut-point, that is, the point of intersection or
-  Youden index (Schisterman et al., 2005). This function uses as a default
-  the decision odds of ordinal test scores near 1 (default < 2). This results
-  in a limit for the Predictive Values = decision.odds / (decision.odds+1).
+are scores that have about the same density in the two distributions of
+patients with and without the targeted condition. This range is typically
+found around the optimal cut-point, that is, the point of intersection or
+Youden index (Schisterman et al., 2005). This function uses as a default
+the decision odds of ordinal test scores near 1 (default < 2). This results
+in a limit for the Predictive Values = decision.odds / (decision.odds+1).
 
-  N.B. 1: Sp = Negative Decisions | true.neg.status; Se = Positive Decisions
-  | true.pos.status. Please note that the values for Se and Sp are
-  underestimated, as the uncertain test scores are considered as errors,
-  which they are not. (Se and Sp are intended for dichotomous thresholds.).
-  Use \code{\link{quality.threshold}} and
-  \code{\link{quality.threshold.uncertain}} for obtaining respectively
-  quality indices for the test scores when ignoring test scores in the
-  uncertain interval and the quality indices of the test scores within the
-  uncertain interval.
+N.B. 1: Sp = Negative Decisions | true.neg.status; Se = Positive Decisions
+| true.pos.status. Please note that the values for Se and Sp are
+underestimated, as the uncertain test scores are considered as errors,
+which they are not. (Se and Sp are intended for dichotomous thresholds.).
+Use \code{\link{quality.threshold}} and
+\code{\link{quality.threshold.uncertain}} for obtaining respectively
+quality indices for the test scores when ignoring test scores in the
+uncertain interval and the quality indices of the test scores within the
+uncertain interval.
 
-  N.B. 2: For the category Uncertain the odds are for the targeted condition
-  (sum of patients with a positive.status)/(sum of patients with
-  negative.status).
+N.B. 2: For the category Uncertain the odds are for the targeted condition
+(sum of patients with a positive.status)/(sum of patients with
+negative.status).
 
-  N.B. 3: Set roll.length to 1 to ignore the test reliability and obtain raw
-  predictive values, likelihood ratios, etc., that are not corrected for the
-  unreliability of the test.
-  
-  N.B. 4: In contrast to the other functions, the \code{RPV}  function can
-  detect more than one uncertain interval. More than one uncertain interval
-  almost always signals bad test quality and interpretation difficulties.
+N.B. 3: Set roll.length to 1 to ignore the test reliability and obtain raw
+predictive values, likelihood ratios, etc., that are not corrected for the
+unreliability of the test.
 
-  Raw predictive values compare the frequencies and provide exact sample
-  values and are most suitable for evaluating the sample results. When
-  prevalence is low, Positive Predictive Values can be disappointingly low,
-  even for tests with high Se values. When prevalence is high, Negative
-  Predictive Values can be low. Reliable Standardized Predictive Values
-  compare the densities (relative frequencies) and are most suitable for
-  comparing the two distributions of the scores for patients with and without
-  the targeted condition.
+N.B. 4: In contrast to the other functions, the \code{RPV}  function can
+detect more than one uncertain interval. More than one uncertain interval
+almost always signals bad test quality and interpretation difficulties.
 
-  The predictive values are calculated from the observed frequencies in the
-  two samples of patients with and without the targeted disease. For a range
-  of test scores x, if f0(x) and f1(x) are the frequencies of respectively
-  patients without and with the targeted disease, then the negative
-  predictive value (NPV) can be defined as: NPV(x) = f0(x) / (f0(x) + f1(x))
-  and the positive predictive value (PPV) as: PPV(x) = f1(x) / (f0(x) +
-  f1(x)). The densities for a range of test scores x can be defined d0(x) =
-  f0(x) / n0 and d1(x) = f1(x) / n1, where n0 and n1 are the number of
-  observed patients in the two samples.  The standardized negative predictive
-  value (SNPV) is defined as SNPV(x) = d0(x) / (d0(x) + d1(x)) and the
-  standardized positive predictive value (SPPV) as SPPV(x) = d1(x) / (d0(x) +
-  d1(x)). The two distributions are weighed equally, or in other words, the
-  prevalence is standardized to .5. N.B. The posttest probability is equal to
-  the positive predictive value when the pretest probability is set to the
-  sample prevalence, while the standardized positive predictive value is
-  equal to the posttest probability when the pretest probability is set to
-  .5.
+Raw predictive values compare the frequencies and provide exact sample
+values and are most suitable for evaluating the sample results. When
+prevalence is low, Positive Predictive Values can be disappointingly low,
+even for tests with high Se values. When prevalence is high, Negative
+Predictive Values can be low. Reliable Standardized Predictive Values
+compare the densities (relative frequencies) and are most suitable for
+comparing the two distributions of the scores for patients with and without
+the targeted condition.
 
-  Reliable estimates of the predictive probabilities correct to a certain
-  degree for random variations. In test theory this random effect is
-  estimated with the Standard Error of Measurement (SEM), which is directly
-  dependent on the reliability of the test: \code{SEM = s * sqrt(1 - r)},
-  where s is the standard deviation of the test scores and r the estimated
-  reliability of the test (Crocker & Algina, 1986; Harvill, 1991). The true
-  score of a patient lies with some probability (roughly 68%) within a range
-  of +- 1 SEM around the acquired test score. This provides information about 
-  the range of test scores that can be expected due to all kinds of random 
-  circumstances where no real changing agent has effect.
+The predictive values are calculated from the observed frequencies in the
+two samples of patients with and without the targeted disease. For a range
+of test scores x, if f0(x) and f1(x) are the frequencies of respectively
+patients without and with the targeted disease, then the negative
+predictive value (NPV) can be defined as: NPV(x) = f0(x) / (f0(x) + f1(x))
+and the positive predictive value (PPV) as: PPV(x) = f1(x) / (f0(x) +
+f1(x)). The densities for a range of test scores x can be defined d0(x) =
+f0(x) / n0 and d1(x) = f1(x) / n1, where n0 and n1 are the number of
+observed patients in the two samples.  The standardized negative predictive
+value (SNPV) is defined as SNPV(x) = d0(x) / (d0(x) + d1(x)) and the
+standardized positive predictive value (SPPV) as SPPV(x) = d1(x) / (d0(x) +
+d1(x)). The two distributions are weighed equally, or in other words, the
+prevalence is standardized to .5. N.B. The posttest probability is equal to
+the positive predictive value when the pretest probability is set to the
+sample prevalence, while the standardized positive predictive value is
+equal to the posttest probability when the pretest probability is set to
+.5.
 
-  The results show the obtained values for the sample and are not corrected
-  in any way. The classification 'Uncertain' shows the scores that lead to
-  odds (d1(x) / d0(x)) that are lower than limit. This indicates that it is
-  difficult to base classifications on that range of scores. The positive
-  classifications are less error prone, with realized odds (d1(x) / d0(x)).
-  These odds are close to 1 and smaller than the decision.odds. The negative
-  classifications are less error prone than 'Uncertain' (odds = d0(x) /
-  d1(x)).
+Reliable estimates of the predictive probabilities correct to a certain
+degree for random variations. In test theory this random effect is
+estimated with the Standard Error of Measurement (SEM), which is directly
+dependent on the reliability of the test: \code{SEM = s * sqrt(1 - r)},
+where s is the standard deviation of the test scores and r the estimated
+reliability of the test (Crocker & Algina, 1986; Harvill, 1991). The true
+score of a patient lies with some probability (roughly 68\%) within a range
+of +- 1 SEM around the acquired test score. This provides information about
+the range of test scores that can be expected due to all kinds of random
+circumstances where no real changing agent has effect.
 
-  The accuracy indices are shown as percentages. Sp = negative
-  classifications given a true negative status. Se = positive classifications
-  given a true positive status. NPV = proportion of Negative Classifications
-  that are correct. PPV = proportion of Positive Classifications that are
-  correct.
+The results show the obtained values for the sample and are not corrected
+in any way. The classification 'Uncertain' shows the scores that lead to
+odds (d1(x) / d0(x)) that are lower than limit. This indicates that it is
+difficult to base classifications on that range of scores. The positive
+classifications are less error prone, with realized odds (d1(x) / d0(x)).
+These odds are close to 1 and smaller than the decision.odds. The negative
+classifications are less error prone than 'Uncertain' (odds = d0(x) /
+d1(x)).
+
+The accuracy indices are shown as percentages. Sp = negative
+classifications given a true negative status. Se = positive classifications
+given a true positive status. NPV = proportion of Negative Classifications
+that are correct. PPV = proportion of Positive Classifications that are
+correct.
 }
 \examples{
 set.seed(1)
@@ -272,20 +272,20 @@ RPV(ref, test, pretest.prob = .5, reliability = .9, roll.length = 3)
 }
 \references{
 Sonis, J. (1999). How to use and interpret interval likelihood
-  ratios. Family Medicine, 31, 432–437.
+ratios. Family Medicine, 31, 432–437.
 
-  Crocker, L., & Algina, J. (1986). Introduction to classical and modern test
-  theory. Holt, Rinehart and Winston, 6277 Sea Harbor Drive, Orlando, FL
-  32887 ($44.75).
+Crocker, L., & Algina, J. (1986). Introduction to classical and modern test
+theory. Holt, Rinehart and Winston, 6277 Sea Harbor Drive, Orlando, FL
+32887 ($44.75).
 
-  Harvill, L. M. (1991). Standard error of measurement. Educational
-  Measurement: Issues and Practice, 10(2), 33–41.
+Harvill, L. M. (1991). Standard error of measurement. Educational
+Measurement: Issues and Practice, 10(2), 33–41.
 
-  Landsheer, J. A. (In press). Impact of the Prevalence of Cognitive
-  Impairment on the Accuracy of the Montreal Cognitive Assessment: The
-  advantage of using two MoCA thresholds to identify error-prone test scores.
-  Alzheimer Disease and Associated Disorders.
-  https://doi.org/10.1097/WAD.0000000000000365
+Landsheer, J. A. (In press). Impact of the Prevalence of Cognitive
+Impairment on the Accuracy of the Montreal Cognitive Assessment: The
+advantage of using two MoCA thresholds to identify error-prone test scores.
+Alzheimer Disease and Associated Disorders.
+https://doi.org/10.1097/WAD.0000000000000365
 }
 \seealso{
 \code{\link{synthdata_NACC}} for an example

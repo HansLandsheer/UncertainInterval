@@ -46,9 +46,9 @@ values: "topleft", "top", "topright".}
 }
 \value{
 named matrix with 2 rows and max(test)-min(test)+1 columns that
-  provide for the position on the x-axis of each of the test values. These
-  values can be used to draw vertical lines to indicate cutoff scores (see
-  example).
+provide for the position on the x-axis of each of the test values. These
+values can be used to draw vertical lines to indicate cutoff scores (see
+example).
 }
 \description{
 Barplot of frequencies, densities or both of the two distributions of

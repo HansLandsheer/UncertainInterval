@@ -12,7 +12,8 @@ ui.nonpar(
   UI.Sp = 0.55,
   intersection = NULL,
   return.first = T,
-  select = c("nearest", "limited")
+  select = c("nearest", "limited"),
+  direction = c("auto", "<", ">")
 )
 }
 \arguments{
@@ -46,31 +47,35 @@ always find a suitable interval and can return a vector of NULL values.}
 of the uncertain interval are nearest UI.Se and UI.Sp respectively. When
 'limited' the solutions have an uncertain interval with a sensitivity and
 specificity limited by UI.Se and UI.Sp respectively.}
+
+\item{direction}{Default = 'auto'. Direction when comparing controls with
+cases. Often, the controls have lower values than the cases (direction =
+'<'). When 'auto', mean comparison is used to determine the direction.}
 }
 \value{
 {A \code{data.frame} of \describe{ \item{cp.l}{ Lower bound of the
- Uncertain interval.} \item{cp.h}{ Upper bound of the Uncertain interval.}
- \item{FN}{ Count of false negatives within the Uncertain interval.}
- \item{TP}{ Count of true positives within the Uncertain interval.}
- \item{TN}{ Count of true negatives within the Uncertain interval.}
- \item{FP}{ Count of false positives within the Uncertain interval.}
- \item{UI.Se}{ Sensitivity of the test scores within the Uncertain
- interval.} 
- \item{UI.Sp}{ Specificity of the test scores within the
- Uncertain interval.} } Only a single row is returned when parameter
- \code{return.first} = TRUE (default).}
+Uncertain interval.} \item{cp.h}{ Upper bound of the Uncertain interval.}
+\item{FN}{ Count of false negatives within the Uncertain interval.}
+\item{TP}{ Count of true positives within the Uncertain interval.}
+\item{TN}{ Count of true negatives within the Uncertain interval.}
+\item{FP}{ Count of false positives within the Uncertain interval.}
+\item{UI.Se}{ Sensitivity of the test scores within the Uncertain
+interval.}
+\item{UI.Sp}{ Specificity of the test scores within the
+Uncertain interval.} } Only a single row is returned when parameter
+\code{return.first} = TRUE (default).}
 }
 \description{
 This function uses a non-parametric approach to determine an
- interval around the intersection of the two distributions of individuals
- without (0) and with (1) the targeted condition. The Uncertain Interval is
- generally defined as an interval below and above the intersection, where the
- densities of the two distributions of patients with and without the targeted
- condition are about equal. These test scores are considered as inconclusive
- for the decision for or against the targeted condition. The interval is
- restricted both by a maximum UI.Se of the test scores within the
- uncertain interval (UI.Se) and by a maximum specificity of the test scores
- within the uncertain interval (UI.Sp).
+interval around the intersection of the two distributions of individuals
+without (0) and with (1) the targeted condition. The Uncertain Interval is
+generally defined as an interval below and above the intersection, where the
+densities of the two distributions of patients with and without the targeted
+condition are about equal. These test scores are considered as inconclusive
+for the decision for or against the targeted condition. The interval is
+restricted both by a maximum UI.Se of the test scores within the
+uncertain interval (UI.Se) and by a maximum specificity of the test scores
+within the uncertain interval (UI.Sp).
 }
 \details{
 { This function can be used for a test without a defined distribution
@@ -132,12 +137,12 @@ ui.nonpar(ref, test)
 }
 \references{
 Landsheer, J. A. (2016). Interval of Uncertainty: An Alternative
- Approach for the Determination of Decision Thresholds, with an Illustrative
- Application for the Prediction of Prostate Cancer. PloS One, 11(11),
- e0166007.
+Approach for the Determination of Decision Thresholds, with an Illustrative
+Application for the Prediction of Prostate Cancer. PloS One, 11(11),
+e0166007.
 
- Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
- Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
- Decision-Making and Screening. Diagnostics, 8(2), 32.
- https://doi.org/10.3390/diagnostics8020032
+Landsheer, J. A. (2018). The Clinical Relevance of Methods for Handling
+Inconclusive Medical Test Results: Quantification of Uncertainty in Medical
+Decision-Making and Screening. Diagnostics, 8(2), 32.
+https://doi.org/10.3390/diagnostics8020032
 }

@@ -24,7 +24,7 @@ the test data are only checked for missing data.}
 }
 \value{
 Either a valid dataset as data.frame with two variables ref and test
-  or an error message.
+or an error message.
 }
 \description{
 Function to check the dataset of individuals with (1) and without (0) the
@@ -32,16 +32,16 @@ targeted condition.
 }
 \details{
 The first check is whether ref and test have equal length. If not,
-  checkdata is aborted with an error message. The second check is whether ref
-  is coded solely with 0 and 1. If not, check.data is aborted and an error
-  message is shown. The third check is whether ref and test have missing
-  values. If true, list wise deletion is applied and a warning message is
-  shown. The fourth check is whether test is continuous or not. If test has
-  less than 20 different values, a warning message is shown. This test is
-  omitted when ordinal = TRUE.
+checkdata is aborted with an error message. The second check is whether ref
+is coded solely with 0 and 1. If not, check.data is aborted and an error
+message is shown. The third check is whether ref and test have missing
+values. If true, list wise deletion is applied and a warning message is
+shown. The fourth check is whether test is continuous or not. If test has
+less than 20 different values, a warning message is shown. This test is
+omitted when ordinal = TRUE.
 
-  This function is called internally from every function that requires data.
-  An external call is only useful to check warnings and errors.
+This function is called internally from every function that requires data.
+An external call is only useful to check warnings and errors.
 }
 \examples{
 set.seed(1)

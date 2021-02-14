@@ -7,19 +7,27 @@
 get.intersection(ref, test, model = c("kernel", "binormal", "ordinal"), ...)
 }
 \arguments{
-\item{ref}{The reference standard. A column in a data frame or a vector indicating the classification by the reference test. The reference standard must be coded either as 0 (absence of the condition) or 1 (presence of the condition)}
+\item{ref}{The reference standard. A column in a data frame or a vector
+indicating the classification by the reference test. The reference standard
+must be coded either as 0 (absence of the condition) or 1 (presence of the
+condition)}
 
-\item{test}{The index test or test under evaluation. A column in a dataset or vector indicating the test results on a continuous scale.}
+\item{test}{The index test or test under evaluation. A column in a dataset or
+vector indicating the test results on a continuous scale.}
 
-\item{model}{The model used for estimating the intersection(s). Default = 'kernel'.}
+\item{model}{The model used for estimating the intersection(s). Default =
+'kernel'.}
 
-\item{...}{passing arguments to the kernel density function, other than kernel='gaussian' (default).}
+\item{...}{passing arguments to the kernel density function, other than
+kernel='gaussian' (default).}
 }
 \value{
-A vector of points of intersection, ordered on their density. The tail has the highest density.
+A vector of points of intersection, ordered on their density. The
+tail has the highest density.
 }
 \description{
-Obtain the intersection of two distributions using the kernel method. Warning: This function does not check the parameters ref and test.
+Obtain the intersection of two distributions using the kernel
+method. Warning: This function does not check the parameters ref and test.
 }
 \examples{
 ref=c(rep(0,500), rep(1,500))
@@ -27,7 +35,10 @@ test=c(rnorm(500,0,1), rnorm(500,1,2))
 (get.intersection(ref, test)) # two intersections! Generates warning in other functions!
 }
 \references{
-Landsheer, J. A. (2016). Interval of Uncertainty: An Alternative Approach for the Determination of Decision Thresholds, with an Illustrative Application for the Prediction of Prostate Cancer. PloS One, 11(11), e0166007.
+Landsheer, J. A. (2016). Interval of Uncertainty: An Alternative
+Approach for the Determination of Decision Thresholds, with an Illustrative
+Application for the Prediction of Prostate Cancer. PloS One, 11(11),
+e0166007.
 }
 \seealso{
 \code{\link{density}}

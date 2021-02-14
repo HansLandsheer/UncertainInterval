@@ -74,9 +74,9 @@
 #'   comparisons, when preselected.thresholds has valid values these values are
 #'   used for the determination of the cut-points. The two cut-points indicate
 #'   the limits of the uncertain area. Parameter decision.use is ignored. When
-#'   preselected.thresholds[2] > preselected.thresholds[1], the higher scores
-#'   are used for positive decisions. When preselected.thresholds[2] <
-#'   preselected.thresholds[1], the lower scores are used for positive
+#'   \code{preselected.thresholds[2] > preselected.thresholds[1]}, the higher scores
+#'   are used for positive decisions. When \code{preselected.thresholds[2] <
+#'   preselected.thresholds[1]}, the lower scores are used for positive
 #'   decisions. An uncertain Interval of a single test score can be determined
 #'   with in-between values. For instance c(1.5, 0.8) defines an uncertain
 #'   interval of test score 1 for a descending ordinal test.
@@ -110,7 +110,7 @@
 #'   N.B. 3: Set roll.length to 1 to ignore the test reliability and obtain raw
 #'   predictive values, likelihood ratios, etc., that are not corrected for the
 #'   unreliability of the test.
-#'   
+#'
 #'   N.B. 4: In contrast to the other functions, the \code{RPV}  function can
 #'   detect more than one uncertain interval. More than one uncertain interval
 #'   almost always signals bad test quality and interpretation difficulties.
@@ -149,8 +149,8 @@
 #'   where s is the standard deviation of the test scores and r the estimated
 #'   reliability of the test (Crocker & Algina, 1986; Harvill, 1991). The true
 #'   score of a patient lies with some probability (roughly 68%) within a range
-#'   of +- 1 SEM around the acquired test score. This provides information about 
-#'   the range of test scores that can be expected due to all kinds of random 
+#'   of +- 1 SEM around the acquired test score. This provides information about
+#'   the range of test scores that can be expected due to all kinds of random
 #'   circumstances where no real changing agent has effect.
 #'
 #'   The results show the obtained values for the sample and are not corrected
@@ -167,9 +167,9 @@
 #'   given a true positive status. NPV = proportion of Negative Classifications
 #'   that are correct. PPV = proportion of Positive Classifications that are
 #'   correct.
-#' @return{ A list of: } \describe{ 
+#' @return{ A list of: } \describe{
 #' \item{$parameters: }{ A named vector:
-#' \itemize{ 
+#' \itemize{
 #' \item{pretest.prob: }{provided or calculated pre-test probability. Default,
 #' the calculated sample prevalence is used.}
 #' \item{sample.prevalence: }{the calculated sample prevalence.}
@@ -189,7 +189,7 @@
 #' \item{$rel.pred.values: }{A table the test scores as columns and with rows:
 #' N.B. When roll.length is set to 1, the test reliability is ignored and the
 #' outcomes are not corrected for unreliability.
-#' \itemize{ 
+#' \itemize{
 #' \item{rnpv: }{(more) reliable negative predictive value. Fitting for
 #' reporting sample results. }
 #'\item{rppv: }{(more) reliable positive predictive value.}
@@ -197,7 +197,7 @@
 #' \item{rsppv: }{(more) reliable standardized positive predictive value.}
 #' \item{rilr: }{(more) reliable interval likelihood ratio.}
 #' \item{rpt.odds: }{(more) reliable posttest odds.}
-#' \item{rpt.prob: }{(more) reliable posttest probabilities.} } 
+#' \item{rpt.prob: }{(more) reliable posttest probabilities.} }
 #' }
 #' \item{thresholds.UI: }{Numeric values for the thresholds of the uncertain
 #' interval. This is NA when there are multiple ranges of test for the uncertain
@@ -205,8 +205,8 @@
 #' \item{ranges: }{The ranges of test scores for the Negative Classifications, Uncertain, Positive
 #' Classifications.}
 #' \item{$result: }{Table of results for the current sample, calculated with the
-#' provided parameters. 
-#' \itemize{ 
+#' provided parameters.
+#' \itemize{
 #' \item{columns: }{Negative Classifications, Uncertain, Positive
 #' Classifications.}
 #' \item{row total.sample: }{percentage of the total sample.}
@@ -219,7 +219,7 @@
 #' \item{row realized.odds: }{The odds that are realized in the sample for each
 #' of the three categories. NB The odds of the uncertain range of test scores
 #' concerns the odds for the targeted condition.}
-#' } } 
+#' } }
 #' \item{$table}{Show table of counts of decisions x true status.}
 #' }
 #' @references Sonis, J. (1999). How to use and interpret interval likelihood
@@ -253,9 +253,9 @@
 #' RPV(ref, test, pretest.prob = .5, reliability = .9, roll.length = 3)
 #'
 
-# pretest.prob = .53; reliability=.86; roll.length = 5; extend = TRUE;
-# decision.odds = 2; decision.use = 'standardized.pv'; digits=3; 
-# preselected.thresholds=c(25,22); use.perc=F
+# pretest.prob = NULL; reliability=.9; roll.length = 3; extend = TRUE;
+# decision.odds = 2; decision.use = 'standardized.pv'; digits=3;
+# preselected.thresholds=c(NULL, NULL); use.perc=F; show.table=F
 
 RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length = NULL,
                 extend = TRUE, decision.odds = 2, decision.use =
@@ -284,12 +284,12 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
     ranges[i + 1] = paste(r[w[i + 1]], r[length(r)], sep = ' to ')
     unlist(ranges)
   }
-  
+
   if ((is.null(reliability) & is.null(roll.length))) {
     roll.length=1
     reliability=1
   }
-  
+
   if (!is.null(reliability)) {
     if (is.factor(test)) {
       SEM = sd(as.numeric(as.character(test))) * sqrt(1 - reliability)
@@ -297,17 +297,17 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
       SEM = sd(test) * sqrt(1 - reliability)
     if (is.null(roll.length)) roll.length = round(SEM*2+1) # roll.length=NA
   }
-  
+
   if (is.null(roll.length)) roll.length = 1
   if (is.even(roll.length)){roll.length = roll.length-1}
   if (roll.length <= 1) {
     roll.length=1
-    warning("roll.length is set to 1. No smoothing applied.") 
+    warning("roll.length is set to 1. No smoothing applied.")
   }
-  
+
   # include test scores with zero counts
   if (is.numeric(test)) test = factor(test, ordered=TRUE,
-                                      levels = min(test):max(test)) 
+                                      levels = min(test):max(test))
   if (is.numeric(ref)) ref = factor(ref, ordered=T, levels = min(ref):max(ref))
   tt = table(ref, test)
   ts.npv = rollsum(tt[1,], roll.length, fill=NA)/
@@ -333,9 +333,9 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
     decuse = 'Decision use = preselected.thresholds.'
   }
   if (extend & any(is.na(ts.npv))){
-    ext = rbind(paste('Reliable Predictive Values for scores ', 
-                      paste(names(which(is.na(ts.npv))), collapse=' '), 
-                      ' have been extended.'), 
+    ext = rbind(paste('Reliable Predictive Values for scores ',
+                      paste(names(which(is.na(ts.npv))), collapse=' '),
+                      ' have been extended.'),
                 unname(decuse))
     ts2.npv=na.fill(ts.npv, fill=c('extend', NA, 'extend'))
     ts2.ppv=na.fill(ts.ppv, fill=c('extend', NA, 'extend'))
@@ -368,9 +368,9 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
                  rel.conf.level=rel.conf.level, decision.odds=decision.odds,
                  limit=limit), digits)) # as.numeric(arg1[1])*2
 
-  ttcols = 1:ncol(tt); 
+  ttcols = 1:ncol(tt);
   names(ttcols)=colnames(tt) # levels(test)
-  
+
   if (is.null(preselected.thresholds)){
     if (decision.use == 'predictive.value'){
       pd = which(ts2.ppv > limit)
@@ -396,7 +396,7 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
         ud = NA
       } else {
         pd = which(ts2.sppv > limit)
-        nd =  
+        nd = which(ts2.sppv < (1-limit))
         ud = which(ts2.snpv <= limit & (ts2.sppv <= limit))
       }
     } else if (decision.use == 'LR'){
@@ -411,7 +411,7 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
       }
     }
   } else { # preselected.thresholds = c(25.2,25.1)
-      numlevels = as.numeric(levels(test)) 
+      numlevels = as.numeric(levels(test))
       if (preselected.thresholds[2] > preselected.thresholds[1]){ # positive decisions for higher scores
         pd = which(numlevels > preselected.thresholds[2])
         nd = which(numlevels < preselected.thresholds[1])
@@ -421,25 +421,25 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
         nd = which(numlevels > preselected.thresholds[1])
         ud = which(numlevels >= preselected.thresholds[2]  & (as.numeric(levels(test)) <= preselected.thresholds[1]))
       }
-      
+
       names(pd)=colnames(tt)[pd]
       names(nd)=colnames(tt)[nd]
       names(ud)=colnames(tt)[ud]
   }
-  
+
   TN = sum(tt[1, nd]) # tt[1,nd]
   FN = sum(tt[2, nd])
   u0 = sum(tt[1, ud])
   u1 = sum(tt[2, ud])
   FP = sum(tt[1, pd])
   TP = sum(tt[2, pd])
-  
+
   if (show.table) {
     showtable = addmargins(matrix(c(TN,FN,u0,u1,FP,TP), ncol=2, byrow=T,
                           dimnames=list(c('Negative decisions','Uncertain',
                                           'Positive decisions'),c("0","1"))))
   }
- 
+
   pv = as.matrix(rbind(rnpv=round(ts2.npv, digits), rppv = round(ts2.ppv, digits),
                       rsnpv=round(ts2.snpv, digits), rsppv=round(ts2.sppv, digits),
                       rilr=round(ts2.ilr,digits), rpt.odds = round(posttest.odds,digits), rpt.prob = round(posttest.prob, digits)))
@@ -472,7 +472,7 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
   true.pos.status = tps
   ud.odds = sum(tt[2,ud])/sum(tt[1,ud]) # digits=7
   realized.odds = c(TN/FN, ud.odds, TP/FP)
-  tt2 = as.matrix(rbind(n, total.sample, correct.decisions, 
+  tt2 = as.matrix(rbind(n, total.sample, correct.decisions,
                          true.neg.status, true.pos.status, realized.odds))
   colnames(tt2) = col.title
   if (use.perc){
@@ -480,9 +480,9 @@ RPV <- function(ref, test, pretest.prob = NULL, reliability = NULL, roll.length 
     tt2[c(2,4,5),2] = percent(as.numeric(tt2[c(2,4,5),2]),digits)
     tt2[2:5,3] = percent(as.numeric(tt2[2:5,3]),digits)
     tt2[6,] = round(as.numeric(tt2[6,]),digits)
-  } 
-  
-  out = list(parameters = arg1, messages = ext, rel.pred.values=pv, 
+  }
+
+  out = list(parameters = arg1, messages = ext, rel.pred.values=pv,
          thresholds.UI=thresholds.UI, ranges=ranges, results=data.frame(tt2))
   if (show.table) out$table = showtable
   return(out)

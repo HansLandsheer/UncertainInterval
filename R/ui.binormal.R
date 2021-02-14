@@ -79,10 +79,15 @@
 
 #' @export
 #' @examples
-#' # A simple test model
+#' test=c(rnorm(500,0,1), rnorm(500,1.6,1))
 #' ref=c(rep(0,500), rep(1,500))
-#' test=c(rnorm(500,0,1), rnorm(500,1,1))
+#' plotMD(ref, test, model='binormal')
 #' ui.binormal(ref, test)
+#' # test scores controls > patients works correctly from version 0.7 or higher
+#' ui.binormal(ref, -test) 
+#' ref=c(rep(1,500), rep(0,500))
+#' plotMD(ref, test, model='binormal')
+#' ui.binormal(ref, test) 
 #'
 
 ui.binormal <- function(ref, test, UI.Se = .55, UI.Sp = .55,

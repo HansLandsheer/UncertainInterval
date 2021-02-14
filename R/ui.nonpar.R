@@ -36,6 +36,9 @@
 #'  of the uncertain interval are nearest UI.Se and UI.Sp respectively. When
 #'  'limited' the solutions have an uncertain interval with a sensitivity and
 #'  specificity limited by UI.Se and UI.Sp respectively.
+#'@param direction Default = 'auto'. Direction when comparing controls with
+#'   cases. Often, the controls have lower values than the cases (direction =
+#'   '<'). When 'auto', mean comparison is used to determine the direction.
 #'
 #'@details{ This function can be used for a test without a defined distribution
 #'of the continuous test scores. The Uncertain Interval is generally defined as
@@ -88,7 +91,7 @@
 #'  \item{TN}{ Count of true negatives within the Uncertain interval.}
 #'  \item{FP}{ Count of false positives within the Uncertain interval.}
 #'  \item{UI.Se}{ Sensitivity of the test scores within the Uncertain
-#'  interval.} 
+#'  interval.}
 #'  \item{UI.Sp}{ Specificity of the test scores within the
 #'  Uncertain interval.} } Only a single row is returned when parameter
 #'  \code{return.first} = TRUE (default).}
@@ -122,7 +125,8 @@ ui.nonpar <-
            UI.Sp = .55,
            intersection = NULL,
            return.first = T,
-           select = c('nearest', 'limited')) {
+           select = c('nearest', 'limited'),
+           direction = c('auto','<', '>')) {
 
     find.closest <- function(M, crit){
       mindiff=min(abs(M-crit))
@@ -131,8 +135,31 @@ ui.nonpar <-
 
     bootstrap=0 # experimental
     select = match.arg(select)
-    df = check.data(ref, test, model='kernel')
+    direction =  match.arg(direction)
 
+    df = check.data(ref, test, model='kernel')
+    if (direction == 'auto'){
+      if (mean(df$test[ref==0]) > mean(df$test[ref==1])) {
+          direction = '>'
+        } else {
+          direction = '<'
+        }
+    }
+    # only one relevant intersection assumed!
+    # linear tests are used for determination of point of intersection
+    # linear test is assumed to have a normal distribution
+    if (is.null(intersection)) {
+      intersection = get.intersection(df$ref, df$test, model='kernel')
+      if (length(intersection) > 1) {
+        intersection = utils::tail(intersection, n = 1)
+        warning('More than one point of intersection. Highest density used. \n')
+      } else intersection=intersection[1] # other values are ignored
+    }
+    negate = (direction == '>')
+    if (negate) {
+      df$test = -df$test
+      intersection = -intersection
+      }
     if (bootstrap > 0) {
       # o4 = uncertain.interval(df$ref, df$test, UI.Se, UI.Sp, intersection, return.first=T,
       #                         select, bootstrap=0)
@@ -323,6 +350,12 @@ ui.nonpar <-
     if (select == 'nearest') {
       o3 = o3[find.closest(abs(o3[, 'UI.Se'] - UI.Se) +
                            abs(o3[, 'UI.Sp'] - UI.Sp), 0),]
+    }
+    if (negate) {
+      temp = o3[,1] # cp.l
+      o3[,1] = -o3[,2]
+      o3[,2] = -temp
+      intersection=-intersection
     }
     if (return.first |
         nrow(o3) == 0)
