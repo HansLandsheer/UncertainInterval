@@ -1,5 +1,5 @@
 Package: UncertainInterval
-Version: 0.7.0.0
+Version: 0.7.0
 Date: 2021-02-12
 Title: Uncertain Interval Methods for Three-Way Cut-Point Determination in Test Results
 Authors@R: c(person("Hans", "Landsheer", role = c("aut", "cre"),

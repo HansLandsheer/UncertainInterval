@@ -41,23 +41,25 @@
 #' @param extend (default = TRUE) The Reliable Predictive Values cannot be
 #'   calculated for the most extreme scores. As the most extreme scores offer
 #'   most often least uncertain decisions for or against the disease, the values
-#'   that can be calculated are extended. When extend = FALSE, NAs (NOT
-#'   Availables) are produced.
-#' @param decision.odds (default = 2). The minimum odds for and against the
-#'   targeted impairment for a positive or negative classification. For the
-#'   uncertain range of test scores both the odds for and the odds against are
-#'   therefore between 2 and 1/2. A decision.odds of 1 causes all test scores to
-#'   be used for either positive or negative decisions. The limit for the
-#'   Predictive Value = decision.odds / (decision.odds+1); for a decision, the
-#'   Predictive Values needs to be larger than this limit. NB 1 Decision.odds can
-#'   be a broken number, such as .55/(1-.55), which defines the decision limit
-#'   for predictive values as .55. The default is therefore (2/3) / (1 - (2/3))
-#'   = 2, equal to a predictive value of .667. NB 2 When a test is more reliable
-#'   and valid, a higher value for decision.odds can be applied. NB 3 For
-#'   serious diseases with relatively uncomplicated cures, decision odds can be
-#'   smaller than one. In that case, a large number of false positives is
-#'   unavoidable and positive decisions are inherently uncertain. See
-#'   Sonis(1999) for a discussion.
+#'   that can be calculated are extended. When extend = FALSE, NA's (NOT
+#'   Available's) are produced.
+#' @param decision.odds (default = 2). The minimum desired odds of probabilities
+#'   for a positive or negative classification. This equals the desired Likelihood
+#'   Ratio: the probability of a person who has the disease testing positive
+#'   divided by the probability of a person who does not have the disease
+#'   testing positive. For the uncertain range of test scores both the odds for
+#'   and the odds against are therefore between 2 and 1/2. A decision.odds of 1
+#'   causes all test scores to be used for either positive or negative
+#'   decisions. The limit for the Predictive Value = decision.odds /
+#'   (decision.odds+1); for a decision, the Predictive Values needs to be larger
+#'   than this limit. NB 1 Decision.odds can be a broken number, such as
+#'   .55/(1-.55), which defines the decision limit for predictive values as .55.
+#'   The default of 2 is therefore (2/3) / (1 - (2/3)) = 2, equal to a
+#'   predictive value of .667. NB 2 When a test is more reliable and valid, a
+#'   higher value for decision.odds can be applied. NB 3 For serious diseases
+#'   with relatively uncomplicated cures, decision odds can be smaller than one.
+#'   In that case, a large number of false positives is unavoidable and positive
+#'   decisions are inherently uncertain. See Sonis(1999) for a discussion.
 #' @param decision.use (default = 'standardized.pv'). The probability to be used
 #'   for decisions. When 'standardized.pv' is chosen, the standardized positive
 #'   predictive value is used for positive decisions and the standardized

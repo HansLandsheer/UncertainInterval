@@ -13,7 +13,7 @@
 #'   from another organ that has been affected by cancer.
 #' @references Tosteson AN, & CB Begg (1988). A general regression methodology
 #'   for ROC curve estimation. Medical Decision Making 8, 204-215
-#'   \url{https://research.fhcrc.org/diagnostic-biomarkers-center/en/datasets.html}
-#'    \url{http://journals.sagepub.com/doi/abs/10.1177/0272989X8800800309}
+#'   \url{https://research.fredhutch.org/diagnostic-biomarkers-center/en/datasets.html}
+#'    \url{https://journals.sagepub.com/doi/abs/10.1177/0272989X8800800309}
 #' @keywords data
 NULL
